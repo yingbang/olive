@@ -6,9 +6,14 @@
 //首页
 export const HOME_ACTION = 'HOME_ACTION';
 
-//登录
-export const PERFORM_LOGIN_ACTION = 'PERFORM_LOGIN_ACTION';
-export const RECEIVE_LOGIN_ACTION = 'RECEIVE_LOGIN_ACTION';
+//登录：手机登录、第三方登录
+export const loginMobileAction = 'loginMobileAction';
+export const loginSuccessAction = 'loginSuccessAction';
+export const loginFailAction = 'loginFailAction';
+//注册：手机号注册
+export const registerMobileAction = 'registerMobileAction';
+//忘记密码、手机找回密码
+export const findPasswordAction = 'findPasswordAction';
 
 //新闻资讯
 export const PERFORM_NEWSlIST_ACTION = 'PERFORM_NEWSlIST_ACTION';

@@ -4,24 +4,43 @@
 'use strict';
 import * as types from './actionTypes';
 
-export function performLoginAction(){
+//手机号登录
+export function loginMobileAction(){
     return dispatch => {
-        dispatch(performLogin());
+        dispatch(loginMobile());
         setTimeout(
             () => {
                 let result = {};
-                dispatch(receiveLoginResult(result));
+                dispatch(loginSuccess(result));
             }, 3000);
     }
 }
-function performLogin() {
+//开始登录
+function loginMobile() {
     return {
-        type: types.PERFORM_LOGIN_ACTION,
+        type: types.loginMobileAction,
+        result: 'login_mobile'
     }
 }
-function receiveLoginResult(result){
+//登录成功
+function loginSuccess(result){
     return {
-        type: types.RECEIVE_LOGIN_ACTION,
-        data: result
+        type: types.loginSuccessAction,
+        result: result
+    }
+}
+//登录失败
+function loginFail(result){
+    return {
+        type: types.loginFailAction,
+        result: result
+    }
+}
+
+//手机号注册
+export function registerMobileAction() {
+    return {
+        type:types.registerMobileAction,
+        result:'register_mobile'
     }
 }

@@ -6,9 +6,8 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import styled from 'styled-components/native';
+import globalStyle from '../components/common/GlobalStyle';
 
-// this is a traditional React component connected to the redux store
 export default class LoginScreen extends Component {
 
     constructor(props) {
@@ -17,15 +16,15 @@ export default class LoginScreen extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <Text style={{fontWeight: '500'}}>请啊啊登录{this.props.loginReducer.data}</Text>
+            <View style={globalStyle.container}>
+                <Text>这里是默认登录页面</Text>
+                <Text onPress={this.props.login}>手机号登录</Text>
+                <Text onPress={this.props.register}>手机注册</Text>
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1
-    }
+
 });

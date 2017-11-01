@@ -6,20 +6,31 @@
 import * as types from '../actions/actionTypes';
 
 const initialState = {
-    loading : false,
-    data:'agg'
+    isLogin : false,
+    msg:''
 };
 
 export default function loginReducer(state = initialState, action){
     switch (action.type) {
-        case types.PERFORM_LOGIN_ACTION:
+        case types.loginMobileAction:
             return Object.assign({}, state, {
-                loading: true
+                isLogin: true,
+                msg: action.result
             });
-        case types.RECEIVE_LOGIN_ACTION:
+        case types.loginSuccessAction:
             return Object.assign({}, state, {
-                loading: false,
-                data: action.result
+                isLogin: false,
+                msg: action.result
+            });
+        case types.loginFailAction:
+            return Object.assign({}, state, {
+                isLogin: false,
+                msg: action.result
+            });
+        case types.registerMobileAction:
+            return Object.assign({},state,{
+                isLogin:false,
+                msg: action.result
             });
         default:
             return state;
