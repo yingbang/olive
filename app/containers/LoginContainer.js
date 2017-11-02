@@ -9,48 +9,22 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import LoginScreen from '../screens/LoginScreen';
+import LoginScreen from '../components/signInUp/LoginScreen';
 import {connect} from 'react-redux';
-import {registerMobileAction, loginMobileAction} from '../actions/loginAction';
-//手机号登录页面
-import LoginMobile from '../components/signInUp/LoginMobile';
-//手机号注册页面
-import RegisterMobile from '../components/signInUp/RegisterMobile';
+//导入动作
+import {registerMobileAction, loginMobileAction, findPasswordAction} from '../actions/loginAction';
 
 class LoginContainer extends Component {
     constructor(props) {
         super(props);
     }
-    componentWillMount() {
-        //this.props.dispatch(performLoginAction());
-    }
-    //手机号注册
-    register(){
-        this.props.dispatch(registerMobileAction());
-    }
-    //手机号登录
-    login(){
-        this.props.dispatch(loginMobileAction());
-    }
+    static navigationOptions = {
+        header:null
+    };
     render() {
-        const {loginReducer} = this.props;
-        //手机号注册
-        if (loginReducer.msg === 'register_mobile') {
-            return (
-                <RegisterMobile/>
-            );
-        }
-        //手机号登录
-        if (loginReducer.msg === 'login_mobile') {
-            return (
-                <LoginMobile/>
-            )
-        }
-        //默认展示页面：第三方登录
         return (
-            <LoginScreen {...this.props} register={()=>{this.register()}} login={()=>{this.login()}}/>
+            <LoginScreen {...this.props}/>
         );
-        //忘记密码、手机找回密码
     }
 }
 

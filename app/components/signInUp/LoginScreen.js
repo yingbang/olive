@@ -1,6 +1,3 @@
-/**
- * 手机注册页面
- */
 import React, {Component} from 'react';
 import {
     Text,
@@ -17,24 +14,17 @@ import {
     Item,
     Input,
     Label,
-    Header,
-    Left,
-    Icon
 } from 'native-base';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 
-export default class RegisterMobile extends Component {
+export default class LoginScreen extends Component {
 
     constructor(props) {
         super(props);
     }
-
-    static navigationOptions = {
-        headerTitle:'注册账号'
-    };
 
     render() {
         return (
@@ -49,23 +39,18 @@ export default class RegisterMobile extends Component {
                             <Label>请输入手机号</Label>
                             <Input/>
                         </Item>
-                        <View>
-                            <Item floatingLabel style={styles.buttonMargin}>
-                                <Label>请输入短信验证码</Label>
-                                <Input/>
-                            </Item>
-                            <Button style={[colors.bgBlue,{position:'absolute',height:30,right:50,bottom:20,paddingLeft:8,paddingRight:8}]}>
-                                <Text style={colors.cWhite}>获取验证码</Text>
-                            </Button>
-                        </View>
                         <Item floatingLabel style={styles.buttonMargin}>
                             <Label>请输入密码</Label>
                             <Input/>
                         </Item>
                         <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
-                            <Text style={[colors.cWhite,fonts.font18]}> 注册 </Text>
+                            <Text style={[colors.cWhite,fonts.font18]}> 登录 </Text>
                         </Button>
                         <View style={styles.bottomBox}>
+                            <View style={[styles.textView, styles.buttonMargin]}>
+                                <Text onPress={()=>{this.props.navigation.navigate('RegisterMobile')}}>注册账号</Text>
+                                <Text onPress={()=>{this.props.navigation.navigate('FindPassword')}}>忘记密码？</Text>
+                            </View>
                             <View style={[styles.thirdView, styles.buttonMargin]}>
                                 <View style={styles.thirdInnerView}>
                                     <Text style={styles.line}></Text>

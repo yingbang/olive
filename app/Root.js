@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import Tabs from './Tabs';
-import LoginContainer from './containers/LoginContainer'
+import SignNavigator from './components/signInUp/SignNavigator';
 
 class Root extends Component {
     constructor(props){
@@ -17,7 +17,7 @@ class Root extends Component {
 
     render() {
         return (
-            (this.state.login === 1) ? <Tabs/> : <LoginContainer/>
+            (this.state.login === 1) ? <Tabs/> : <SignNavigator/>
         );
     }
 }

@@ -7,7 +7,7 @@ import * as types from './actionTypes';
 //手机号登录
 export function loginMobileAction(){
     return dispatch => {
-        dispatch(loginMobile());
+        //dispatch(loginMobile());
         setTimeout(
             () => {
                 let result = {};
@@ -16,10 +16,10 @@ export function loginMobileAction(){
     }
 }
 //开始登录
-function loginMobile() {
+function loginMobile(){
     return {
         type: types.loginMobileAction,
-        result: 'login_mobile'
+        result: ""
     }
 }
 //登录成功
@@ -42,5 +42,13 @@ export function registerMobileAction() {
     return {
         type:types.registerMobileAction,
         result:'register_mobile'
+    }
+}
+
+//忘记密码
+export function findPasswordAction() {
+    return {
+        type:types.findPasswordAction,
+        result:'find_password'
     }
 }

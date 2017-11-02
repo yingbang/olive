@@ -1,5 +1,5 @@
 /**
- * 手机注册页面
+ * 找回密码页面
  */
 import React, {Component} from 'react';
 import {
@@ -26,14 +26,14 @@ import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 
-export default class RegisterMobile extends Component {
+export default class FindPassword extends Component {
 
     constructor(props) {
         super(props);
     }
 
     static navigationOptions = {
-        headerTitle:'注册账号'
+        headerTitle:'找回密码'
     };
 
     render() {
@@ -58,23 +58,10 @@ export default class RegisterMobile extends Component {
                                 <Text style={colors.cWhite}>获取验证码</Text>
                             </Button>
                         </View>
-                        <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入密码</Label>
-                            <Input/>
-                        </Item>
                         <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
-                            <Text style={[colors.cWhite,fonts.font18]}> 注册 </Text>
+                            <Text style={[colors.cWhite,fonts.font18]}> 下一步 </Text>
                         </Button>
-                        <View style={styles.bottomBox}>
-                            <View style={[styles.thirdView, styles.buttonMargin]}>
-                                <View style={styles.thirdInnerView}>
-                                    <Text style={styles.line}></Text>
-                                    <Text style={styles.thirdText}> 第三方账号登录 </Text>
-                                    <Text style={styles.line}></Text>
-                                </View>
-                                <FontIcon name="weixin" style={[fonts.font30,colors.cGreen]}/>
-                            </View>
-                        </View>
+                        <View style={styles.bottomBox}></View>
                     </ImageBackground>
                 </Content>
             </Container>
@@ -104,22 +91,5 @@ const styles = StyleSheet.create({
         justifyContent:'space-around',
         flexDirection:'row',
         marginTop:15
-    },
-    thirdText:{
-        color:'#aaa'
-    },
-    thirdView:{
-        alignItems:'center',
-        marginTop:30
-    },
-    thirdInnerView:{
-        flexDirection:'row',
-        alignItems:'center',
-        marginBottom:15
-    },
-    line:{
-        height:1,
-        backgroundColor:'#eee',
-        flex:1
     }
 });
