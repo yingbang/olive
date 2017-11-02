@@ -21,6 +21,7 @@ import {
     Left,
     Icon
 } from 'native-base';
+import request from 'superagent';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
@@ -35,6 +36,16 @@ export default class RegisterMobile extends Component {
     static navigationOptions = {
         headerTitle:'注册账号'
     };
+
+    //获取短信验证码
+    getCode() {
+        request('POST','http://rapapi.org/mockjs/25374/submit')
+            .send({username:'1',password:'2'})
+            .set('accept','json')
+            .end(function (err, res) {
+            console.log(res)
+        })
+    }
 
     render() {
         return (
@@ -55,7 +66,7 @@ export default class RegisterMobile extends Component {
                                 <Input/>
                             </Item>
                             <Button style={[colors.bgBlue,{position:'absolute',height:30,right:50,bottom:20,paddingLeft:8,paddingRight:8}]}>
-                                <Text style={colors.cWhite}>获取验证码</Text>
+                                <Text style={colors.cWhite} onPress={()=>{this.getCode()}}>获取验证码</Text>
                             </Button>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
