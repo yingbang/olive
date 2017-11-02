@@ -6,6 +6,13 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
+import {
+    Container,
+    Content,
+    Button,
+    Header,
+} from 'native-base';
+import Icon from 'react-native-vector-icons/Entypo';
 import globalStyle from '../components/common/GlobalStyle';
 
 export default class LoginScreen extends Component {
@@ -16,11 +23,16 @@ export default class LoginScreen extends Component {
 
     render() {
         return (
-            <View style={globalStyle.container}>
-                <Text>这里是默认登录页面</Text>
-                <Text onPress={this.props.login}>手机号登录</Text>
-                <Text onPress={this.props.register}>手机注册</Text>
-            </View>
+            <Container>
+                <Content padder style={globalStyle.container}>
+                    <Text>这里是默认登录页面</Text>
+                    <Button block small rounded info onPress={this.props.login}>
+                        <Icon name="sina-weibo"/>
+                        <Text> 手机号登录 </Text>
+                    </Button>
+                    <Button block small danger onPress={this.props.register}><Text> 手机注册 </Text></Button>
+                </Content>
+            </Container>
         );
     }
 }
