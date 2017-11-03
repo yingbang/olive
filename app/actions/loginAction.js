@@ -25,7 +25,11 @@ export function loginMobile(){
 //登录成功
 export function loginSuccess(result){
     //保存登录状态到本地数据库
-
+    realmObj.write(()=>{
+        let User = realmObj.objects('User');
+        realmObj.delete(User);
+        realmObj.create('User',{id:1, name:'feifei', mobile:'15834235678'});
+    });
     //返回成功
     return {
         type: types.loginSuccessAction,

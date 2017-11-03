@@ -11,11 +11,24 @@ import {connect} from 'react-redux';
 class Root extends Component {
     constructor(props){
         super(props);
+        this.state = {
+            isLogin:0
+        };
+    }
+
+    componentWillMount(){
+        //判断数据库是否有会员信息，如果有的话，说明是登录状态
+        let User = realmObj.objects('User');
+        if(User && User[0]){
+            this.setState({
+                isLogin:1
+            });
+        }
     }
 
     render() {
         return (
-            (this.props.loginReducer.isLogin === true) ? <Tabs/> : <SignNavigator/>
+            (this.state.isLogin === 1 || this.props.loginReducer.isLogin === true) ? <Tabs/> : <SignNavigator/>
         );
     }
 }

@@ -11,7 +11,9 @@ import configureStore from './app/configureStore';
 import SplashScreen from 'react-native-splash-screen';
 import Root from './app/Root';
 const store = configureStore();
-//导航菜单
+//引入Realm数据库
+import configureRealm from './app/realm/configureRealm';
+configureRealm();
 
 export default class rootApp extends Component {
     componentDidMount() {
