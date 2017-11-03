@@ -6,20 +6,25 @@ import React, {Component} from 'react';
 import {View} from 'react-native';
 import Tabs from './Tabs';
 import SignNavigator from './components/signInUp/SignNavigator';
+import {connect} from 'react-redux';
 
 class Root extends Component {
     constructor(props){
         super(props);
-        this.state = {
-            login:0
-        }
     }
 
     render() {
         return (
-            (this.state.login === 1) ? <Tabs/> : <SignNavigator/>
+            (this.props.loginReducer.isLogin === true) ? <Tabs/> : <SignNavigator/>
         );
     }
 }
 
-export default Root;
+//和store绑定，这样就可以获取reducer中的登录状态了
+function select(state) {
+    const {loginReducer} = state;
+    return {
+        loginReducer
+    }
+}
+export default connect(select)(Root);

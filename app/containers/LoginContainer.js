@@ -12,7 +12,7 @@ import {
 import LoginScreen from '../components/signInUp/LoginScreen';
 import {connect} from 'react-redux';
 //导入动作
-import {registerMobileAction, loginMobileAction, findPasswordAction} from '../actions/loginAction';
+import {loginSuccess} from '../actions/loginAction';
 
 class LoginContainer extends Component {
     constructor(props) {
@@ -21,9 +21,14 @@ class LoginContainer extends Component {
     static navigationOptions = {
         header:null
     };
+    //登录成功以后
+    loginSuccess(){
+        this.props.dispatch(loginSuccess())
+    }
+    //默认显示登录页面
     render() {
         return (
-            <LoginScreen {...this.props}/>
+            <LoginScreen {...this.props} loginSuccess={()=>{this.loginSuccess()}}/>
         );
     }
 }

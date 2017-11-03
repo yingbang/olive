@@ -16,21 +16,24 @@ export function loginMobileAction(){
     }
 }
 //开始登录
-function loginMobile(){
+export function loginMobile(){
     return {
         type: types.loginMobileAction,
         result: ""
     }
 }
 //登录成功
-function loginSuccess(result){
+export function loginSuccess(result){
+    //保存登录状态到本地数据库
+
+    //返回成功
     return {
         type: types.loginSuccessAction,
         result: result
     }
 }
 //登录失败
-function loginFail(result){
+export function loginFail(result){
     return {
         type: types.loginFailAction,
         result: result

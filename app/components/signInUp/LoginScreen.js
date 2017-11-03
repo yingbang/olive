@@ -26,6 +26,12 @@ export default class LoginScreen extends Component {
         super(props);
     }
 
+    beginLogin(){
+        //this.props.navigation.navigate("Tab")
+        //alert(this.state.login)
+        this.props.loginSuccess();
+    }
+
     render() {
         return (
             <Container style={globalStyle.containerWithoutStatusBar}>
@@ -43,7 +49,7 @@ export default class LoginScreen extends Component {
                             <Label>请输入密码</Label>
                             <Input/>
                         </Item>
-                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
+                        <Button block rounded success onPress={()=>{this.beginLogin()}} style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
                             <Text style={[colors.cWhite,fonts.font18]}> 登录 </Text>
                         </Button>
                         <View style={styles.bottomBox}>

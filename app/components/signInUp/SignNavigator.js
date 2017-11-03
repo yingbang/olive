@@ -15,7 +15,6 @@ import RegisterMobile from './RegisterMobile';
 //找回密码页面
 import FindPassword from './FindPassword';
 
-
 /**
  * 设置页面导航
  */
