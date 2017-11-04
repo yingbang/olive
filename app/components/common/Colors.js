@@ -20,5 +20,20 @@ const colors = StyleSheet.create({
     bgBlue:{
         backgroundColor:'#00bfff'
     },
+    //白色背景
+    bgWhite:{
+        backgroundColor:'#ffffff'
+    },
+    //
+    bgF2:{
+        backgroundColor:'#f2f2f2'
+    },
+    //渲染颜色
+    tintBlue:{
+        tintColor:'#00bfff',
+    },
+    tintWhite:{
+        tintColor:'#ffffff'
+    }
 });
 export default colors;

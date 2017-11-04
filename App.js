@@ -23,7 +23,7 @@ export default class rootApp extends Component {
     render() {
         return (
             <Provider store={store}>
-              <Root/>
+                <Root/>
             </Provider>
         )
     }

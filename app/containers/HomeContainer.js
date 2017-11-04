@@ -10,13 +10,15 @@ import {
     StyleSheet
 } from 'react-native';
 import {connect} from 'react-redux';
+import HomeNavigator from '../components/home/HomeNavigator';
 
 class HomeContainer extends Component {
+    static navigationOptions = {
+        header:null
+    };
     render() {
         return (
-            <View>
-                <Text>Home</Text>
-            </View>
+            <HomeNavigator/>
         );
     }
 }

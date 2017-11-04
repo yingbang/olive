@@ -10,13 +10,12 @@ import {
     StyleSheet
 } from 'react-native';
 import {connect} from 'react-redux';
+import FindIndex from '../components/find/Index';
 
 class FindContainer extends Component {
     render() {
         return (
-            <View>
-                <Text>Find</Text>
-            </View>
+            <FindIndex {...this.props}/>
         );
     }
 }

@@ -10,13 +10,17 @@ import {
     StyleSheet
 } from 'react-native';
 import {connect} from 'react-redux';
+import PublishIndex from '../components/publish/Index';
 
 class PublishContainer extends Component {
+
+    static navigationOptions = {
+        header:null
+    };
+
     render() {
         return (
-            <View>
-                <Text>Publish</Text>
-            </View>
+            <PublishIndex {...this.props}/>
         );
     }
 }

@@ -15,13 +15,16 @@ import FindContainer from './containers/FindContainer';
 import MyContainer from './containers/MyContainer';
 import NewsContainer from './containers/NewsContainer';
 import PublishContainer from './containers/PublishContainer';
+//需要导入的子页面
+//发布
+import PublishEdit from './components/publish/PublishEdit';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
  */
 const AppTab = TabNavigator(
     {
-        HomeIndex: {
+        HomeContainer: {
             screen: HomeContainer,
             navigationOptions: {
                 tabBarLabel: '公益圈',
@@ -35,7 +38,7 @@ const AppTab = TabNavigator(
                 )
             }
         },
-        FindIndex: {
+        FindContainer: {
             screen: FindContainer,
             navigationOptions: {
                 headerTitle:'find',
@@ -50,7 +53,7 @@ const AppTab = TabNavigator(
                 )
             }
         },
-        PublishIndex: {
+        PublishContainer: {
             screen: PublishContainer,
             navigationOptions: {
                 tabBarLabel: ({focused,tintColor})=>(
@@ -69,7 +72,7 @@ const AppTab = TabNavigator(
                 tabBarVisible:false,//当点击进去，是否显示底部菜单
             }
         },
-        NewsIndex: {
+        NewsContainer: {
             screen: NewsContainer,
             navigationOptions: {
                 tabBarLabel: '资讯',
@@ -83,7 +86,7 @@ const AppTab = TabNavigator(
                 )
             }
         },
-        MyIndex: {
+        MyContainer: {
             screen: MyContainer,
             navigationOptions: {
                 tabBarLabel: '我的',
@@ -98,7 +101,7 @@ const AppTab = TabNavigator(
             }
         }
     }, {
-        initialRouteName: 'HomeIndex',//默认显示的tab页
+        initialRouteName: 'HomeContainer',//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -137,6 +140,7 @@ const AppTab = TabNavigator(
 const Navigator = StackNavigator(
     {
         Tab: {screen: AppTab},
+        PublishEdit:{screen:PublishEdit},
     },
     {
         navigationOptions: {
@@ -146,7 +150,7 @@ const Navigator = StackNavigator(
             swipeEnabled: false,
             animationEnabled: false,
         },
-        headerMode: 'float',
+        //headerMode: 'float',
     });
 
 export default Navigator;

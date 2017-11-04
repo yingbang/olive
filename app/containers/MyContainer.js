@@ -10,13 +10,15 @@ import {
     StyleSheet
 } from 'react-native';
 import {connect} from 'react-redux';
+import MyIndex from '../components/my/Index';
 
 class MyContainer extends Component {
+    static navigationOptions = {
+        header:null
+    };
     render() {
         return (
-            <View>
-                <Text>My</Text>
-            </View>
+            <MyIndex {...this.props}/>
         );
     }
 }

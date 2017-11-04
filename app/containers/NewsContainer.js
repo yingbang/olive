@@ -10,13 +10,12 @@ import {
     StyleSheet
 } from 'react-native';
 import {connect} from 'react-redux';
+import NewsIndex from '../components/news/Index';
 
 class NewsContainer extends Component {
     render() {
         return (
-            <View>
-                <Text>News</Text>
-            </View>
+            <NewsIndex {...this.props}/>
         );
     }
 }
