@@ -16,6 +16,10 @@ const colors = StyleSheet.create({
     cBlue:{
         color:'#00bfff'
     },
+    //#999999
+    c99:{
+        color:'#999999'
+    },
     //蓝色背景
     bgBlue:{
         backgroundColor:'#00bfff'
@@ -34,6 +38,9 @@ const colors = StyleSheet.create({
     },
     tintWhite:{
         tintColor:'#ffffff'
-    }
+    },
+    tint99:{
+        tintColor:'#999999'
+    },
 });
 export default colors;

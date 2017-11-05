@@ -11,8 +11,12 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import NewsIndex from '../components/news/Index';
+import HeaderWithSearch from '../components/common/HeaderWithSearch';
 
 class NewsContainer extends Component {
+    static navigationOptions = {
+        header:<HeaderWithSearch/>
+    };
     render() {
         return (
             <NewsIndex {...this.props}/>

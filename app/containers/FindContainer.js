@@ -11,8 +11,12 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import FindIndex from '../components/find/Index';
+import HeaderWithSearch from '../components/common/HeaderWithSearch';
 
 class FindContainer extends Component {
+    static navigationOptions = {
+        header:<HeaderWithSearch/>
+    };
     render() {
         return (
             <FindIndex {...this.props}/>

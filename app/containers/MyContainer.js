@@ -10,7 +10,7 @@ import {
     StyleSheet
 } from 'react-native';
 import {connect} from 'react-redux';
-import MyIndex from '../components/my/Index';
+import MyNavigator from '../components/my/MyNavigator';
 
 class MyContainer extends Component {
     static navigationOptions = {
@@ -18,7 +18,7 @@ class MyContainer extends Component {
     };
     render() {
         return (
-            <MyIndex {...this.props}/>
+            <MyNavigator/>
         );
     }
 }

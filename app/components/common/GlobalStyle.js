@@ -7,6 +7,13 @@ import {
 const {width, height} = Dimensions.get('window');
 
 const globalStyle = StyleSheet.create({
+    //设置flex=1
+    flex1:{
+        flex:1
+    },
+    statusHeight:{
+        paddingTop: (Platform.OS === 'ios') ? 20 : 0,
+    },
     //显示状态栏
     container:{
         flex:1,
