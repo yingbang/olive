@@ -46,7 +46,7 @@ export default class Guanzhu extends Component{
 
     renderRow = ({item}) => (
         <View style={{marginBottom:15}}>
-            <TouchableWithoutFeedback onPress={()=>{navigation.navigate("DongTaiDetail");}}>
+            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail");}}>
                 <View>
                     <View style={{flexDirection:'row',marginBottom:12}}>
                         <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>

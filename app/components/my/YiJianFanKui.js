@@ -7,12 +7,18 @@ import {
     TextInput,
 } from 'react-native';
 //公共头部
-import MyTop from './MyTop';
+import { Card, List, ListItem, Header} from 'react-native-elements';
+import globalStyle from '../common/GlobalStyle';
+import colors from '../common/Colors';
 
 export default class YiJianFanKui extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
-            return <MyTop title="意见反馈" {...HeaderProps}/>
+            return <Header
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                centerComponent={{ text: '意见反馈'}}
+                backgroundColor="#ffffff"
+            />
         }
     };
     render(){

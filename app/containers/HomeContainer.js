@@ -13,20 +13,23 @@ import {connect} from 'react-redux';
 import HomeNavigator from '../components/home/HomeNavigator';
 
 class HomeContainer extends Component {
+    constructor(props){
+        super(props);
+    }
     static navigationOptions = {
-        header:null
+        header:null,
     };
     render() {
         return (
-            <HomeNavigator/>
+            <HomeNavigator screenProps={this.props}/>
         );
     }
 }
 
 function select(state) {
-    const {loginReducer} = state;
+    const {tabReducer} = state;
     return {
-        loginReducer
+        tabReducer
     }
 }
 export default connect(select)(HomeContainer);

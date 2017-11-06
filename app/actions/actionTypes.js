@@ -22,3 +22,7 @@ export const GET_MORE_NEWSLIST_ACTION = 'GET_MORE_NEWSLIST_ACTION';
 export const REFRESH_NEWSlIST_ACTION = 'REFRESH_NEWSlIST_ACTION';
 export const HAS_FINISHED_ACTION = 'HAS_FINISHED_ACTION';
 export const ERROR_NEWSLIST_ACTION = 'ERROR_NEWSLIST_ACTION';
+
+//是否显示tab栏
+export const hideTabAction = 'hideTabAction';
+export const showTabAction = 'showTabAction';

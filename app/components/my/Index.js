@@ -15,7 +15,8 @@ import {
     FlatList
 } from 'react-native';
 import globalStyle from '../common/GlobalStyle';
-import { List, ListItem } from 'react-native-elements';
+import colors from '../common/Colors';
+import { List, ListItem, Header } from 'react-native-elements';
 
 const list = [
     {
@@ -24,14 +25,14 @@ const list = [
         icon: 'feather',
         iconType:'entypo',
         subtitle: '最近参加公益5次',
-        nav:'GongYi'
+        nav:'my_gongyi'
     },
     {
         key:1,
         name: '我的组织',
         icon: 'group',
         iconType:'font-awesome',
-        nav:'ZuZhi',
+        nav:'my_zuzhi',
         isDivider:true
     },
     {
@@ -39,27 +40,27 @@ const list = [
         name: '我的荣誉勋章',
         icon: 'trophy',
         iconType:'font-awesome',
-        nav:'ZuZhi'
+        nav:'my_rongyu'
     },
     {
         key:3,
         name: '我的公益活动',
         icon: 'gift',
         iconType:'font-awesome',
-        nav:'ZuZhi'
+        nav:'my_huodong'
     },
     {
         key:4,
         name: '我的收藏',
         icon: 'star',
-        nav:'ZuZhi'
+        nav:'my_shoucang'
     },
     {
         key:5,
         name: '订单',
         icon: 'reorder',
         iconType:'font-awesome',
-        nav:'ZuZhi',
+        nav:'my_dingdan',
         isDivider:true
     },
     {
@@ -67,7 +68,7 @@ const list = [
         name: '意见反馈',
         icon: 'notification',
         iconType:'entypo',
-        nav:'ZuZhi',
+        nav:'my_yijian',
         isDivider:true
     },
     {
@@ -75,7 +76,7 @@ const list = [
         name: '设置',
         icon: 'cog',
         iconType:'font-awesome',
-        nav:'SheZhi',
+        nav:'my_shezhi',
         isDivider:true
     },
 ];
@@ -92,24 +93,61 @@ export default class MyIndex extends Component{
             title={item.name}
             subtitle={item.subtitle}
             leftIcon={{name: item.icon,color:'#00bfff',size:18,type:item.iconType ? item.iconType : ''}}
-            onPress={()=>{this.props.navigation.navigate(item.nav)}}
-            containerStyle={{borderBottomColor:'#f8f8f8',marginTop:item.isDivider ? 8 : 0,backgroundColor:'#ffffff'}}
+            onPress={()=>{this.onClick(item.nav)}}
+            containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}
         />
-    )
+    );
+
+    onClick(tag) {
+        let TargetComponent;
+        switch (tag) {
+            case 'my_xiaoxi':
+                TargetComponent = 'XiaoXi';
+                break;
+            case 'my_ziliao':
+                TargetComponent = 'ZiLiao';
+                break;
+            case 'my_guanzhu':
+                TargetComponent = 'GuanZhu';
+                break;
+            case 'my_fensi':
+                TargetComponent = '';
+                break;
+            case 'my_dongtai':
+                TargetComponent = '';
+                break;
+            case 'my_zuzhi':
+                TargetComponent = 'ZuZhi';
+                break;
+            case 'my_rongyu':
+                TargetComponent = '';
+                break;
+            case 'my_huodong':
+                TargetComponent = '';
+                break;
+            case 'my_shoucang':
+                TargetComponent = 'ShouCang';
+                break;
+            case 'my_dingdan':
+                TargetComponent = 'DingDan';
+                break;
+            case 'my_yijian':
+                TargetComponent = 'YiJianFanKui';
+                break;
+            case 'my_shezhi':
+                TargetComponent = 'SheZhi';
+                break;
+        }
+        if (TargetComponent) {
+            //跳转页面
+            this.props.navigation.navigate(TargetComponent);
+        }
+    }
 
     render(){
         return (
-            <ScrollView style={[globalStyle.statusHeight,styles.container]}>
-                <View style={styles.top}>
-                    <TouchableWithoutFeedback onPress={()=>{this.onClick('my_xiaoxi')}}>
-                        <View style={styles.header}>
-                            <Image source={require('../../assets/icon/iconmessage.png')} style={styles.image} />
-                            <View style={styles.imageTip}>
-                                <Text style={styles.tipText}>3</Text>
-                            </View>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </View>
+            <ScrollView style={[styles.container]}>
+
                 <TouchableWithoutFeedback onPress={()=>{this.onClick('my_ziliao')}}>
                     <View style={styles.baseInfo}>
                         <Animated.Image
@@ -142,7 +180,7 @@ export default class MyIndex extends Component{
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
-                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,backgroundColor:'#f8f8f8'}}>
+                <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                     <FlatList
                         renderItem={this.renderRow}
                         data={list}

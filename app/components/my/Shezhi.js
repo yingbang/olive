@@ -7,20 +7,66 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     TextInput,
-    Button
+    Button,
+    FlatList
 } from 'react-native';
 //公共头部
-import MyTop from './MyTop';
+import { Card, List, ListItem, Header} from 'react-native-elements';
+import globalStyle from '../common/GlobalStyle';
+import colors from '../common/Colors';
+
+const contentList = [
+    {
+        key:0,
+        title: '账户资料',
+    },
+    {
+        key:1,
+        title: '消息通知设置',
+    },
+    {
+        key:2,
+        title: '隐私',
+    },
+    {
+        key:3,
+        title: '意见反馈',
+    },
+    {
+        key:4,
+        title: '给橄榄枝评分',
+    },
+    {
+        key:5,
+        title: '邀请好友使用',
+    },
+    {
+        key:6,
+        title: '关于橄榄枝',
+        isDivider:true,
+    },
+    {
+        key:7,
+        title: '退出登录',
+        isDivider:true,
+        hideChevron:true,
+        titleStyle:{color:'red'},
+        titleContainerStyle:{alignItems:'center'}
+    },
+]
 
 export default class Shezhi extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
-            return <MyTop title="设置" {...HeaderProps}/>
+            return <Header
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                centerComponent={{ text: '设置'}}
+                backgroundColor="#ffffff"
+            />
         }
     };
     onClick(tag) {
         let TargetComponent;
-        const { navigation } = this.props;
         switch (tag) {
             case 'shezhi_ziliao':
                 TargetComponent = '';
@@ -46,54 +92,29 @@ export default class Shezhi extends Component{
         }
         if (TargetComponent) {
             //跳转页面
-            navigation.navigate(TargetComponent);
+            this.props.navigation.navigate(TargetComponent);
         }
     }
-    _getItem(callBack, text, hasLine, tintStyle, expandableIco){
-        return (
-            <TouchableWithoutFeedback
-                onPress={callBack}>
-                <View style={[styles.setting_item_container,hasLine ? {borderBottomColor:'#f8f8f8',borderBottomWidth:1,} : {}]}>
-                    <View style={{flex:1,marginLeft:8}}>
-                        <Text style={{fontSize:12}}>{text}</Text>
-                    </View>
-                    <Image source={expandableIco ? expandableIco : require('../../assets/icon/icongo.png')}
-                           style={[{
-                               height: 15,
-                               width: 15,
-                               tintColor:'#999999'
-                           }, tintStyle]}/>
-                </View>
-            </TouchableWithoutFeedback>
-        );
-    }
-    getItem(tag, text, hasLine) {
-        return this._getItem(()=>this.onClick(tag), text, hasLine,null,null);
-    }
+
+    renderRow = ({item}) => (
+        <ListItem
+            title={item.title}
+            containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}
+            hideChevron={item.hideChevron}
+            titleContainerStyle={item.titleContainerStyle}
+            titleStyle={item.titleStyle}
+        />
+    );
     render(){
         return (
-            <View style={styles.container}>
-                <ScrollView>
-                    <View style={styles.block}>
-                        {this.getItem('shezhi_ziliao', '账户资料',true)}
-                        {this.getItem('shezhi_xiaoxi', '消息通知设置',true)}
-                        {this.getItem('shezhi_yinsi', '隐私',true)}
-                        {this.getItem('shezhi_yijian', '意见反馈',true)}
-                        {this.getItem('shezhi_pingfen', '给橄榄枝评分',true)}
-                        {this.getItem('shezhi_yaoqing', '邀请好友使用')}
-                    </View>
-                    <View style={styles.block}>
-                        {this.getItem('shezhi_guanyu', '关于橄榄枝')}
-                    </View>
-                    <View style={styles.block}>
-                        <TouchableWithoutFeedback>
-                            <View style={{justifyContent:'center',alignItems:'center',padding:8}}>
-                                <Text style={{color:'#ff4343'}}>退出登录</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </ScrollView>
-            </View>
+            <ScrollView style={styles.container}>
+                <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
+                    <FlatList
+                        renderItem={this.renderRow}
+                        data={contentList}
+                    />
+                </List>
+            </ScrollView>
         );
     }
 }
@@ -102,15 +123,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f8f8',
-    },
-    setting_item_container: {
-        flex:1,
-        flexDirection:'row',
-        alignItems:'center',
-        height:40,
-    },
-    block:{
-        marginTop:10,
-        backgroundColor:'#ffffff'
     },
 });

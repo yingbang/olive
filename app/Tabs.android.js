@@ -18,6 +18,14 @@ import PublishContainer from './containers/PublishContainer';
 //需要导入的子页面
 //发布
 import PublishEdit from './components/publish/PublishEdit';
+//个人主页
+import PersonalHome from './components/home/PersonalHome';
+import DongTaiDetail from './components/home/DongTaiDetail';
+//我的
+import SheZhi from './components/my/Shezhi';
+import XiaoXi from './components/my/XiaoXi';
+import ZiLiao from './components/my/ZiLiao';
+import YiJianFanKui from './components/my/YiJianFanKui';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -101,7 +109,7 @@ const AppTab = TabNavigator(
             }
         }
     }, {
-        initialRouteName: 'HomeContainer',//默认显示的tab页
+        initialRouteName: 'MyContainer',//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -140,7 +148,16 @@ const AppTab = TabNavigator(
 const Navigator = StackNavigator(
     {
         Tab: {screen: AppTab},
+        //发布
         PublishEdit:{screen:PublishEdit},
+        //个人主页
+        PersonalHome: {screen: PersonalHome},
+        DongTaiDetail: {screen: DongTaiDetail},
+        //我的
+        SheZhi: {screen: SheZhi},
+        XiaoXi: {screen: XiaoXi},
+        ZiLiao: {screen: ZiLiao},
+        YiJianFanKui: {screen: YiJianFanKui},
     },
     {
         navigationOptions: {

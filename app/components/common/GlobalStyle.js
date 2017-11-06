@@ -41,5 +41,16 @@ const globalStyle = StyleSheet.create({
         width:width,
         height:height,
     },
+    //List容器样式
+    listContainer:{
+        marginTop:0,
+        marginBottom:20,
+        borderTopWidth:0
+    },
+    //ListItem样式
+    listItem:{
+        borderBottomColor:'#f8f8f8',
+        backgroundColor:'#ffffff'
+    }
 });
 export default globalStyle;

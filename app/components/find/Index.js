@@ -133,7 +133,7 @@ export default class FindIndex extends Component{
                         </TouchableWithoutFeedback>
                     </ScrollView>
                 </View>
-                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,backgroundColor:'#f8f8f8'}}>
+                <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                     <FlatList
                         renderItem={this.renderRow}
                         data={list}

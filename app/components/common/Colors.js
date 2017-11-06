@@ -32,6 +32,10 @@ const colors = StyleSheet.create({
     bgF2:{
         backgroundColor:'#f2f2f2'
     },
+    //
+    bgF8:{
+        backgroundColor:'#f8f8f8'
+    },
     //渲染颜色
     tintBlue:{
         tintColor:'#00bfff',

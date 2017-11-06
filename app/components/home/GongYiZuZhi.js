@@ -42,7 +42,7 @@ export default class GongYiZuZhi extends Component {
                 <ScrollView horizontal={true}>
                     {
                         contentList.map((item, i) => (
-                            <TouchableWithoutFeedback key={i} onPress={()=>{this.props.navigation.navigate("PersonalHome")}}>
+                            <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome")}}>
                                 <View style={{justifyContent:'center',alignItems:'center',borderWidth:1,borderColor:'#eeeeee',borderRadius:8,padding:15,marginRight:10}}>
                                     <Image style={{width:70,height:70,borderRadius:35,marginBottom:10}} source={require('../../assets/mock_data/1.jpg')}/>
                                     <Text>520格格子</Text>

@@ -13,8 +13,6 @@ import {
     TouchableOpacity
 } from 'react-native';
 import ParallaxScrollView from '../common/parallax/index';
-import PersonalDongtaiListItem from './PersonalDongtaiListItem';
-import FenGeXian from '../common/FenGeXian';
 import Blank from '../common/Blank';
 
 const window = Dimensions.get('window');
@@ -22,7 +20,30 @@ const AVATAR_SIZE = 80;
 const PARALLAX_HEADER_HEIGHT = 220;
 const STICKY_HEADER_HEIGHT = 40;
 
+const contentList = [
+    {
+        key:0,
+        title: 'Appointments',
+    },
+    {
+        key:1,
+        title: 'Trips',
+    },
+    {
+        key:2,
+        title: 'Trips',
+    },
+    {
+        key:3,
+        title: 'Trips',
+    },
+    {
+        key:4,
+        title: 'Trips',
+    },
+]
 export default class PersonalHome extends Component{
+
     static navigationOptions = {
         header:null
     };
@@ -30,22 +51,38 @@ export default class PersonalHome extends Component{
      * 点击返回按钮
      */
     pressBack(){
-        const { navigation } = this.props;
-        navigation.goBack();
+        this.props.navigation.goBack();
     }
-    state = {selected: (new Map())};
-    _keyExtractor = (item, index) => item.id;
     _onPressItem = (id) => {
-        const { navigation } = this.props;
-        navigation.navigate("NewsDetail");
+        this.props.navigation.navigate("NewsDetail");
     };
-    _renderItem = ({item}) => (
-        <PersonalDongtaiListItem
-            id={item.id}
-            onPressItem={this._onPressItem}
-            selected={!!this.state.selected.get(item.id)}
-            title={item.title}
-        />
+    renderRow = ({item}) => (
+        <View style={{marginBottom:8}}>
+            <TouchableWithoutFeedback>
+                <View>
+                    <View style={{padding:8}}>
+                        <Text>橄榄枝新品发布会成功举行！两款智能装备将为这个跑马季带来无限新动力！智能跑鞋源自UA生产线，采用创新高科技鞋底技术</Text>
+                        <Text style={{color:'#00bfff',marginTop:5}}>查看全文</Text>
+                    </View>
+                    <View style={{flexDirection:'row',marginTop:10,marginBottom:10,paddingTop:5,paddingLeft:8,paddingBottom:5,backgroundColor:'#f8f8f8'}}>
+                        <View style={{flex:1,flexDirection:'row'}}>
+                            <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
+                                <View style={{flexDirection:'row',marginRight:15,alignItems:'center'}}>
+                                    <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
+                                    <Text>33</Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
+                                <View style={{flexDirection:'row',marginRight:15,alignItems:'center'}}>
+                                    <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconpinglun.png')}/>
+                                    <Text>10</Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </View>
     );
     render(){
         const { onScroll = () => {} } = this.props;
@@ -113,16 +150,12 @@ export default class PersonalHome extends Component{
                             </View>
                         )}
                     >
-
                         <FlatList
-                            data={[{id: 'a',title:'hello'}, {id: 'b',title:'hi'}, {id: 'c',title:'hi'}, {id: 'd',title:'hi'}, {id: 'e',title:'hi'}, {id: 'f',title:'hi'}, {id: 'g',title:'hi'}]}
-                            keyExtractor={this._keyExtractor}
-                            renderItem={this._renderItem}
+                            renderItem={this.renderRow}
+                            data={contentList}
                             style={styles.container}
                             ListFooterComponent={Blank}
                             ListHeaderComponent={Blank}
-                            onRefresh={()=>{alert(1)}}
-                            refreshing={false}
                         />
 
                     </ParallaxScrollView>

@@ -7,20 +7,77 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     TextInput,
-    Button
+    Button,
+    FlatList
 } from 'react-native';
 //公共头部
-import MyTop from './MyTop';
+import { Card, List, ListItem, Header} from 'react-native-elements';
+import globalStyle from '../common/GlobalStyle';
+import colors from '../common/Colors';
+
+const contentList = [
+    {
+        key:0,
+        title: '头像',
+        rTitle:' ',
+        avatar:"https://imgsa.baidu.com/news/q%3D100/sign=24c56caafc03918fd1d139ca613c264b/3b87e950352ac65c57da5d39f0f2b21192138a98.jpg",
+    },
+    {
+        key:1,
+        title: '名字',
+        rTitle:'颜子轩',
+    },
+    {
+        key:2,
+        title: '公司',
+        rTitle:'阿里巴巴',
+    },
+    {
+        key:3,
+        title: '职务',
+        rTitle:'CEO',
+    },
+    {
+        key:4,
+        title: '手机',
+        rTitle:'15958746214',
+        isDivider:true,
+    },
+    {
+        key:5,
+        title: '邮箱',
+        rTitle:'25478412@qq.com',
+    },
+    {
+        key:6,
+        title: '城市',
+        rTitle:'山东青岛',
+    },
+    {
+        key:7,
+        title: '座右铭',
+        rTitle:" ",
+    },
+    {
+        key:8,
+        title: '认证',
+        rTitle:" ",
+    },
+]
 
 export default class ZiLiao extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
-            return <MyTop title="个人资料" {...HeaderProps}/>
+            return <Header
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                centerComponent={{ text: '个人资料'}}
+                rightComponent={{icon:'qrcode',type:"font-awesome"}}
+                backgroundColor="#ffffff"
+            />
         }
     };
     onClick(tag) {
         let TargetComponent;
-        const { navigation } = this.props;
         switch (tag) {
             case 'shezhi_ziliao':
                 TargetComponent = '';
@@ -46,74 +103,27 @@ export default class ZiLiao extends Component{
         }
         if (TargetComponent) {
             //跳转页面
-            navigation.navigate(TargetComponent);
+            this.props.navigation.navigate(TargetComponent);
         }
     }
-    _getItem(callBack, text, rightText, hasLine, tintStyle, expandableIco){
-        return (
-            <TouchableWithoutFeedback
-                onPress={callBack}>
-                <View style={[styles.setting_item_container,hasLine ? {borderBottomColor:'#f8f8f8',borderBottomWidth:1,} : {}]}>
-                    <View style={{flex:1,marginLeft:8}}>
-                        <Text style={{fontSize:12}}>{text}</Text>
-                    </View>
-                    <View style={{flex:1,marginLeft:8}}>
-                        <Text style={{fontSize:12,textAlign:'right'}}>{rightText}</Text>
-                    </View>
-                    <Image source={expandableIco ? expandableIco : require('../../assets/icon/icongo.png')}
-                           style={[{
-                               height: 15,
-                               width: 15,
-                               tintColor:'#999999'
-                           }, tintStyle]}/>
-                </View>
-            </TouchableWithoutFeedback>
-        );
-    }
-    getItem(tag, text, hasLine) {
-        return this._getItem(()=>this.onClick(tag), text, hasLine,null,null);
-    }
+    renderRow = ({item}) => (
+        <ListItem
+            title={item.title}
+            rightTitle={item.rTitle}
+            rightIcon={item.avatar ? <Image source={{uri:item.avatar}} style={{width:20,height:20}} /> : {name: 'chevron-right'}}
+            containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}
+        />
+    );
     render(){
         return (
-            <View style={styles.container}>
-                <ScrollView>
-                    <View style={styles.block}>
-                        <TouchableWithoutFeedback>
-                            <View style={[styles.setting_item_container,{borderBottomColor:'#f8f8f8',borderBottomWidth:1}]}>
-                                <View style={{flex:1,marginLeft:8}}>
-                                    <Text style={{fontSize:12}}>头像</Text>
-                                </View>
-                                <View style={{marginLeft:8}}>
-                                    <Image style={{width:20,height:20,borderRadius:10}} source={require('../../test/mock_data/1.jpg')}/>
-                                </View>
-                                <Image source={require('../../assets/icon/icongo.png')}
-                                       style={[{
-                                           height: 15,
-                                           width: 15,
-                                           tintColor:'#999999'
-                                       }]}/>
-                            </View>
-                        </TouchableWithoutFeedback>
-                        {this.getItem('shezhi_xiaoxi', '名字','刘德华',true)}
-                        {this.getItem('shezhi_yinsi', '公司','香港国际电影公司',true)}
-                        {this.getItem('shezhi_yijian', '职务','艺术总监')}
-                    </View>
-                    <View style={styles.block}>
-                        {this.getItem('shezhi_yinsi', '手机','13954787547',true)}
-                        {this.getItem('shezhi_yinsi', '邮箱','11554@qq.com',true)}
-                        {this.getItem('shezhi_yinsi', '城市','山东 青岛',true)}
-                        {this.getItem('shezhi_yinsi', '座右铭',true)}
-                        {this.getItem('shezhi_guanyu', '认证')}
-                    </View>
-                    <View style={styles.block}>
-                        <TouchableWithoutFeedback>
-                            <View style={{justifyContent:'center',alignItems:'center',padding:8}}>
-                                <Text style={{color:'#ff4343'}}>返回我的主页</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </ScrollView>
-            </View>
+            <ScrollView style={styles.container}>
+                <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
+                    <FlatList
+                        renderItem={this.renderRow}
+                        data={contentList}
+                    />
+                </List>
+            </ScrollView>
         );
     }
 }
@@ -122,15 +132,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f8f8',
-    },
-    setting_item_container: {
-        flex:1,
-        flexDirection:'row',
-        alignItems:'center',
-        height:40,
-    },
-    block:{
-        marginTop:10,
-        backgroundColor:'#ffffff'
     },
 });
