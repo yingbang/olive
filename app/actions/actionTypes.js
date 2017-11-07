@@ -3,8 +3,8 @@
  */
 'use strict';
 
-//首页
-export const HOME_ACTION = 'HOME_ACTION';
+//请求网址
+export const REQUEST_HOST = 'http://192.168.1.103:88';
 
 //登录：手机登录、第三方登录
 export const loginMobileAction = 'loginMobileAction';
@@ -16,12 +16,12 @@ export const registerMobileAction = 'registerMobileAction';
 export const findPasswordAction = 'findPasswordAction';
 
 //新闻资讯
-export const PERFORM_NEWSlIST_ACTION = 'PERFORM_NEWSlIST_ACTION';
-export const RECEIVE_NEWSlIST_ACTION = 'RECEIVE_NEWSlIST_ACTION';
-export const GET_MORE_NEWSLIST_ACTION = 'GET_MORE_NEWSLIST_ACTION';
-export const REFRESH_NEWSlIST_ACTION = 'REFRESH_NEWSlIST_ACTION';
-export const HAS_FINISHED_ACTION = 'HAS_FINISHED_ACTION';
-export const ERROR_NEWSLIST_ACTION = 'ERROR_NEWSLIST_ACTION';
+export const getNewsListAction = 'getNewsListAction';
+export const receiveNewsListAction = 'receiveNewsListAction';
+export const getMoreNewsListAction = 'getMoreNewsListAction';
+export const refreshNewsListAction = 'refreshNewsListAction';
+export const noMoreNewsListAction = 'noMoreNewsListAction';
+export const errorNewsListAction = 'errorNewsListAction';
 
 //是否显示tab栏
 export const hideTabAction = 'hideTabAction';

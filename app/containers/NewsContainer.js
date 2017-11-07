@@ -25,9 +25,9 @@ class NewsContainer extends Component {
 }
 
 function select(state) {
-    const {loginReducer} = state;
+    const {newsReducer} = state;
     return {
-        loginReducer
+        newsReducer
     }
 }
 export default connect(select)(NewsContainer);

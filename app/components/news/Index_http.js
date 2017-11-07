@@ -1,5 +1,5 @@
 /**
- * 资讯：使用Realm保存数据
+ * 资讯：纯http获取数据
  */
 import React,{Component} from 'react';
 import {
