@@ -36,6 +36,10 @@ const globalStyle = StyleSheet.create({
     content:{
         flex:1,
     },
+    //横排显示
+    flexRow:{
+        flexDirection:'row'
+    },
     //全屏背景图片ImageBackground
     wholeBackground:{
         width:width,

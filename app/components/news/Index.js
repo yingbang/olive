@@ -8,7 +8,7 @@ import {
     Image,
     FlatList,
     Text,
-    Platform,
+    Platform
 } from 'react-native';
 import {
     List,
@@ -30,34 +30,38 @@ export default class NewsIndex extends Component{
             data:[]
         }
     }
-
-    _flags = (flagStr)=>{
-        if(!flagStr) return;
-        let flagArr = flagStr.split(",");
-        if(!flagArr) return;
-        let flagText = ['推荐','热点','头条','精选','幻灯'];
-        return (
-            flagArr.map(function(item){
-                return (
-                    <Text key={item} style={[styles.bottomText,styles.textBorder]}>{flagText[item-1]}</Text>
-                );
-            })
-        )
-    };
-
+    //组件加载完成
     componentDidMount() {
-        //1、组件加载完成，发送action开始获取新闻
-        this.props.dispatch(getNewsListAction(this._loadComplete.bind(this)));
-        this.setState({
-            loading:true
-        });
+        //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
+        try{
+            let newsList = realmObj.objects("News");
+            if(newsList.length > 0){
+                newsList = newsList.sorted([['flags',true],['id',true]]);
+                this.setState({
+                    data:newsList
+                });
+            }else{
+                this.setState({
+                    loading:true
+                });
+                this.props.dispatch(getNewsListAction(this._loadComplete.bind(this)));
+            }
+        }catch(e){
+            console.log(e);
+        }
     }
-    //上拉加载完成以后回调
+    //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadComplete(){
-        this.setState({
-            loading:false,
-            data:common.uniqueArray(this.state.data.concat(this.props.newsReducer.data))
-        });
+        try{
+            let newsList = realmObj.objects("News");
+            if(newsList.length > 0){
+                newsList = newsList.sorted([['flags',true],['id',true]]);
+                this.setState({
+                    data:newsList,
+                    loading:false
+                });
+            }
+        }catch(e){}
     }
     //上拉加载更多
     _endReached = (info)=>{
@@ -71,16 +75,14 @@ export default class NewsIndex extends Component{
             this.props.dispatch(getMoreNewsListAction(this.state.currentPage,this._loadComplete.bind(this)));
             //增加页数
             this.setState({
-                currentPage:this.state.currentPage + 1,
-                //data:this.props.newsReducer.data
+                currentPage:this.state.currentPage + 1
             });
         }
     };
     //下拉刷新成功之后
     _refreshComplete(){
         this.setState({
-            loading:false,
-            data:common.uniqueArray(this.props.newsReducer.data.concat(this.state.data))
+            loading:false
         });
     }
     //下拉刷新
@@ -92,25 +94,46 @@ export default class NewsIndex extends Component{
             isFinished:false,
         });
     };
-
+    //文章属性
+    _flags = (flagStr)=>{
+        if(!flagStr || flagStr === null || flagStr === undefined) return;
+        let flagArr = flagStr.split(",");
+        if(!flagArr) return;
+        let flagText = ['推荐','热点','头条','精选','幻灯'];
+        return (
+            flagArr.map(function(item){
+                return (
+                    <Text key={item} style={[styles.bottomText,styles.textBorder]}>{flagText[item-1]}</Text>
+                );
+            })
+        )
+    };
+    //橄榄枝推荐
+    _leftTop = (str)=>{
+        if(!str || str === null || str === undefined) return;
+        return (
+            <Text style={styles.leftTop}>{str}</Text>
+        );
+    };
+    //渲染每一行样式
     renderRow = ({item}) => (
-        <ListItem style={{marginLeft:0}}>
+        <ListItem style={{marginLeft:0}} onPress={()=>{this.props.navigation.navigate("NewsDetail",{id:item.id})}}>
             <Body>
             <View style={styles.cell_container}>
                 <View style={styles.itemLeft}>
-                    <Text style={styles.leftTop}>橄榄枝推荐</Text>
+                    {this._leftTop(item.author)}
                     <Text style={styles.leftMiddle}>{item.title}</Text>
                     <View style={styles.leftBottom}>
-                        {this._flags('1,3')}
+                        {this._flags(item.flags)}
                         <Image style={styles.bottomImage} source={require('../../assets/icon/iconnews_views.png')}/>
-                        <Text style={styles.bottomText}>0</Text>
+                        <Text style={styles.bottomText}>{item.views}</Text>
                         <Image style={styles.bottomImage} source={require('../../assets/icon/iconnews_pinglun.png')}/>
-                        <Text style={styles.bottomText}>11</Text>
+                        <Text style={styles.bottomText}>{item.comments}</Text>
                     </View>
                 </View>
             </View>
             </Body>
-            <Thumbnail square style={styles.thumb} source={require('../../assets/mock_data/1.jpg')} />
+            <Thumbnail square style={styles.thumb} source={!!item.pic ? {uri:item.pic} : require('../../assets/mock_data/1.jpg')} />
         </ListItem>
     );
     //把id当成key，否则会有警告

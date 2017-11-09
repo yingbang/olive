@@ -4,7 +4,7 @@
 'use strict';
 
 //请求网址
-export const REQUEST_HOST = 'http://192.168.1.103:88';
+export const REQUEST_HOST = 'http://119.23.203.142:8080';
 
 //登录：手机登录、第三方登录
 export const loginMobileAction = 'loginMobileAction';
@@ -19,7 +19,6 @@ export const findPasswordAction = 'findPasswordAction';
 export const getNewsListAction = 'getNewsListAction';
 export const receiveNewsListAction = 'receiveNewsListAction';
 export const getMoreNewsListAction = 'getMoreNewsListAction';
-export const refreshNewsListAction = 'refreshNewsListAction';
 export const noMoreNewsListAction = 'noMoreNewsListAction';
 export const errorNewsListAction = 'errorNewsListAction';
 

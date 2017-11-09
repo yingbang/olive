@@ -36,11 +36,6 @@ export default function newsReducer(state = initialState, action){
                 data: action.data.list,
                 isFinished:true
             });
-        case types.refreshNewsListAction:
-            return Object.assign({}, state, {
-                loading: false,
-                data: action.data.list,
-            });
         case types.errorNewsListAction:
             return Object.assign({}, state, {
                 loading: false,

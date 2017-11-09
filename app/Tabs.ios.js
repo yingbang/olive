@@ -26,7 +26,8 @@ import SheZhi from './components/my/Shezhi';
 import XiaoXi from './components/my/XiaoXi';
 import ZiLiao from './components/my/ZiLiao';
 import YiJianFanKui from './components/my/YiJianFanKui';
-
+//资讯
+import NewsDetail from './components/news/NewsDetail';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -157,6 +158,8 @@ const Navigator = StackNavigator(
         XiaoXi: {screen: XiaoXi},
         ZiLiao: {screen: ZiLiao},
         YiJianFanKui: {screen: YiJianFanKui},
+        //资讯
+        NewsDetail: {screen: NewsDetail},
     },
     {
         navigationOptions: {

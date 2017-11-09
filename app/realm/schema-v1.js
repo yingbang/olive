@@ -4,6 +4,23 @@
 
 'use strict';
 
+//资讯表
+const NewsSchema = {
+    name:'News',
+    primaryKey:'id',
+    properties:{
+        id:'int',//文章ID
+        cid:{type:'int',default:0},//分类ID
+        title:{type:'string',default:''},//标题
+        intro:{type:'string',default:''},//简介
+        pic:{type:'string',default:''},//缩略图
+        author:{type:'string',default:''},//作者
+        flags:{type:'string',default:''},//属性：推荐、头条、热门
+        views:{type:'int',default:0},//浏览量
+        comments:{type:'int',default:0},//评论数
+    }
+};
+//会员表
 const UserSchema = {
     name: 'User',
     primaryKey:'id',
@@ -27,7 +44,7 @@ const UserSchema = {
 };
 
 export default {
-    schema: [UserSchema],
-    schemaVersion: 1,
+    schema: [UserSchema,NewsSchema],
+    schemaVersion: 2,
     migration: () => {}
 };
