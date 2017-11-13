@@ -19,6 +19,11 @@ export default class rootApp extends Component {
     componentDidMount() {
         // 隐藏启动页
         SplashScreen.hide();
+        //设置公共信息
+        realmObj.write(()=>{
+           realmObj.create("Global",{key:"REQUEST_HOST", value:"http://119.23.203.142:8080"},true);
+           //realmObj.delete(realmObj.objects("Global"));
+        });
     }
     render() {
         return (

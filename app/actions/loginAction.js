@@ -3,6 +3,7 @@
  */
 'use strict';
 import * as types from './actionTypes';
+import request from 'superagent';
 
 //手机号登录
 export function loginMobileAction(){
@@ -23,17 +24,11 @@ export function loginMobile(){
     }
 }
 //登录成功
-export function loginSuccess(result){
-    //保存登录状态到本地数据库
-    realmObj.write(()=>{
-        let User = realmObj.objects('User');
-        realmObj.delete(User);
-        realmObj.create('User',{id:1, name:'feifei', mobile:'15834235678'});
-    });
+export function loginSuccess(){
     //返回成功
     return {
         type: types.loginSuccessAction,
-        result: result
+        result: ''
     }
 }
 //登录失败
@@ -57,5 +52,14 @@ export function findPasswordAction() {
     return {
         type:types.findPasswordAction,
         result:'find_password'
+    }
+}
+
+//退出登录
+export function logout(){
+    //返回成功
+    return {
+        type: types.logoutAction,
+        result: ""
     }
 }

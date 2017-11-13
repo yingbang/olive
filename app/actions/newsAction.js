@@ -5,12 +5,13 @@
 import * as types from './actionTypes';
 import request from 'superagent';
 
-let host = types.REQUEST_HOST;
+//let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'");
 
 export function getNewsListAction(callback){
     return dispatch => {
         dispatch(showLoading());
         //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         request.get(host + '/api/content').query({_t:Math.random()}).end((err,res)=>{
             if(err){
                 dispatch(errorResult());
@@ -66,6 +67,7 @@ function errorResult(){
 }
 //获取更多
 export function getMoreNewsListAction(page,callback) {
+    let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
     return dispatch => {
         request.get(host + '/api/content').query({p:page,_t:Math.random()}).end((err,res)=>{
             if(err){

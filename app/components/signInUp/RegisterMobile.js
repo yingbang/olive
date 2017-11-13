@@ -26,11 +26,19 @@ import FontIcon from 'react-native-vector-icons/FontAwesome';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
+import {toastShort} from "../common/ToastTool";
+import {isMobile,isBlank} from "../common/Validate";
+import TimerText from '../common/TimerText';
 
 export default class RegisterMobile extends Component {
 
     constructor(props) {
         super(props);
+        this.state={
+            mobile:"",
+            password:"",
+            code:"",
+        };
     }
 
     static navigationOptions = {
@@ -38,13 +46,72 @@ export default class RegisterMobile extends Component {
     };
 
     //获取短信验证码
-    getCode() {
-        request('POST','http://rapapi.org/mockjs/25374/submit')
-            .send({username:'1',password:'2'})
+    getCode(callback) {
+        //验证信息
+        let mobile = this.state.mobile;
+        let checkMobile = isMobile(mobile);
+        if(checkMobile.msg){
+            toastShort(checkMobile.msg);
+            return false;
+        }
+        //执行回调
+        callback && callback(true);
+        //发送
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let _that = this;
+        request('GET',host + '/api/user/sendCode?mobile=' + mobile + '&type=0')
             .set('accept','json')
             .end(function (err, res) {
-            console.log(res)
-        })
+                if(res.body.state === 'fail'){
+                    //执行回调
+                    callback && callback(false);
+                    toastShort("短信发送失败！");
+                }else if(res.body.state === 'ok'){
+                    toastShort("短信发送成功！");
+                }
+            });
+    }
+
+    //开始注册
+    beginReg(){
+        //验证信息
+        let mobile = this.state.mobile;
+        let password = this.state.password;
+        let code = this.state.code;
+        let checkMobile = isMobile(mobile);
+        if(checkMobile.msg){
+            toastShort(checkMobile.msg);
+            return false;
+        }
+        if(isBlank(code)){
+            toastShort("请输入短信验证码");
+            return false;
+        }
+        if(isBlank(password)){
+            toastShort("请输入密码");
+            return false;
+        }
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let _that = this;
+        request('GET',host + '/api/user?mobile=' + mobile + '&password=' + password + '&code=' + code)
+            .set('accept','json')
+            .end(function (err, res) {
+                if(res.body.state === 'fail'){
+                    let code = res.body.code;
+                    if(code === -1){
+                        toastShort("注册失败，用户名已存在！");
+                    }else if(code === -2){
+                        toastShort("注册失败，验证码已过期！");
+                    }else if(code === -3){
+                        toastShort("注册失败，验证码错误！");
+                    }else{
+                        toastShort("注册失败！")
+                    }
+                }else if(res.body.state === 'ok'){
+                    toastShort("注册成功！");
+                    _that.props.navigation.goBack();
+                }
+            });
     }
 
     render() {
@@ -58,23 +125,29 @@ export default class RegisterMobile extends Component {
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
                             <Label>请输入手机号</Label>
-                            <Input/>
+                            <Input onChangeText={(text)=>{this.setState({mobile:text});}}/>
                         </Item>
                         <View>
                             <Item floatingLabel style={styles.buttonMargin}>
                                 <Label>请输入短信验证码</Label>
-                                <Input/>
+                                <Input onChangeText={(text)=>{this.setState({code:text});}}/>
                             </Item>
                             <Button style={[colors.bgBlue,{position:'absolute',height:30,right:50,bottom:20,paddingLeft:8,paddingRight:8}]}>
-                                <Text style={colors.cWhite} onPress={()=>{this.getCode()}}>获取验证码</Text>
+                                <TimerText enable={this.state.mobile.length}
+                                             style={colors.cWhite}
+                                             textStyle={{color:'#fff'}}
+                                             timerCount={70}
+                                             onClick={(shouldStartCountting)=>{
+                                                 this.getCode(shouldStartCountting)
+                                             }}/>
                             </Button>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
                             <Label>请输入密码</Label>
-                            <Input/>
+                            <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({password:text});}}/>
                         </Item>
                         <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
-                            <Text style={[colors.cWhite,fonts.font18]}> 注册 </Text>
+                            <Text style={[colors.cWhite,fonts.font18]} onPress={()=>{this.beginReg()}}> 注册 </Text>
                         </Button>
                         <View style={styles.bottomBox}>
                             <View style={[styles.thirdView, styles.buttonMargin]}>

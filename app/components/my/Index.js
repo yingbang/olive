@@ -95,6 +95,7 @@ export default class MyIndex extends Component{
             leftIcon={{name: item.icon,color:'#00bfff',size:18,type:item.iconType ? item.iconType : ''}}
             onPress={()=>{this.onClick(item.nav)}}
             containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}
+            {...this.props}
         />
     );
 

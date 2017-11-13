@@ -14,6 +14,7 @@ import LoginContainer from '../../containers/LoginContainer';
 import RegisterMobile from './RegisterMobile';
 //找回密码页面
 import FindPassword from './FindPassword';
+import FindPasswordNext from './FindPasswordNext';
 
 /**
  * 设置页面导航
@@ -23,6 +24,7 @@ const SignNavigator = StackNavigator(
         LoginContainer: {screen: LoginContainer},
         RegisterMobile: {screen: RegisterMobile},
         FindPassword: {screen: FindPassword},
+        FindPasswordNext: {screen: FindPasswordNext},
     },{
         navigationOptions:{
             headerStyle:{

@@ -15,21 +15,55 @@ import {
     Input,
     Label,
 } from 'native-base';
+import request from 'superagent';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
+import {toastShort} from "../common/ToastTool";
+import {isMobile,isBlank} from "../common/Validate";
 
 export default class LoginScreen extends Component {
 
     constructor(props) {
         super(props);
+        this.state={
+            mobile:"",
+            password:""
+        }
     }
 
     beginLogin(){
-        //this.props.navigation.navigate("Tab")
-        //alert(this.state.login)
-        this.props.loginSuccess();
+        //验证信息
+        let mobile = this.state.mobile;
+        let password = this.state.password;
+        let checkMobile = isMobile(mobile);
+        if(checkMobile.msg){
+            toastShort(checkMobile.msg);
+            return false;
+        }
+        if(isBlank(password)){
+            toastShort("请输入密码");
+            return false;
+        }
+        //开始登录
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let _that = this;
+        request('GET',host + '/api/user/login?mobile=' + mobile + '&password=' + password)
+            .set('accept','json')
+            .end(function (err, res) {
+                if(res.body.state === 'fail'){
+                    let code = res.body.code;
+                    if(code === -1 || code === -2){
+                        toastShort("登录失败：用户名或密码错误！");
+                    }else{
+                        toastShort("登录失败！")
+                    }
+                }else if(res.body.state === 'ok'){
+                    toastShort("登录成功！");
+                    _that.props.loginSuccess(mobile);
+                }
+            });
     }
 
     render() {
@@ -43,11 +77,11 @@ export default class LoginScreen extends Component {
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
                             <Label>请输入手机号</Label>
-                            <Input/>
+                            <Input onChangeText={(text)=>{this.setState({mobile:text});}}/>
                         </Item>
                         <Item floatingLabel style={styles.buttonMargin}>
                             <Label>请输入密码</Label>
-                            <Input/>
+                            <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({password:text});}}/>
                         </Item>
                         <Button block rounded success onPress={()=>{this.beginLogin()}} style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
                             <Text style={[colors.cWhite,fonts.font18]}> 登录 </Text>

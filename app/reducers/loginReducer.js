@@ -30,6 +30,12 @@ export default function loginReducer(state = initialState, action){
                 isLogin: false,
                 msg: action.result
             });
+        //退出登录
+        case types.logoutAction:
+            return Object.assign({}, state, {
+                isLogin: false,
+                msg: action.result
+            });
         //注册
         case types.registerMobileAction:
             return Object.assign({},state,{

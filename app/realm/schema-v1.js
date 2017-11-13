@@ -4,6 +4,16 @@
 
 'use strict';
 
+//global公共信息存储
+const GlobalSchema = {
+    name:"Global",
+    primaryKey:"key",
+    properties: {
+        key:'string',
+        value:'string'
+    }
+};
+
 //资讯表
 const NewsSchema = {
     name:'News',
@@ -44,7 +54,7 @@ const UserSchema = {
 };
 
 export default {
-    schema: [UserSchema,NewsSchema],
+    schema: [GlobalSchema,UserSchema,NewsSchema],
     schemaVersion: 2,
     migration: () => {}
 };

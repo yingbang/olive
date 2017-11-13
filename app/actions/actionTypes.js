@@ -3,13 +3,11 @@
  */
 'use strict';
 
-//请求网址
-export const REQUEST_HOST = 'http://119.23.203.142:8080';
-
 //登录：手机登录、第三方登录
 export const loginMobileAction = 'loginMobileAction';
 export const loginSuccessAction = 'loginSuccessAction';
 export const loginFailAction = 'loginFailAction';
+export const logoutAction = 'logoutAction';
 //注册：手机号注册
 export const registerMobileAction = 'registerMobileAction';
 //忘记密码、手机找回密码

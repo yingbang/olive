@@ -8,46 +8,57 @@ import {
     StyleSheet,
     TextInput,
     Button,
-    FlatList
+    FlatList,
+    Alert
 } from 'react-native';
 //公共头部
+import {connect} from 'react-redux';
 import { Card, List, ListItem, Header} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
+import {logout} from '../../actions/loginAction';
 
 const contentList = [
     {
         key:0,
         title: '账户资料',
+        action:"",
     },
     {
         key:1,
         title: '消息通知设置',
+        action:"",
     },
     {
         key:2,
         title: '隐私',
+        action:"",
     },
     {
         key:3,
         title: '意见反馈',
+        action:"shezhi_yijian",
     },
     {
         key:4,
         title: '给橄榄枝评分',
+        action:"",
     },
     {
         key:5,
         title: '邀请好友使用',
+        action:"",
     },
     {
         key:6,
         title: '关于橄榄枝',
         isDivider:true,
+        action:"",
     },
     {
         key:7,
         title: '退出登录',
+        action:"shezhi_tuichu",
         isDivider:true,
         hideChevron:true,
         titleStyle:{color:'red'},
@@ -55,7 +66,10 @@ const contentList = [
     },
 ]
 
-export default class Shezhi extends Component{
+export class Shezhi extends Component{
+    constructor(props){
+        super(props);
+    }
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
@@ -89,6 +103,26 @@ export default class Shezhi extends Component{
             case 'shezhi_guanyu':
                 TargetComponent = 'Shezhi';
                 break;
+            case 'shezhi_tuichu':
+                let _that = this;
+                Alert.alert(
+                    "您确定要退出登录吗？",
+                    "",
+                    [
+                        {text: '取消', onPress: ()=>{}},
+                        {text: '确定', onPress: ()=>{
+                            //删除登录状态
+                            realmObj.write(()=>{
+                                let User = realmObj.objects('User');
+                                realmObj.delete(User);
+                                realmObj.objects('User');//再重新获取一遍，这样realm就会立即更新了
+                            });
+                            _that.props.dispatch(logout());
+                        }}
+                    ],
+                    {cancelable: true}
+                );
+                break;
         }
         if (TargetComponent) {
             //跳转页面
@@ -103,6 +137,7 @@ export default class Shezhi extends Component{
             hideChevron={item.hideChevron}
             titleContainerStyle={item.titleContainerStyle}
             titleStyle={item.titleStyle}
+            onPress={()=>{this.onClick(item.action)}}
         />
     );
     render(){
@@ -125,3 +160,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8f8f8',
     },
 });
+
+function select(state) {
+    const {loginReducer} = state;
+    return {
+        loginReducer
+    }
+}
+export default connect(select)(Shezhi);
