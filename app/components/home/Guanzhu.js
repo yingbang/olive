@@ -13,6 +13,7 @@ import {
     Button,
     FlatList
 } from 'react-native';
+import request from 'superagent';
 import { Card, List, ListItem} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 

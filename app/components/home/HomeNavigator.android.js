@@ -7,6 +7,8 @@ import {StackNavigator, TabNavigator} from 'react-navigation';
 //热门、关注的Screen
 import Hot from './Hot';
 import Guanzhu from './Guanzhu';
+//公告详情
+import NoticeDetail from './NoticeDetail';
 
 /**
  * 设置热门、关注切换
@@ -58,6 +60,7 @@ const HomeTab = TabNavigator(
 const HomeNavigator = StackNavigator(
     {
         HomeTab: {screen: HomeTab},
+        NoticeDetail: {screen: NoticeDetail},
     },
     {
         navigationOptions: {

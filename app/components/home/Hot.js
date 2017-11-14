@@ -11,8 +11,10 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     Button,
+    Platform,
     FlatList
 } from 'react-native';
+import request from 'superagent';
 import { Card, List, ListItem} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import Carousel from '../common/Carousel';
@@ -20,6 +22,8 @@ import GongYiZuZhi from './GongYiZuZhi';
 import GongYiDaRen from './GongYiDaRen';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
+import {getSlideAction, getNoticeAction} from '../../actions/toolAction';
+import ScrollVertical from '../common/ScrollVertical';
 
 const { width, height } = Dimensions.get('window');
 const contentList = [
@@ -54,9 +58,14 @@ export default class Hot extends Component{
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            slide:[],
+            notice:[],
+            currentSlidePage:0,
+        };
     }
 
+    //动态项
     renderRow = ({item}) => (
         <View style={{marginBottom:15}}>
             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail");}}>
@@ -106,6 +115,60 @@ export default class Hot extends Component{
         </View>
     );
 
+    //获取幻灯片、头条、公益组织、达人、动态等
+    componentDidMount(){
+        try{
+            //幻灯片
+            let slideList = realmObj.objects("Slide");
+            if(slideList.length > 0){
+                slideList = slideList.sorted('id',true);
+                this.setState({
+                    slide:slideList
+                });
+            }
+            //公告头条
+            let noticeList = realmObj.objects("Notice");
+            if(noticeList.length > 0){
+                noticeList = noticeList.sorted('id',true);
+                this.setState({
+                    notice:noticeList
+                });
+            }
+        }catch(e){
+            console.log(e);
+        }finally {
+            this.props.screenProps.dispatch(getSlideAction(this._loadSlideComplete.bind(this)));
+            this.props.screenProps.dispatch(getNoticeAction(this._loadNoticeComplete.bind(this)));
+        }
+    }
+    //网络请求数据接收完成以后执行，重新从realm中获取数据
+    _loadSlideComplete(){
+        try{
+            let contentList = realmObj.objects("Slide");
+            if(contentList.length > 0){
+                contentList = contentList.sorted('id',true);
+                this.setState({
+                    slide:contentList
+                });
+            }
+        }catch(e){}
+    }
+    _loadNoticeComplete(){
+        try{
+            let contentList = realmObj.objects("Notice");
+            if(contentList.length > 0){
+                contentList = contentList.sorted('id',true);
+                this.setState({
+                    notice:contentList
+                });
+            }
+        }catch(e){}
+    }
+
+    onPressSlide(){
+        let item = this.state.slide[this.state.currentSlidePage];
+        this.props.screenProps.navigation.navigate("ShowUrl",{url:item.url});
+    }
     render(){
         return (
             <ScrollView style={styles.container}>
@@ -116,23 +179,36 @@ export default class Hot extends Component{
                         autoplay
                         pageInfo={false}
                         swiper
-                        onAnimateNextPage={(p) => {}}
+                        onAnimateNextPage={(p) => {this.setState({currentSlidePage:p})}}
                         bullets={true}
+                        onClick={()=>{this.onPressSlide()}}
                     >
-                        <View style={styles.carousel}>
-                            <Image style={styles.carousel} source={{uri:'http://demo.sc.chinaz.com/Files/DownLoad/webjs1/201707/jiaoben5258/images/3-1.jpg'}}/>
-                        </View>
-                        <View style={styles.carousel}>
-                            <Image style={styles.carousel} source={{uri:'http://demo.sc.chinaz.com/Files/DownLoad/webjs1/201707/jiaoben5258/images/2-1.jpg'}}/>
-                        </View>
-                        <View style={styles.carousel}>
-                            <Image style={styles.carousel} source={{uri:'http://demo.sc.chinaz.com/Files/DownLoad/webjs1/201707/jiaoben5258/images/1-1.jpg'}}/>
-                        </View>
+                        {
+                            this.state.slide.map((item,i)=>{
+                                return (
+                                    <View key={i} style={styles.carousel}>
+                                        <Image style={styles.carousel} source={{uri:item['pic']}}/>
+                                    </View>
+                                );
+                            })
+                        }
                     </Carousel>
                     <TouchableWithoutFeedback>
                         <View style={styles.toutiao}>
                             <Text style={{color:'#00bfff',fontWeight:'600',marginRight:10}}>头条</Text>
-                            <Text style={{flex:1,fontSize:12}}>橄榄枝公益活动火热进行中</Text>
+                            <ScrollVertical
+                                onChange={(index => {
+                                    this.index = index;
+                                })}
+                                onClick={(id)=>{this.props.navigation.navigate("NoticeDetail",{id:id})}}
+                                enableAnimation={true}
+                                data={realmObj.objects("Notice")}
+                                delay={2500}
+                                duration={1000}
+                                scrollHeight={17}
+                                scrollStyle={{flex:1 }}
+                                kbContainer={{flex:1,marginTop:(Platform.OS === 'ios') ? 4 : 0}}
+                                textStyle={{fontSize: 12 }} />
                             <Image style={{width:14,height:14}} source={require('../../assets/icon/icongo.png')}/>
                         </View>
                     </TouchableWithoutFeedback>

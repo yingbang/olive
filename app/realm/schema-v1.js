@@ -14,6 +14,31 @@ const GlobalSchema = {
     }
 };
 
+//公告头条
+const NoticeSchema = {
+    name:'Notice',
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        title:{type:'string',default:''},
+        author:{type:'string',default:''},
+        content:{type:'string',default:''},
+    }
+};
+
+//幻灯片
+const SlideSchema = {
+    name:'Slide',
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        title:{type:'string',default:''},
+        pic:{type:'string',default:''},
+        url:{type:'string',default:''},
+        content:{type:'string',default:''},
+    }
+};
+
 //资讯表
 const NewsSchema = {
     name:'News',
@@ -54,7 +79,7 @@ const UserSchema = {
 };
 
 export default {
-    schema: [GlobalSchema,UserSchema,NewsSchema],
+    schema: [GlobalSchema,NoticeSchema,SlideSchema,UserSchema,NewsSchema],
     schemaVersion: 2,
     migration: () => {}
 };

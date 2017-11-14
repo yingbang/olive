@@ -28,6 +28,8 @@ import ZiLiao from './components/my/ZiLiao';
 import YiJianFanKui from './components/my/YiJianFanKui';
 //资讯
 import NewsDetail from './components/news/NewsDetail';
+//用于显示url
+import ShowUrl from './components/common/ShowUrl';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -160,6 +162,8 @@ const Navigator = StackNavigator(
         YiJianFanKui: {screen: YiJianFanKui},
         //资讯
         NewsDetail: {screen: NewsDetail},
+        //显示网页
+        ShowUrl: {screen: ShowUrl},
     },
     {
         navigationOptions: {

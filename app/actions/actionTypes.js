@@ -20,6 +20,10 @@ export const getMoreNewsListAction = 'getMoreNewsListAction';
 export const noMoreNewsListAction = 'noMoreNewsListAction';
 export const errorNewsListAction = 'errorNewsListAction';
 
-//是否显示tab栏
-export const hideTabAction = 'hideTabAction';
-export const showTabAction = 'showTabAction';
+//工具：幻灯片、公告等
+export const getSlideAction = 'getSlideAction';
+export const receiveSlideAction = 'receiveSlideAction';
+export const errorSlideAction = 'errorSlideAction';
+export const getNoticeAction = 'getNoticeAction';
+export const receiveNoticeAction = 'receiveNoticeAction';
+export const errorNoticeAction = 'errorNoticeAction';

@@ -29,6 +29,23 @@
  参考：
  http://blog.csdn.net/u011272795/article/details/76435675?locationNum=10&fps=1
  https://github.com/phil-r/react-native-looped-carousel
+
+ 新增：onClick事件，需结合onAnimateNextPage使用，设置state中的当前页码，根据页码处理业务
+ onPressSlide(){
+        let item = this.state.slide[this.state.currentSlidePage];
+        this.props.screenProps.navigation.navigate("ShowUrl",{url:item.url});
+    }
+ <Carousel
+ delay={4000}
+ style={styles.carousel}
+ autoplay
+ pageInfo={false}
+ swiper
+ onAnimateNextPage={(p) => {this.setState({currentSlidePage:p})}}
+ bullets={true}
+ onClick={()=>{this.onPressSlide()}}
+ >
+
  */
 import React, { Component } from 'react';
 import {
@@ -140,7 +157,7 @@ export default class Carousel extends Component {
         </Text></View>);
       }
       this.pages = pages.map((page, i) => (
-        <TouchableWithoutFeedback style={[{ ...size }, this.props.pageStyle]} key={`page${i}`}>
+        <TouchableWithoutFeedback onPress={()=>{this.props.onClick ? this.props.onClick() : null}} style={[{ ...size }, this.props.pageStyle]} key={`page${i}`}>
           {page}
         </TouchableWithoutFeedback>
       ));
