@@ -27,3 +27,18 @@ export const errorSlideAction = 'errorSlideAction';
 export const getNoticeAction = 'getNoticeAction';
 export const receiveNoticeAction = 'receiveNoticeAction';
 export const errorNoticeAction = 'errorNoticeAction';
+
+//会员
+export const getUserListAction = 'getUserListAction';
+export const receiveUserListAction = 'receiveUserListAction';
+export const errorUserListAction = 'errorUserListAction';
+export const getUserInfoAction = 'getUserInfoAction';
+export const receiveUserInfoAction = 'receiveUserInfoAction';
+export const errorUserInfoAction = 'errorUserInfoAction';
+//加入的公益组织、关注的会员
+export const getJoinCompanyListAction = 'getJoinCompanyListAction';
+export const receiveJoinCompanyListAction = 'receiveJoinCompanyListAction';
+export const errorJoinCompanyListAction = 'errorJoinCompanyListAction';
+export const getFollowUserListAction = 'getFollowUserListAction';
+export const receiveFollowUserListAction = 'receiveFollowUserListAction';
+export const errorFollowUserListAction = 'errorFollowUserListAction';

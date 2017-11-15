@@ -34,8 +34,11 @@ class LoginContainer extends Component {
                 try{
                     realmObj.write(()=>{
                         let user = {
-                            id:1,//待修复
-                            name:json['username'] !== null ? json['username'] : "",//待修复
+                            id:parseInt(json['id']),
+                            type:parseInt(json['type']),
+                            flag:parseInt(json['flag']),
+                            name:json['name'] !== null ? json['name'] : "",
+                            sex:json['sex'] !== null ? json['sex'] : "",
                             mobile:json['mobile'] !== null ? json['mobile'] : "",
                             nickname:json['nickname'] !== null ? json['nickname'] : "",
                             username:json['username'] !== null ? json['username'] : "",
@@ -45,10 +48,15 @@ class LoginContainer extends Component {
                             area:json['area'] !== null ? json['area'] : "",
                             address:json['address'] !== null ? json['address'] : "",
                             weixin:json['weixin'] !== null ? json['weixin'] : "",
+                            intro:json['intro'] !== null ? json['intro'] : "",
                             renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
                             avatar:json['avatar'] !== null ? host + json['avatar'] : "",
+                            visible:false,//自己的信息不需要显示在列表中
                         };
                         realmObj.create("User",user,true);
+                        //保存当前登录的用户ID和手机号
+                        realmObj.create("Global",{key:"currentUserId",value:json['id']},true);
+                        realmObj.create("Global",{key:"currentUserMobile",value:json['mobile']},true);
                     });
                 }catch(e){
                     console.log(e)

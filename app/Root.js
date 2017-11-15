@@ -18,8 +18,8 @@ class Root extends Component {
 
     componentWillMount(){
         //判断数据库是否有会员信息，如果有的话，说明是登录状态
-        let User = realmObj.objects('User');
-        if(User && User[0]){
+        let user = realmObj.objects("Global").filtered("key == 'currentUserId'");
+        if(user && user[0]){
             this.setState({
                 isLogin:1
             });

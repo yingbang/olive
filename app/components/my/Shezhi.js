@@ -113,9 +113,11 @@ export class Shezhi extends Component{
                         {text: '确定', onPress: ()=>{
                             //删除登录状态
                             realmObj.write(()=>{
-                                let User = realmObj.objects('User');
-                                realmObj.delete(User);
-                                realmObj.objects('User');//再重新获取一遍，这样realm就会立即更新了
+                                let userid = realmObj.objects('Global').filtered("key == 'currentUserId'");
+                                let userMobile = realmObj.objects('Global').filtered("key == 'currentUserMobile'");
+                                realmObj.delete(userid);
+                                realmObj.delete(userMobile);
+                                realmObj.objects('Global');//再重新获取一遍，这样realm就会立即更新了
                             });
                             _that.props.dispatch(logout());
                         }}
