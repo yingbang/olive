@@ -1,5 +1,61 @@
-//二维数组去重[{id:1},{id:2},{id:3}]
-//key表示根据哪个字段去重，默认根据id
+//计算时间差
+export function getDateTimeDiff(startTime, endTime, isArray) {
+    //默认现在时间
+    if(endTime === null || endTime === undefined){
+        endTime = new Date().getTime();
+    }
+    //返回时间格式
+    if(isArray === null || isArray === undefined){
+        isArray = false;
+    }
+
+    let retValue = {};
+
+    let date3 = endTime - startTime;  //时间差的毫秒数
+
+    //计算出相差天数
+    let days = Math.floor(date3 / (24 * 3600 * 1000));
+    retValue['Days'] = days;
+
+    let years = Math.floor(days / 365);
+    retValue['Years'] = years;
+
+    let months = Math.floor(days / 30);
+    retValue['Months'] = months;
+
+    //计算出小时数
+    let leave1 = date3 % (24 * 3600 * 1000);    //计算天数后剩余的毫秒数
+    let hours = Math.floor(leave1 / (3600 * 1000));
+    retValue['Hours'] = hours;
+
+    //计算相差分钟数
+    let leave2 = leave1 % (3600 * 1000);        //计算小时数后剩余的毫秒数
+    let minutes = Math.floor(leave2 / (60 * 1000));
+    retValue['Minutes'] = minutes;
+
+    //计算相差秒数
+    let leave3 = leave2 % (60 * 1000);      //计算分钟数后剩余的毫秒数
+    let seconds = Math.round(leave3 / 1000);
+    retValue['Seconds'] = seconds;
+
+    let strTime = "";
+    if (years >= 1) {
+        strTime = years + "年前";
+    } else if (months >= 1) {
+        strTime = months + "个月前";
+    } else if (days >= 1) {
+        strTime = days + "天前";
+    } else if (hours >= 1) {
+        strTime = hours + "小时前";
+    } else if (minutes >= 1) {
+        strTime = minutes + "分钟前";
+    } else {
+        strTime = seconds + "秒前";
+    }
+    retValue['PubTime'] = strTime;     //帖子,文章,博客发表时间的一种简短表示方法
+    return isArray ? retValue : strTime;
+}
+//二维数组去重[{id:1},{id:2},{id:3}] key表示根据哪个字段去重，默认根据id
 export function uniqueArray(arr,key) {
     let result = [], hash = {};
     if(!key){

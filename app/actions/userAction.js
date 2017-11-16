@@ -221,3 +221,195 @@ function errorFollowUserResult(){
         type: types.errorFollowUserListAction
     }
 }
+
+//动态列表：如果有userid的话表示获取这个会员的所有动态
+export function getDongtaiAction(userid,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let api = 'dongtai';
+        if(userid !== null && userid !== ""){
+            api = 'dongtaiByUser';
+        }
+        request.get(host + '/api/content/' + api).query({userid:userid,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                                userid:parseInt(contentList[i]['userid']),
+                                pinglun:parseInt(contentList[i]['pinglun']),
+                                zan:parseInt(contentList[i]['zan']),
+                                share:parseInt(contentList[i]['share']),
+                                jingxuan:parseInt(contentList[i]['jingxuan']),
+                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
+                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                pics:contentList[i]['pics'] !== null ? contentList[i]['pics'] : "",
+                                pinglunlist:contentList[i]['pinglunlist'] !== null ? contentList[i]['pinglunlist'] : "",
+                                name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
+                                avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                guanzhu:userid ? 1 : 0,//是否为关注者发布的
+                            };
+                            realmObj.create("Dongtai",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback(json.totalPage);
+            }
+        });
+    }
+}
+
+//获取某个动态的评论
+export function getPinglunAction(id,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/getPinglunById').query({id:id,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                                touserid:parseInt(contentList[i]['touserid']),
+                                fromuserid:parseInt(contentList[i]['fromuserid']),
+                                type:parseInt(contentList[i]['type']),
+                                zan:parseInt(contentList[i]['zan']),
+                                contentid:parseInt(contentList[i]['contentid']),
+                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+
+                            };
+                            realmObj.create("Pinglun",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}
+
+//获取某个动态的点赞列表
+export function getZanAction(id,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/getZanById').query({id:id,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                                userid:parseInt(contentList[i]['touserid']),
+                                contentid:parseInt(contentList[i]['contentid']),
+                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+
+                            };
+                            realmObj.create("Zan",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}
+
+//获取点赞过的动态列表，用来判断是否点过赞
+export function getZanDongtaiAction(page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.get(host + '/api/user/guanZanList').query({userid:userid,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                            };
+                            realmObj.create("ZanDongtai",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}
+
+//获取收藏过的内容
+export function getCangAction(type,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.get(host + '/api/user/guanCangList').query({userid:userid,type:type,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                                userid:parseInt(contentList[i]['touserid']),
+                                contentid:parseInt(contentList[i]['contentid']),
+                                type:parseInt(contentList[i]['type']),
+                            };
+                            realmObj.create("Cang",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}

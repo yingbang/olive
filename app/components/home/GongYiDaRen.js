@@ -11,29 +11,6 @@ import {getArrayItems,inArray} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getFollowUserAction} from '../../actions/userAction';
 
-const contentList = [
-    {
-        key:0,
-        title: 'Appointments',
-    },
-    {
-        key:1,
-        title: 'Trips',
-    },
-    {
-        key:2,
-        title: 'Trips',
-    },
-    {
-        key:3,
-        title: 'Trips',
-    },
-    {
-        key:4,
-        title: 'Trips',
-    },
-]
-
 export default class GongYiDaRen extends Component {
     constructor(props){
         super(props);
@@ -49,7 +26,7 @@ export default class GongYiDaRen extends Component {
             let contentList = realmObj.objects("User").filtered("visible = true and type = 0 and flag = 1");
             if(contentList && contentList.length > 0){
                 this.setState({
-                    content:getArrayItems(contentList,10)
+                    content:getArrayItems(contentList,5)
                 });
             }
         }catch(e){
@@ -65,7 +42,7 @@ export default class GongYiDaRen extends Component {
             let contentList = realmObj.objects("User").filtered("visible = true and type = 0 and flag = 1");
             if(contentList.length > 0){
                 this.setState({
-                    content:getArrayItems(contentList,10),
+                    content:getArrayItems(contentList,5),
                     currentPage:this.state.currentPage++
                 });
             }
@@ -113,12 +90,17 @@ export default class GongYiDaRen extends Component {
         }catch(e){}
     }
 
+    //换一批
+    changeContent(){
+        this.props.screenProps.dispatch(getUserListAction(this.state.currentPage,0,1,this._loadComplete.bind(this)));
+    }
+
     render() {
         return(
             <View style={{flex:1}}>
                 <View style={{flexDirection:'row',marginBottom:12}}>
                     <Text style={globalStyle.flex1}>推荐公益达人</Text>
-                    <TouchableWithoutFeedback onPress={()=>{alert('更多')}}>
+                    <TouchableWithoutFeedback onPress={()=>{this.changeContent()}}>
                         <View style={{flexDirection:'row'}}>
                             <Text style={colors.c99}>更多</Text>
                             <Image style={[colors.tint99,{width:15,height:15}]} source={require('../../assets/icon/icongo.png')}/>

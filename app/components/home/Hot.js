@@ -12,9 +12,11 @@ import {
     Dimensions,
     Button,
     Platform,
-    FlatList
+    FlatList,
+    RefreshControl
 } from 'react-native';
-import request from 'superagent';
+import HTMLView from 'react-native-htmlview';
+import {getDateTimeDiff} from '../common/public';
 import { Card, List, ListItem} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import Carousel from '../common/Carousel';
@@ -23,31 +25,10 @@ import GongYiDaRen from './GongYiDaRen';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import {getSlideAction, getNoticeAction} from '../../actions/toolAction';
+import {getDongtaiAction} from '../../actions/userAction';
 import ScrollVertical from '../common/ScrollVertical';
 
 const { width, height } = Dimensions.get('window');
-const contentList = [
-    {
-        key:0,
-        title: 'Appointments',
-    },
-    {
-        key:1,
-        title: 'Trips',
-    },
-    {
-        key:2,
-        title: 'Trips',
-    },
-    {
-        key:3,
-        title: 'Trips',
-    },
-    {
-        key:4,
-        title: 'Trips',
-    },
-]
 
 export default class Hot extends Component{
 
@@ -62,31 +43,34 @@ export default class Hot extends Component{
             slide:[],
             notice:[],
             currentSlidePage:0,
+            loading:false,
+            dongtai:[],
+            currentDongtaiPage:1,
+            loadDongtaiFinish:false,
         };
     }
 
     //动态项
     renderRow = ({item}) => (
         <View style={{marginBottom:15}}>
-            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail");}}>
+            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
                     <View style={{flexDirection:'row',marginBottom:12}}>
-                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
+                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
                         <View>
-                            <Text>橄榄枝编辑</Text>
-                            <Text style={{color:'#999999',fontSize:12}}>3天前</Text>
+                            <Text>{item['name']}</Text>
+                            <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
                         </View>
                     </View>
                     <View>
-                        <Text>橄榄枝新品发布会成功举行！两款智能装备将为这个跑马季带来无限新动力！智能跑鞋源自UA生产线，采用创新高科技鞋底技术</Text>
-                        <Text style={{color:'#00bfff',marginTop:5}}>查看全文</Text>
+                        <Text>{item['content']}</Text>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
                             <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
+                            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
@@ -101,20 +85,32 @@ export default class Hot extends Component{
                     </View>
                     <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
                         <View>
-                            <View style={{flexDirection:'row',marginBottom:8}}>
-                                <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                <Text style={{fontSize:12,color:'#333'}}>102人赞了</Text>
-                            </View>
-                            <Text style={{fontSize:12}}><Text style={{color:'#333'}}>逍遥：</Text>我是沙发啊</Text>
-                            <Text style={{fontSize:12}}><Text style={{color:'#333'}}>吐槽君：</Text>这一听就很不错，小编说的非常对。</Text>
-                            <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有100条评论</Text>
+                            {
+                                item['zan'] > 0 ?
+                                    <View style={{flexDirection:'row',marginBottom:8}}>
+                                        <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
+                                    </View>
+                                    : null
+                            }
+
+                            <HTMLView
+                                value={item['pinglunlist']}
+                                stylesheet={styles}
+                                addLineBreaks={false}
+                                onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
+                            />
+                            {
+                                item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
+                            }
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
             </TouchableWithoutFeedback>
         </View>
     );
-
+    //把id当成key，否则会有警告
+    _keyExtractor = (item, index) => item.id;
     //获取幻灯片、头条、公益组织、达人、动态等
     componentDidMount(){
         try{
@@ -134,11 +130,20 @@ export default class Hot extends Component{
                     notice:noticeList
                 });
             }
+            //动态
+            let dongtaiList = realmObj.objects("Dongtai");
+            if(dongtaiList.length > 0){
+                dongtaiList = dongtaiList.sorted('id',true);
+                this.setState({
+                    dongtai:dongtaiList
+                });
+            }
         }catch(e){
             console.log(e);
         }finally {
             this.props.screenProps.dispatch(getSlideAction(this._loadSlideComplete.bind(this)));
             this.props.screenProps.dispatch(getNoticeAction(this._loadNoticeComplete.bind(this)));
+            this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
         }
     }
     //网络请求数据接收完成以后执行，重新从realm中获取数据
@@ -164,14 +169,54 @@ export default class Hot extends Component{
             }
         }catch(e){}
     }
-
+    _loadDongtaiComplete(totalPage){
+        try{
+            let contentList = realmObj.objects("Dongtai");
+            if(contentList.length > 0){
+                contentList = contentList.sorted('id',true);
+                let page = this.state.currentDongtaiPage;
+                this.setState({
+                    dongtai:contentList,
+                    currentDongtaiPage:page + 1,
+                    loadDongtaiFinish:page >= totalPage,
+                    loading:false,
+                });
+            }
+        }catch(e){}
+    }
     onPressSlide(){
         let item = this.state.slide[this.state.currentSlidePage];
         this.props.screenProps.navigation.navigate("ShowUrl",{url:item.url});
     }
+    //判断是否滚动到底部
+    _contentViewScroll = (e)=>{
+        let offsetY = parseInt(e.nativeEvent.contentOffset.y); //滑动距离
+        let contentSizeHeight = parseInt(e.nativeEvent.contentSize.height); //scrollView contentSize高度
+        let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight){
+            if(this.state.loadDongtaiFinish === false){
+                this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            }
+        }
+    };
+    //下拉刷新
+    _refresh = ()=>{
+        this.setState({
+            loading:true,
+        });
+        this.props.screenProps.dispatch(getDongtaiAction("",1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+    };
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container}
+                        onMomentumScrollEnd = {this._contentViewScroll}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.loading}
+                                onRefresh={this._refresh.bind(this)}
+                            />
+                        }
+            >
                 <View style={styles.block}>
                     <Carousel
                         delay={4000}
@@ -236,17 +281,13 @@ export default class Hot extends Component{
                 <View style={[styles.block,globalStyle.flex1]}>
                     <View style={{flexDirection:'row',marginBottom:12}}>
                         <Text style={globalStyle.flex1}>精选动态</Text>
-                        <TouchableWithoutFeedback onPress={()=>{alert('更多')}}>
-                            <View style={{flexDirection:'row'}}>
-                                <Text style={colors.c99}>更多</Text>
-                                <Image style={[colors.tint99,{width:15,height:15}]} source={require('../../assets/icon/icongo.png')}/>
-                            </View>
-                        </TouchableWithoutFeedback>
                     </View>
                     <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
                         <FlatList
                             renderItem={this.renderRow}
-                            data={contentList}
+                            data={this.state.dongtai}
+                            extraData={this.state}
+                            keyExtractor={this._keyExtractor}
                         />
                     </List>
                 </View>
@@ -273,4 +314,12 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginTop:8,
     },
+    p:{
+        color:'#666',
+        fontSize:12,
+        marginBottom:3
+    },
+    b:{
+        color:'#333'
+    }
 });

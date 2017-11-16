@@ -48,7 +48,7 @@ class LoginContainer extends Component {
                             area:json['area'] !== null ? json['area'] : "",
                             address:json['address'] !== null ? json['address'] : "",
                             weixin:json['weixin'] !== null ? json['weixin'] : "",
-                            intro:json['intro'] !== null ? json['intro'] : "",
+                            intro:(json['intro'] !== null && json['intro'] !== undefined) ? json['intro'] : "",
                             renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
                             avatar:json['avatar'] !== null ? host + json['avatar'] : "",
                             visible:false,//自己的信息不需要显示在列表中

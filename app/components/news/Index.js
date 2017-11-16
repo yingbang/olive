@@ -8,7 +8,9 @@ import {
     Image,
     FlatList,
     Text,
-    Platform
+    Platform,
+    ScrollView,
+    RefreshControl
 } from 'react-native';
 import {
     List,
@@ -16,7 +18,7 @@ import {
     Thumbnail,
     Body
 } from 'native-base';
-import {getNewsListAction,getMoreNewsListAction} from '../../actions/newsAction';
+import {getNewsListAction} from '../../actions/newsAction';
 import * as common from '../common/public';
 
 export default class NewsIndex extends Component{
@@ -24,7 +26,7 @@ export default class NewsIndex extends Component{
     constructor(props){
         super(props);
         this.state={
-            currentPage:2,
+            currentPage:1,
             isFinished:false,
             loading:false,
             data:[]
@@ -40,59 +42,35 @@ export default class NewsIndex extends Component{
                 this.setState({
                     data:newsList
                 });
-            }else{
-                this.setState({
-                    loading:true
-                });
-                this.props.dispatch(getNewsListAction(this._loadComplete.bind(this)));
             }
         }catch(e){
             console.log(e);
+        }finally{
+            this.props.dispatch(getNewsListAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
         }
     }
     //网络请求数据接收完成以后执行，重新从realm中获取数据
-    _loadComplete(){
+    _loadComplete(totalPage){
         try{
             let newsList = realmObj.objects("News");
             if(newsList.length > 0){
                 newsList = newsList.sorted([['flags',true],['id',true]]);
+                let page = this.state.currentPage;
                 this.setState({
                     data:newsList,
+                    currentPage:page + 1,
+                    isFinished:page >= totalPage,
                     loading:false
                 });
             }
         }catch(e){}
     }
-    //上拉加载更多
-    _endReached = (info)=>{
-        if(!this.state.isFinished){
-            if(this.props.newsReducer.isFinished === true){
-                this.setState({
-                    isFinished:true
-                });
-                return;
-            }
-            this.props.dispatch(getMoreNewsListAction(this.state.currentPage,this._loadComplete.bind(this)));
-            //增加页数
-            this.setState({
-                currentPage:this.state.currentPage + 1
-            });
-        }
-    };
-    //下拉刷新成功之后
-    _refreshComplete(){
-        this.setState({
-            loading:false
-        });
-    }
     //下拉刷新
     _refresh = ()=>{
-        this.props.dispatch(getMoreNewsListAction(1,this._refreshComplete.bind(this)));
-        //重置页数
         this.setState({
-            currentPage:2,
-            isFinished:false,
+            loading:true,
         });
+        this.props.dispatch(getNewsListAction(1,(totalPage)=>{this._loadComplete(totalPage)}));
     };
     //文章属性
     _flags = (flagStr)=>{
@@ -138,18 +116,37 @@ export default class NewsIndex extends Component{
     );
     //把id当成key，否则会有警告
     _keyExtractor = (item, index) => item.id;
+    //判断是否滚动到底部
+    _contentViewScroll = (e)=>{
+        let offsetY = parseInt(e.nativeEvent.contentOffset.y); //滑动距离
+        let contentSizeHeight = parseInt(e.nativeEvent.contentSize.height); //scrollView contentSize高度
+        let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight){
+            if(this.state.isFinished === false){
+                this.props.dispatch(getNewsListAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+            }
+        }
+    };
     render(){
         return (
-            <FlatList
-                renderItem={this.renderRow}
-                data={this.state.data}
-                extraData={this.state}
-                keyExtractor={this._keyExtractor}
-                refreshing={this.state.loading}
-                onRefresh={this._refresh.bind(this)}
-                onEndReached={this._endReached.bind(this)}
-                onEndReachedThreshold={0.2}
-            />
+            <ScrollView style={styles.container}
+                        onMomentumScrollEnd = {this._contentViewScroll}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.loading}
+                                onRefresh={this._refresh.bind(this)}
+                            />
+                        }
+            >
+                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
+                <FlatList
+                    renderItem={this.renderRow}
+                    data={this.state.data}
+                    extraData={this.state}
+                    keyExtractor={this._keyExtractor}
+                />
+                </List>
+            </ScrollView>
         );
     }
 }

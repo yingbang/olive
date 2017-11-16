@@ -11,61 +11,54 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     Button,
-    FlatList
+    FlatList,
+    RefreshControl
 } from 'react-native';
-import request from 'superagent';
-import { Card, List, ListItem} from 'react-native-elements';
+import HTMLView from 'react-native-htmlview';
+import {getDateTimeDiff} from '../common/public';
+import {Card, List, ListItem} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
+import {getDongtaiAction} from '../../actions/userAction';
 
-const contentList = [
-    {
-        key:0,
-        title: 'Appointments',
-    },
-    {
-        key:1,
-        title: 'Trips',
-    },
-    {
-        key:2,
-        title: 'Trips',
-    },
-    {
-        key:3,
-        title: 'Trips',
-    },
-    {
-        key:4,
-        title: 'Trips',
-    },
-]
 export default class Guanzhu extends Component{
 
     static navigationOptions = {
         header:<HeaderWithSearch/>
     };
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dongtai:[],
+            currentDongtaiPage:1,
+            loadDongtaiFinish:false,
+            loading:false,
+            userid:'1',//默认是显示管理员，多个用逗号隔开
+        };
+    }
+
+    //动态项
     renderRow = ({item}) => (
         <View style={{marginBottom:15}}>
-            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail");}}>
+            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
                     <View style={{flexDirection:'row',marginBottom:12}}>
-                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
+                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
                         <View>
-                            <Text>橄榄枝编辑</Text>
-                            <Text style={{color:'#999999',fontSize:12}}>3天前</Text>
+                            <Text>{item['name']}</Text>
+                            <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
                         </View>
                     </View>
                     <View>
-                        <Text>橄榄枝新品发布会成功举行！两款智能装备将为这个跑马季带来无限新动力！智能跑鞋源自UA生产线，采用创新高科技鞋底技术</Text>
-                        <Text style={{color:'#00bfff',marginTop:5}}>查看全文</Text>
+                        <Text>{item['content']}</Text>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
                             <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
+                            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
@@ -80,27 +73,101 @@ export default class Guanzhu extends Component{
                     </View>
                     <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
                         <View>
-                            <View style={{flexDirection:'row',marginBottom:8}}>
-                                <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                <Text style={{fontSize:12,color:'#333'}}>102人赞了</Text>
-                            </View>
-                            <Text style={{fontSize:12}}><Text style={{color:'#333'}}>逍遥：</Text>我是沙发啊</Text>
-                            <Text style={{fontSize:12}}><Text style={{color:'#333'}}>吐槽君：</Text>这一听就很不错，小编说的非常对。</Text>
-                            <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有100条评论</Text>
+                            {
+                                item['zan'] > 0 ?
+                                    <View style={{flexDirection:'row',marginBottom:8}}>
+                                        <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
+                                    </View>
+                                    : null
+                            }
+
+                            <HTMLView
+                                value={item['pinglunlist']}
+                                stylesheet={styles}
+                                addLineBreaks={false}
+                                onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
+                            />
+                            {
+                                item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
+                            }
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
             </TouchableWithoutFeedback>
         </View>
     );
+    //把id当成key，否则会有警告
+    _keyExtractor = (item, index) => item.id;
 
+    //获取动态
+    componentDidMount(){
+        try{
+            //动态
+            let dongtaiList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
+            if(dongtaiList.length > 0){
+                dongtaiList = dongtaiList.sorted('id',true);
+                this.setState({
+                    dongtai:dongtaiList
+                });
+            }
+        }catch(e){
+            console.log(e);
+        }finally {
+            this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+        }
+    }
+    //网络请求加载完成
+    _loadDongtaiComplete(totalPage){
+        try{
+            let contentList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
+            if(contentList.length > 0){
+                contentList = contentList.sorted('id',true);
+                let page = this.state.currentDongtaiPage;
+                this.setState({
+                    dongtai:contentList,
+                    currentDongtaiPage:page + 1,
+                    loadDongtaiFinish:page >= totalPage,
+                    loading:false,
+                });
+            }
+        }catch(e){}
+    }
+    //判断是否滚动到底部
+    _contentViewScroll = (e)=>{
+        let offsetY = parseInt(e.nativeEvent.contentOffset.y); //滑动距离
+        let contentSizeHeight = parseInt(e.nativeEvent.contentSize.height); //scrollView contentSize高度
+        let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight){
+            if(this.state.loadDongtaiFinish === false){
+                this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            }
+        }
+    };
+    //下拉刷新
+    _refresh = ()=>{
+        this.setState({
+            loading:true,
+        });
+        this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+    };
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container}
+                        onMomentumScrollEnd = {this._contentViewScroll}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.loading}
+                                onRefresh={this._refresh.bind(this)}
+                            />
+                        }
+            >
                 <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
                     <FlatList
                         renderItem={this.renderRow}
-                        data={contentList}
+                        data={this.state.dongtai}
+                        extraData={this.state}
+                        keyExtractor={this._keyExtractor}
                     />
                 </List>
             </ScrollView>
@@ -113,4 +180,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         padding:8
     },
+    p:{
+        color:'#666',
+        fontSize:12,
+        marginBottom:3
+    },
+    b:{
+        color:'#333'
+    }
 });
