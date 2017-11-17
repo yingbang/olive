@@ -12,7 +12,8 @@ import {
     Easing,
     PanResponder,
     TouchableWithoutFeedback,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
@@ -84,9 +85,6 @@ export default class MyIndex extends Component{
     constructor(props) {
         super(props);
     }
-    static navigationOptions = {
-        header:null
-    };
     renderRow = ({item}) => (
         <ListItem
             key={item.key}
@@ -149,6 +147,19 @@ export default class MyIndex extends Component{
         return (
             <ScrollView style={[styles.container]}>
 
+                <Header
+                    rightComponent={<TouchableWithoutFeedback onPress={()=>{HeaderProps.navigation.navigate('XiaoXi')}}>
+                        <View style={styles.header}>
+                            <Image source={require('../../assets/icon/iconmessage.png')} style={styles.image} />
+                            <View style={styles.imageTip}>
+                                <Text style={styles.tipText}>3</Text>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>}
+                    backgroundColor="#ffffff"
+                    outerContainerStyles={{borderBottomWidth:0,paddingBottom:0,height:(Platform.OS === 'ios') ? 50 : 30}}
+                />
+
                 <TouchableWithoutFeedback onPress={()=>{this.onClick('my_ziliao')}}>
                     <View style={styles.baseInfo}>
                         <Animated.Image
@@ -197,17 +208,14 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor:'#f8f8f8',
     },
-    top:{
-        height:30,
-    },
     header:{
-        height:30,
         alignItems:'center',
         flexDirection:'row',
         justifyContent:'flex-end',
         paddingRight:10,
         backgroundColor:'#ffffff',
     },
+
     image:{
         width:25,
         height:25,

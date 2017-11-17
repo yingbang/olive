@@ -10,6 +10,7 @@ import {
     Button,
     FlatList
 } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 //公共头部
 import { Card, List, ListItem, Header} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
@@ -21,6 +22,7 @@ const contentList = [
         title: '头像',
         rTitle:' ',
         avatar:"https://imgsa.baidu.com/news/q%3D100/sign=24c56caafc03918fd1d139ca613c264b/3b87e950352ac65c57da5d39f0f2b21192138a98.jpg",
+        event:'shezhi_ziliao',
     },
     {
         key:1,
@@ -80,7 +82,13 @@ export default class ZiLiao extends Component{
         let TargetComponent;
         switch (tag) {
             case 'shezhi_ziliao':
-                TargetComponent = '';
+                ImagePicker.openPicker({
+                    width: 300,
+                    height: 400,
+                    cropping: true
+                }).then(image => {
+                    alert(' 图片路径：'+ image);
+                });
                 break;
             case 'shezhi_xiaoxi':
                 TargetComponent = '';
@@ -110,6 +118,7 @@ export default class ZiLiao extends Component{
         <ListItem
             title={item.title}
             rightTitle={item.rTitle}
+            onPress={()=>{this.onClick(item.event)}}
             rightIcon={item.avatar ? <Image source={{uri:item.avatar}} style={{width:20,height:20}} /> : {name: 'chevron-right'}}
             containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}
         />
