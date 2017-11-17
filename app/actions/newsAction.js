@@ -41,3 +41,35 @@ export function getNewsListAction(page,callback) {
         });
     }
 }
+
+//根据ID获取新闻内容
+export function getNewsInfoByIdAction(id,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.get(host + '/api/content/article').query({id:id,userid:userid,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let item = {
+                            id:json['id']+0,
+                            title:json['title'],
+                            content:json['content'] !== null ? json['content'] : "",
+                            shoucang:json['shoucang']+0,
+                        };
+                        realmObj.create("NewsData",item,true);
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}

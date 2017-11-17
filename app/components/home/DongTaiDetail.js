@@ -10,13 +10,28 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    RefreshControl,
+    FlatList
 } from 'react-native';
+import {connect} from 'react-redux';
 import { Header} from 'react-native-elements';
+import HTMLView from 'react-native-htmlview';
+import {getDateTimeDiff} from '../common/public';
+import {getZanAction,getPinglunAction,getZanDongtaiAction} from '../../actions/userAction';
 
-export default class DongTaiDetail extends Component{
+class DongTaiDetail extends Component{
     constructor(props){
         super(props);
+        this.state={
+            dongtaiId:this.props.navigation.state.params.id,//动态ID
+            dongtai:{},//动态内容
+            pinglun:[],//评论列表
+            zan:[],//点赞列表
+            currentPinglunPage:1,//当前的页码
+            loadPinglunFinish:false,//评论是否获取完毕
+            loading:false,//下拉刷新显示
+        }
     }
     static navigationOptions = {
         header:(HeaderProps)=>{
@@ -28,97 +43,177 @@ export default class DongTaiDetail extends Component{
             />
         }
     };
-    onSubmitComment(){
-
+    componentDidMount(){
+        try{
+            //获取动态内容
+            let dongtai = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId);
+            if(dongtai.length > 0){
+                this.setState({
+                    dongtai:dongtai[0]
+                });
+            }
+            //获取点赞列表
+            let zan = realmObj.objects("Zan").filtered("contentid = " + this.state.dongtaiId).slice(0, 6);
+            if(zan.length > 0){
+                this.setState({
+                    zan:zan
+                });
+            }
+            //获取评论列表
+            let pinglun = realmObj.objects("Pinglun").filtered("type = 1 and contentid = " + this.state.dongtaiId);
+            if(pinglun.length > 0){
+                this.setState({
+                    pinglun:pinglun
+                });
+            }
+        }catch(e){}finally{
+            this.props.dispatch(getZanAction(this.state.dongtaiId,1,this._loadZanComplete));
+            this.props.dispatch(getPinglunAction(this.state.dongtaiId,this.state.currentPinglunPage,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
+        }
     }
+    //获取点赞列表完毕
+    _loadZanComplete = ()=>{
+        try{
+            let zan = realmObj.objects("Zan").filtered("contentid = " + this.state.dongtaiId).slice(0, 6);
+            if(zan.length > 0){
+                this.setState({
+                    zan:zan
+                });
+            }
+        }catch(e){}
+    };
+    //获取评论列表完毕
+    _loadPinglunComplete(totalPage){
+        try{
+            let contentList = realmObj.objects("Pinglun").filtered("type = 1 and contentid = " + this.state.dongtaiId);
+            if(contentList.length > 0){
+                let page = this.state.currentPinglunPage;
+                this.setState({
+                    pinglun:contentList,
+                    currentPinglunPage:page + 1,
+                    loadPinglunFinish:page >= totalPage,
+                    loading:false,
+                });
+            }
+        }catch(e){}
+    }
+    //判断是否滚动到底部
+    _contentViewScroll = (e)=>{
+        let offsetY = parseInt(e.nativeEvent.contentOffset.y); //滑动距离
+        let contentSizeHeight = parseInt(e.nativeEvent.contentSize.height); //scrollView contentSize高度
+        let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight){
+            if(this.state.loadPinglunFinish === false){
+                this.props.dispatch(getPinglunAction(this.state.dongtaiId,this.state.currentPinglunPage,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
+            }
+        }
+    };
+    //下拉刷新
+    _refresh = ()=>{
+        this.setState({
+            loading:true,
+        });
+        this.props.dispatch(getPinglunAction(this.state.dongtaiId,1,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
+    };
+    //评论项
+    renderRow = ({item}) => (
+        <View style={{paddingTop:8,paddingBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8'}}>
+            <View style={{flexDirection:'row'}}>
+                <Image style={{width:30,height:30,borderRadius:15,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
+                <View style={{flex:1}}>
+                    <Text style={{fontSize:12}}>{item['name']}</Text>
+                    <Text style={{fontSize:10}}>{getDateTimeDiff(item['dateline'])}</Text>
+                </View>
+                <View style={{flexDirection:'row'}}>
+                    <TouchableWithoutFeedback>
+                        <Image style={{width:15,height:15,marginRight:15}} source={require('../../assets/icon/iconhuifu.png')}/>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback>
+                        <View style={{flexDirection:'row'}}>
+                            <Image style={{width:15,height:15,marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
+                            <Text style={{fontSize:10}}>4</Text>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+            </View>
+            <View style={{marginLeft:30,marginTop:8}}>
+                <Text style={{fontSize:12}}>{item['content']}</Text>
+            </View>
+        </View>
+    );
+    //把id当成key，否则会有警告
+    _keyExtractor = (item, index) => item.id;
     render(){
+        const {dongtai} = this.state;
         return (
             <View style={styles.container}>
-                <ScrollView style={{flex:1}}>
+                <ScrollView style={{flex:1}}
+                            onMomentumScrollEnd = {this._contentViewScroll}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.loading}
+                                    onRefresh={this._refresh.bind(this)}
+                                />
+                            }
+                >
                     <View style={styles.block}>
-                        <View style={{marginBottom:10}}>
-                            <TouchableWithoutFeedback onPress={()=>{alert('详情')}}>
+                        <View>
+                            <View style={{flexDirection:'row',marginBottom:20,marginTop:12}}>
+                                <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
                                 <View>
-                                    <View style={{flexDirection:'row',marginBottom:12}}>
-                                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
-                                        <View>
-                                            <Text>橄榄枝编辑</Text>
-                                            <Text style={{color:'#999999',fontSize:12}}>3天前</Text>
-                                        </View>
-                                    </View>
-                                    <View>
-                                        <Text>橄榄枝新品发布会成功举行！两款智能装备将为这个跑马季带来无限新动力！智能跑鞋源自UA生产线，采用创新高科技鞋底技术</Text>
-                                    </View>
-                                    <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
-                                        <View>
-                                            <View style={{marginBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8',paddingBottom:8}}>
-                                                <Text style={{fontSize:12,color:'#666',marginBottom:5,marginTop:15}}>102人赞了</Text>
-                                                <View style={{flexDirection:'row'}}>
-                                                    <TouchableWithoutFeedback>
-                                                        <Image style={{width:30,height:30,borderRadius:15,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
-                                                    </TouchableWithoutFeedback>
-                                                    <TouchableWithoutFeedback>
-                                                        <Image style={{width:30,height:30,borderRadius:15,marginRight:10}} source={require('../../assets/mock_data/2.jpg')}/>
-                                                    </TouchableWithoutFeedback>
-                                                </View>
-                                            </View>
-                                            <View>
-                                                <Text style={{marginBottom:8,fontSize:12}}>23条评论</Text>
-
-                                                <View style={{paddingTop:8,paddingBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8'}}>
-                                                    <View style={{flexDirection:'row'}}>
-                                                        <Image style={{width:30,height:30,borderRadius:15,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
-                                                        <View style={{flex:1}}>
-                                                            <Text style={{fontSize:12}}>天空中的柠檬</Text>
-                                                            <Text style={{fontSize:10}}>7小时前</Text>
-                                                        </View>
-                                                        <View style={{flexDirection:'row'}}>
-                                                            <TouchableWithoutFeedback>
-                                                                <Image style={{width:15,height:15,marginRight:15}} source={require('../../assets/icon/iconhuifu.png')}/>
-                                                            </TouchableWithoutFeedback>
-                                                            <TouchableWithoutFeedback>
-                                                                <View style={{flexDirection:'row'}}>
-                                                                    <Image style={{width:15,height:15,marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
-                                                                    <Text style={{fontSize:10}}>4</Text>
-                                                                </View>
-                                                            </TouchableWithoutFeedback>
-                                                        </View>
-                                                    </View>
-                                                    <View style={{marginLeft:30,marginTop:8}}>
-                                                        <Text style={{fontSize:12}}>金牛座默默的看着</Text>
-                                                    </View>
-                                                </View>
-
-                                                <View style={{paddingTop:8,paddingBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8'}}>
-                                                    <View style={{flexDirection:'row'}}>
-                                                        <Image style={{width:30,height:30,borderRadius:15,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
-                                                        <View style={{flex:1}}>
-                                                            <Text style={{fontSize:12}}>天空中的柠檬</Text>
-                                                            <Text style={{fontSize:10}}>7小时前</Text>
-                                                        </View>
-                                                        <View style={{flexDirection:'row'}}>
-                                                            <TouchableWithoutFeedback>
-                                                                <Image style={{width:15,height:15,marginRight:15}} source={require('../../assets/icon/iconhuifu.png')}/>
-                                                            </TouchableWithoutFeedback>
-                                                            <TouchableWithoutFeedback>
-                                                                <View style={{flexDirection:'row'}}>
-                                                                    <Image style={{width:15,height:15,marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
-                                                                    <Text style={{fontSize:10}}>4</Text>
-                                                                </View>
-                                                            </TouchableWithoutFeedback>
-                                                        </View>
-                                                    </View>
-                                                    <View style={{marginLeft:30,marginTop:8}}>
-                                                        <Text style={{fontSize:12}}>金牛座默默的看着</Text>
-                                                    </View>
-                                                </View>
-
-
-                                            </View>
-                                        </View>
-                                    </TouchableWithoutFeedback>
+                                    <Text>{dongtai['name']}</Text>
+                                    <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(dongtai['dateline'])}</Text>
                                 </View>
-                            </TouchableWithoutFeedback>
+                            </View>
+                            <View style={{marginBottom:20}}>
+                                <Text>{dongtai['content']}</Text>
+                            </View>
+                            <View>
+                                {
+                                    dongtai['zan'] > 0 ?
+                                        <View style={{marginBottom:15,borderBottomWidth:1,borderBottomColor:'#f8f8f8',paddingBottom:15}}>
+                                            <Text style={{fontSize:14,color:'#666',marginBottom:10,marginTop:15}}>{dongtai['zan']}人赞了</Text>
+                                            <View style={{flexDirection:'row'}}>
+                                                <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false} horizontal={true}>
+                                                    {
+                                                        this.state.zan.map((item,i)=>{
+                                                            return (
+                                                                <TouchableWithoutFeedback key={i} onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item['userid']})}}>
+                                                                    <Image style={{width:40,height:40,borderRadius:20,marginRight:20}} source={require('../../assets/mock_data/1.jpg')}/>
+                                                                </TouchableWithoutFeedback>
+                                                            );
+                                                        })
+                                                    }
+                                                </ScrollView>
+                                                <TouchableWithoutFeedback>
+                                                    <Image style={{width:40,height:40}} source={require('../../assets/icon/icongengduo.png')}/>
+                                                </TouchableWithoutFeedback>
+                                            </View>
+                                        </View>
+                                        : <View style={{marginBottom:15,borderBottomWidth:1,borderBottomColor:'#f8f8f8',paddingBottom:15}}></View>
+                                }
+
+                                {
+                                    dongtai['pinglun'] > 0 ?
+                                        <View>
+                                            <Text style={{marginBottom:8,fontSize:14}}>{dongtai['pinglun']}条评论</Text>
+                                            <FlatList
+                                                renderItem={this.renderRow}
+                                                data={this.state.pinglun}
+                                                extraData={this.state}
+                                                keyExtractor={this._keyExtractor}
+                                            />
+                                        </View>
+                                        :
+                                         <View>
+                                            <Text style={{marginBottom:8,fontSize:14}}>评论</Text>
+                                            <View style={{alignItems:'center'}}>
+                                                <Text style={{marginTop:30}}>还没有人评论过，不如你来抢沙发</Text>
+                                            </View>
+                                         </View>
+                                }
+
+                            </View>
                         </View>
                     </View>
                 </ScrollView>
@@ -165,6 +260,14 @@ export default class DongTaiDetail extends Component{
         );
     }
 }
+
+function select(state) {
+    const {userReducer} = state;
+    return {
+        userReducer
+    }
+}
+export default connect(select)(DongTaiDetail);
 
 const styles = StyleSheet.create({
     container: {

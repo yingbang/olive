@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {getDateTimeDiff} from '../common/public';
-import {Card, List, ListItem} from 'react-native-elements';
+import {List} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import {getDongtaiAction} from '../../actions/userAction';
 

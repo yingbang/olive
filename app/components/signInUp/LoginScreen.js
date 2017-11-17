@@ -52,16 +52,20 @@ export default class LoginScreen extends Component {
         request('GET',host + '/api/user/login?mobile=' + mobile + '&password=' + password)
             .set('accept','json')
             .end(function (err, res) {
-                if(res.body.state === 'fail'){
-                    let code = res.body.code;
-                    if(code === -1 || code === -2){
-                        toastShort("登录失败：用户名或密码错误！");
-                    }else{
-                        toastShort("登录失败！")
+                if(err){
+                    toastShort("网络错误！")
+                }else{
+                    if(res.body.state === 'fail'){
+                        let code = res.body.code;
+                        if(code === -1 || code === -2){
+                            toastShort("登录失败：用户名或密码错误！");
+                        }else{
+                            toastShort("登录失败！")
+                        }
+                    }else if(res.body.state === 'ok'){
+                        toastShort("登录成功！");
+                        _that.props.loginSuccess(mobile);
                     }
-                }else if(res.body.state === 'ok'){
-                    toastShort("登录成功！");
-                    _that.props.loginSuccess(mobile);
                 }
             });
     }

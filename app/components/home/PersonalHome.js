@@ -6,46 +6,176 @@ import {
     Text,
     View,
     FlatList,
+    ScrollView,
     Image,
     TouchableWithoutFeedback,
     StyleSheet,
     Dimensions,
-    TouchableOpacity
+    TouchableOpacity,
+    RefreshControl,
+    StatusBar
 } from 'react-native';
+import {connect} from 'react-redux';
+import HTMLView from 'react-native-htmlview';
+import {List} from 'react-native-elements';
+import {getDateTimeDiff} from '../common/public';
 import ParallaxScrollView from '../common/parallax/index';
 import Blank from '../common/Blank';
+import BlankDongtai from '../common/BlankDongtai';
+import {getDongtaiAction,getUserInfoByIdAction} from '../../actions/userAction';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
 const PARALLAX_HEADER_HEIGHT = 220;
 const STICKY_HEADER_HEIGHT = 40;
 
-const contentList = [
-    {
-        key:0,
-        title: 'Appointments',
-    },
-    {
-        key:1,
-        title: 'Trips',
-    },
-    {
-        key:2,
-        title: 'Trips',
-    },
-    {
-        key:3,
-        title: 'Trips',
-    },
-    {
-        key:4,
-        title: 'Trips',
-    },
-]
-export default class PersonalHome extends Component{
+class PersonalHome extends Component{
 
     static navigationOptions = {
         header:null
+    };
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dongtai:[],
+            currentDongtaiPage:1,
+            loadDongtaiFinish:false,
+            loading:false,
+            userid:this.props.navigation.state.params.id,//只显示当前用户的动态
+            userInfo:{},//会员信息
+        };
+    }
+    //动态项
+    renderRow = ({item}) => (
+        <View style={{marginBottom:15}}>
+            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
+                <View>
+                    <View style={{flexDirection:'row',marginBottom:12}}>
+                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
+                        <View>
+                            <Text>{item['name']}</Text>
+                            <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
+                        </View>
+                    </View>
+                    <View>
+                        <Text>{item['content']}</Text>
+                    </View>
+                    <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
+                        <View style={{flex:1,flexDirection:'row'}}>
+                            <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
+                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
+                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
+                                <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconfenxiang.png')}/>
+                            </TouchableWithoutFeedback>
+                        </View>
+                        <View>
+                            <TouchableWithoutFeedback onPress={()=>{alert('更多')}}>
+                                <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconmore.png')}/>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </View>
+                    <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
+                        <View>
+                            {
+                                item['zan'] > 0 ?
+                                    <View style={{flexDirection:'row',marginBottom:8}}>
+                                        <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
+                                    </View>
+                                    : null
+                            }
+
+                            <HTMLView
+                                value={item['pinglunlist']}
+                                stylesheet={styles}
+                                addLineBreaks={false}
+                                onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
+                            />
+                            {
+                                item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
+                            }
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+            </TouchableWithoutFeedback>
+        </View>
+    );
+    //把id当成key，否则会有警告
+    _keyExtractor = (item, index) => item.id;
+
+    //获取动态
+    componentDidMount(){
+        try{
+            //动态
+            let dongtaiList = realmObj.objects("Dongtai").filtered("userid = " + this.state.userid);
+            if(dongtaiList.length > 0){
+                dongtaiList = dongtaiList.sorted('id',true);
+                this.setState({
+                    dongtai:dongtaiList
+                });
+            }
+            //会员信息
+            let userInfo = realmObj.objects("User").filtered("id = " + this.state.userid);
+            if(userInfo.length > 0){
+                this.setState({
+                    userInfo:userInfo[0]
+                });
+            }
+        }catch(e){
+            console.log(e);
+        }finally {
+            this.props.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            this.props.dispatch(getUserInfoByIdAction(this.state.userid,this._loadUserInfoComplete));
+        }
+    }
+    //网络请求加载完成
+    _loadDongtaiComplete(totalPage){
+        try{
+            let contentList = realmObj.objects("Dongtai").filtered("userid = " + this.state.userid);
+            if(contentList.length > 0){
+                contentList = contentList.sorted('id',true);
+                let page = this.state.currentDongtaiPage;
+                this.setState({
+                    dongtai:contentList,
+                    currentDongtaiPage:page + 1,
+                    loadDongtaiFinish:page >= totalPage,
+                    loading:false,
+                });
+            }
+        }catch(e){}
+    }
+    _loadUserInfoComplete(){
+        try{
+            let userInfo = realmObj.objects("User").filtered("id = " + this.state.userid);
+            if(userInfo.length > 0){
+                this.setState({
+                    userInfo:userInfo[0]
+                });
+            }
+        }catch(e){}
+    }
+    //判断是否滚动到底部
+    _contentViewScroll = (e)=>{
+        let offsetY = parseInt(e.nativeEvent.contentOffset.y); //滑动距离
+        let contentSizeHeight = parseInt(e.nativeEvent.contentSize.height); //scrollView contentSize高度
+        let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight){
+            if(this.state.loadDongtaiFinish === false){
+                this.props.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            }
+        }
+    };
+    //下拉刷新
+    _refresh = ()=>{
+        this.setState({
+            loading:true,
+        });
+        this.props.dispatch(getDongtaiAction(this.state.userid,1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
     };
     /**
      * 点击返回按钮
@@ -53,44 +183,16 @@ export default class PersonalHome extends Component{
     pressBack(){
         this.props.navigation.goBack();
     }
-    _onPressItem = (id) => {
-        this.props.navigation.navigate("NewsDetail");
-    };
-    renderRow = ({item}) => (
-        <View style={{marginBottom:8}}>
-            <TouchableWithoutFeedback>
-                <View>
-                    <View style={{padding:8}}>
-                        <Text>橄榄枝新品发布会成功举行！两款智能装备将为这个跑马季带来无限新动力！智能跑鞋源自UA生产线，采用创新高科技鞋底技术</Text>
-                        <Text style={{color:'#00bfff',marginTop:5}}>查看全文</Text>
-                    </View>
-                    <View style={{flexDirection:'row',marginTop:10,marginBottom:10,paddingTop:5,paddingLeft:8,paddingBottom:5,backgroundColor:'#f8f8f8'}}>
-                        <View style={{flex:1,flexDirection:'row'}}>
-                            <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
-                                <View style={{flexDirection:'row',marginRight:15,alignItems:'center'}}>
-                                    <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
-                                    <Text>33</Text>
-                                </View>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
-                                <View style={{flexDirection:'row',marginRight:15,alignItems:'center'}}>
-                                    <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconpinglun.png')}/>
-                                    <Text>10</Text>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        </View>
-    );
+    //编辑个人信息
+    bianji(){
+        this.props.navigation.navigate("ZiLiao");
+    }
     render(){
-        const { onScroll = () => {} } = this.props;
         return (
             <View style={{ flex: 1 }}>
+                <StatusBar hidden={true}/>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <ParallaxScrollView
-                        onScroll={onScroll}
                         BackgroundColor="#ffffff"
                         stickyHeaderHeight={ STICKY_HEADER_HEIGHT }
                         parallaxHeaderHeight={ PARALLAX_HEADER_HEIGHT }
@@ -114,9 +216,9 @@ export default class PersonalHome extends Component{
                                     width: AVATAR_SIZE,
                                     height: AVATAR_SIZE
                                 }}/>
-                                <Text style={ styles.sectionSpeakerText }>小鱼儿</Text>
+                                <Text style={ styles.sectionSpeakerText }>{this.state.userInfo['nickname']}</Text>
                                 <Text style={ styles.sectionTitleText }>
-                                    寻找那属于所有人的美好
+                                    {this.state.userInfo['intro']}
                                 </Text>
                             </View>
                         )}
@@ -127,8 +229,8 @@ export default class PersonalHome extends Component{
                                         <Image style={{width:15,height:15,marginLeft:8}} source={require('../../assets/icon/iconback.png')}/>
                                     </View>
                                 </TouchableWithoutFeedback>
-                                <Text style={styles.stickySectionText}>小鱼儿</Text>
-                                <TouchableWithoutFeedback>
+                                <Text style={styles.stickySectionText}>{this.state.userInfo['nickname']}</Text>
+                                <TouchableWithoutFeedback onPress={()=>{this.bianji()}}>
                                     <View>
                                         <Text style={{fontSize:14,marginRight:8}}>编辑</Text>
                                     </View>
@@ -142,7 +244,7 @@ export default class PersonalHome extends Component{
                                         <Image style={{width:15,height:15,marginLeft:8,tintColor:'#ffffff'}} source={require('../../assets/icon/iconback.png')}/>
                                     </View>
                                 </TouchableWithoutFeedback>
-                                <TouchableWithoutFeedback>
+                                <TouchableWithoutFeedback onPress={()=>{this.bianji()}}>
                                     <View>
                                         <Text style={{color:'#ffffff',fontSize:14,marginRight:8}}>编辑</Text>
                                     </View>
@@ -150,13 +252,27 @@ export default class PersonalHome extends Component{
                             </View>
                         )}
                     >
-                        <FlatList
-                            renderItem={this.renderRow}
-                            data={contentList}
-                            style={styles.container}
-                            ListFooterComponent={Blank}
-                            ListHeaderComponent={Blank}
-                        />
+                        <ScrollView style={styles.container}
+                                    onMomentumScrollEnd = {this._contentViewScroll}
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.loading}
+                                            onRefresh={this._refresh.bind(this)}
+                                        />
+                                    }
+                        >
+                            <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
+                                <FlatList
+                                    renderItem={this.renderRow}
+                                    data={this.state.dongtai}
+                                    extraData={this.state}
+                                    keyExtractor={this._keyExtractor}
+                                    ListFooterComponent={Blank}
+                                    ListHeaderComponent={Blank}
+                                    ListEmptyComponent={BlankDongtai}
+                                />
+                            </List>
+                        </ScrollView>
 
                     </ParallaxScrollView>
                 </View>
@@ -165,10 +281,26 @@ export default class PersonalHome extends Component{
     }
 }
 
+function select(state) {
+    const {userReducer} = state;
+    return {
+        userReducer
+    }
+}
+export default connect(select)(PersonalHome);
+
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: '#ffffff',
+        padding:8
+    },
+    p:{
+        color:'#666',
+        fontSize:12,
+        marginBottom:3
+    },
+    b:{
+        color:'#333'
     },
     background: {
         position: 'absolute',

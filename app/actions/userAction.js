@@ -12,7 +12,7 @@ export function getUserListAction(page,type,flag,callback){
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         request.get(host + '/api/user/getUserList').query({p:page,type:type,flag:flag,_t:Math.random()}).end((err,res)=>{
             if(err){
-                dispatch(errorUserListResult());
+                console.log(err);
             }else{
                 let json = res.body;
                 //保存到realm
@@ -48,34 +48,20 @@ export function getUserListAction(page,type,flag,callback){
                     console.log(e)
                 }
                 //发送
-                dispatch(receiveUserListResult(json));
                 callback && callback();
             }
         });
     }
 }
-//接收到内容
-function receiveUserListResult(result){
-    return {
-        type: types.receiveUserListAction,
-        data: result
-    }
-}
-//发生错误
-function errorUserListResult(){
-    return {
-        type: types.errorUserListAction
-    }
-}
 
-//获取会员信息
+//根据手机号获取会员信息
 export function getUserInfoAction(mobile,callback){
     return dispatch => {
         //开始请求网络
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         request.get(host + '/api/user/info').query({mobile:mobile,_t:Math.random()}).end((err,res)=>{
             if(err){
-                dispatch(errorUserInfoResult());
+                console.log(err);
             }else{
                 let json = res.body;
                 //保存到realm
@@ -108,23 +94,54 @@ export function getUserInfoAction(mobile,callback){
                     console.log(e)
                 }
                 //发送
-                dispatch(receiveUserInfoResult(json));
                 callback && callback();
             }
         });
     }
 }
-//接收到内容
-function receiveUserInfoResult(result){
-    return {
-        type: types.receiveUserInfoAction,
-        data: result
-    }
-}
-//发生错误
-function errorUserInfoResult(){
-    return {
-        type: types.errorUserInfoAction
+//根据会员ID获取会员信息
+export function getUserInfoByIdAction(userid,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/user/infoById').query({userid:userid,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let hidden = realmObj.objects("HiddenUser").filtered("id = " + json['id']);
+                        let user = {
+                            id:parseInt(json['id']),
+                            type:parseInt(json['type']),
+                            flag:parseInt(json['flag']),
+                            name:json['name'] !== null ? json['name'] : "",
+                            sex:json['sex'] !== null ? json['sex'] : "",
+                            mobile:json['mobile'] !== null ? json['mobile'] : "",
+                            nickname:json['nickname'] !== null ? json['nickname'] : "",
+                            username:json['username'] !== null ? json['username'] : "",
+                            email:json['email'] !== null ? json['email'] : "",
+                            province:json['province'] !== null ? json['province'] : "",
+                            city:json['city'] !== null ? json['city'] : "",
+                            area:json['area'] !== null ? json['area'] : "",
+                            address:json['address'] !== null ? json['address'] : "",
+                            weixin:json['weixin'] !== null ? json['weixin'] : "",
+                            intro:json['intro'] !== null ? json['intro'] : "",
+                            renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
+                            avatar:json['avatar'] !== null ? host + json['avatar'] : "",
+                            visible:hidden.length <= 0,
+                        };
+                        realmObj.create("User",user,true);
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback();
+            }
+        });
     }
 }
 
@@ -136,7 +153,7 @@ export function getJoinCompanyAction(page,callback){
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
         request.get(host + '/api/user/joinList').query({userid:userid,page:page,_t:Math.random()}).end((err,res)=>{
             if(err){
-                dispatch(errorJoinCompanyResult());
+                console.log(err);
             }else{
                 let json = res.body;
                 //保存到realm
@@ -155,23 +172,9 @@ export function getJoinCompanyAction(page,callback){
                     console.log(e)
                 }
                 //发送
-                dispatch(receiveJoinCompanyResult(json));
                 callback && callback();
             }
         });
-    }
-}
-//接收到内容
-function receiveJoinCompanyResult(result){
-    return {
-        type: types.receiveJoinCompanyListAction,
-        data: result
-    }
-}
-//发生错误
-function errorJoinCompanyResult(){
-    return {
-        type: types.errorJoinCompanyListAction
     }
 }
 
@@ -183,7 +186,7 @@ export function getFollowUserAction(page,callback){
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
         request.get(host + '/api/user/guanzhuList').query({userid:userid,page:page,_t:Math.random()}).end((err,res)=>{
             if(err){
-                dispatch(errorFollowUserResult());
+                console.log(err);
             }else{
                 let json = res.body;
                 //保存到realm
@@ -202,23 +205,9 @@ export function getFollowUserAction(page,callback){
                     console.log(e)
                 }
                 //发送
-                dispatch(receiveFollowUserResult(json));
                 callback && callback();
             }
         });
-    }
-}
-//接收到内容
-function receiveFollowUserResult(result){
-    return {
-        type: types.receiveFollowUserListAction,
-        data: result
-    }
-}
-//发生错误
-function errorFollowUserResult(){
-    return {
-        type: types.errorFollowUserListAction
     }
 }
 
@@ -289,14 +278,13 @@ export function getPinglunAction(id,page,callback){
                                 id:parseInt(contentList[i]['id']),
                                 touserid:parseInt(contentList[i]['touserid']),
                                 fromuserid:parseInt(contentList[i]['fromuserid']),
-                                type:parseInt(contentList[i]['type']),
-                                zan:parseInt(contentList[i]['zan']),
+                                type:contentList[i]['type'] !== null ? parseInt(contentList[i]['type']) : 1,
+                                zan:contentList[i]['zan'] !== null ? parseInt(contentList[i]['zan']) : 0,
                                 contentid:parseInt(contentList[i]['contentid']),
                                 dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
                                 content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
                                 name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
                                 avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
-
                             };
                             realmObj.create("Pinglun",item,true);
                         }
@@ -305,7 +293,7 @@ export function getPinglunAction(id,page,callback){
                     console.log(e)
                 }
                 //发送
-                callback && callback();
+                callback && callback(json.totalPage);
             }
         });
     }
@@ -328,7 +316,7 @@ export function getZanAction(id,page,callback){
                         for(let i=0, l=contentList.length; i<l; i++){
                             let item = {
                                 id:parseInt(contentList[i]['id']),
-                                userid:parseInt(contentList[i]['touserid']),
+                                userid:parseInt(contentList[i]['userid']),
                                 contentid:parseInt(contentList[i]['contentid']),
                                 name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
                                 avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
@@ -353,7 +341,7 @@ export function getZanDongtaiAction(page,callback){
         //开始请求网络
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-        request.get(host + '/api/user/guanZanList').query({userid:userid,p:page,_t:Math.random()}).end((err,res)=>{
+        request.get(host + '/api/user/getZanList').query({userid:userid,p:page,_t:Math.random()}).end((err,res)=>{
             if(err){
                 console.log(err);
             }else{
@@ -385,7 +373,7 @@ export function getCangAction(type,page,callback){
         //开始请求网络
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-        request.get(host + '/api/user/guanCangList').query({userid:userid,type:type,p:page,_t:Math.random()}).end((err,res)=>{
+        request.get(host + '/api/user/getCangList').query({userid:userid,type:type,p:page,_t:Math.random()}).end((err,res)=>{
             if(err){
                 console.log(err);
             }else{
@@ -397,7 +385,7 @@ export function getCangAction(type,page,callback){
                         for(let i=0, l=contentList.length; i<l; i++){
                             let item = {
                                 id:parseInt(contentList[i]['id']),
-                                userid:parseInt(contentList[i]['touserid']),
+                                userid:parseInt(contentList[i]['userid']),
                                 contentid:parseInt(contentList[i]['contentid']),
                                 type:parseInt(contentList[i]['type']),
                             };

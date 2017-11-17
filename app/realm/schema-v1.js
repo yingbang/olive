@@ -55,6 +55,16 @@ const NewsSchema = {
         comments:{type:'int',default:0},//评论数
     }
 };
+const NewsDataSchema = {
+    name:'NewsData',
+    primaryKey:'id',
+    properties:{
+        id:'int',//文章ID
+        title:{type:'string',default:''},//标题
+        content:{type:'string',default:''},//简介
+        shoucang:{type:'int',default:0},//是否收藏
+    }
+};
 
 //会员表
 const UserSchema = {
@@ -184,7 +194,7 @@ const CangSchema = {
 };
 
 export default {
-    schema: [GlobalSchema,NoticeSchema,SlideSchema,UserSchema,NewsSchema,
+    schema: [GlobalSchema,NoticeSchema,SlideSchema,UserSchema,NewsSchema,NewsDataSchema,
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,
         DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema],
     schemaVersion: 6,
