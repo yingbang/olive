@@ -7,11 +7,12 @@ import {
     TextInput,
 } from 'react-native';
 //公共头部
-import { Card, List, ListItem, Header} from 'react-native-elements';
-import globalStyle from '../common/GlobalStyle';
-import colors from '../common/Colors';
+import {Header} from 'react-native-elements';
+import {connect} from 'react-redux';
+import {toastShort} from '../common/ToastTool';
+import {fankuiAction} from '../../actions/userAction';
 
-export default class YiJianFanKui extends Component{
+class YiJianFanKui extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
@@ -21,6 +22,30 @@ export default class YiJianFanKui extends Component{
             />
         }
     };
+    constructor(props){
+        super(props);
+        this.state={
+            title:"",
+            content:""
+        }
+    }
+    submit(){
+        let title = this.state.title;
+        let content = this.state.content;
+        if(title === '' || title === null){
+            toastShort("请输入联系方式");
+            return false;
+        }
+        this.props.dispatch(fankuiAction(title,content,(result)=>{this.submitComplete(result)}))
+    }
+    submitComplete(result){
+        if(result.state === 'ok'){
+            toastShort("提交成功，请耐心等待");
+            this.props.navigation.goBack();
+        }else{
+            toastShort("提交失败，请重试");
+        }
+    }
     render(){
         return (
             <View style={styles.container}>
@@ -35,6 +60,7 @@ export default class YiJianFanKui extends Component{
                         clearButtonMode="while-editing"
                         clearTextOnFocus={true}
                         enablesReturnKeyAutomatically={true}
+                        onChangeText={(text)=>{this.setState({title:text})}}
                     />
                 </View>
                 <View style={[styles.inputView,{height:180}]}>
@@ -50,15 +76,24 @@ export default class YiJianFanKui extends Component{
                         multiline={true}
                         enablesReturnKeyAutomatically={true}
                         textAlignVertical="top"
+                        onChangeText={(text)=>{this.setState({content:text})}}
                     />
                 </View>
                 <View>
-                    <Text style={styles.button}>提交</Text>
+                    <Text style={styles.button} onPress={()=>{this.submit()}}>提交</Text>
                 </View>
             </View>
         );
     }
 }
+
+function select(state) {
+    const {userReducer} = state;
+    return {
+        userReducer
+    }
+}
+export default connect(select)(YiJianFanKui);
 
 const styles = StyleSheet.create({
     container: {

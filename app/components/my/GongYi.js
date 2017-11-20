@@ -12,21 +12,21 @@ import {
 } from 'react-native';
 //公共头部
 import {List, ListItem, Header} from 'react-native-elements';
-import DingDanTab from './DingDanTab';
+import GongYiTab from './GongYiTab';
 
-export default class DingDan extends Component{
+export default class GongYi extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
-                centerComponent={{ text: '我的订单'}}
+                centerComponent={{ text: '我的公益活动'}}
                 backgroundColor="#ffffff"
             />
         }
     };
     render(){
         return (
-            <DingDanTab screenProps={this.props}/>
+            <GongYiTab screenProps={this.props}/>
         );
     }
 }

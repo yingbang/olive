@@ -8,74 +8,144 @@ import {
     StyleSheet,
     TextInput,
     Button,
-    FlatList
+    FlatList,
+    RefreshControl
 } from 'react-native';
 //公共头部
-import MyTop from './MyTop';
-import FenGeXian from '../../common/FenGeXian';
-import Blank from '../../common/Blank';
+import {connect} from 'react-redux';
+import {List, ListItem, Header} from 'react-native-elements';
+import {getJoinCompanyAction} from '../../actions/userAction';
+import globalStyle from '../common/GlobalStyle';
+import colors from '../common/Colors';
 
-export default class ZuZhi extends Component{
+class ZuZhi extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
-            return <MyTop title="我的组织" {...HeaderProps}/>
+            return <Header
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                centerComponent={{ text: '我的组织'}}
+                backgroundColor="#ffffff"
+            />
         }
     };
-    state = {selected: (new Map())};
+    constructor(props){
+        super(props);
+        this.state={
+            currentPage:1,
+            isFinished:false,
+            loading:false,
+            data:[]
+        }
+    }
+    //组件加载完成
+    componentDidMount() {
+        //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
+        try{
+            let newsList = realmObj.objects("JoinCompany");
+            if(newsList.length > 0){
+                this.setState({
+                    data:newsList
+                });
+            }
+        }catch(e){
+            console.log(e);
+        }finally{
+            this.props.dispatch(getJoinCompanyAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+        }
+    }
+    //下拉刷新
+    _refresh = ()=>{
+        this.setState({
+            loading:true,
+        });
+        this.props.dispatch(getJoinCompanyAction(1,(totalPage)=>{this._loadComplete(totalPage)}));
+    };
+    //判断是否滚动到底部
+    _contentViewScroll = (e)=>{
+        let offsetY = parseInt(e.nativeEvent.contentOffset.y); //滑动距离
+        let contentSizeHeight = parseInt(e.nativeEvent.contentSize.height); //scrollView contentSize高度
+        let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
+        if (offsetY + oriageScrollHeight >= contentSizeHeight){
+            if(this.state.isFinished === false){
+                this.props.dispatch(getJoinCompanyAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+            }
+        }
+    };
+    //网络请求数据接收完成以后执行，重新从realm中获取数据
+    _loadComplete(totalPage){
+        try{
+            let newsList = realmObj.objects("JoinCompany");
+            if(newsList.length > 0){
+                let page = this.state.currentPage;
+                this.setState({
+                    data:newsList,
+                    currentPage:page + 1,
+                    isFinished:page >= totalPage,
+                    loading:false
+                });
+            }
+        }catch(e){}
+    }
     _keyExtractor = (item, index) => item.id;
     _renderItem = ({item}) => (
-        <View style={{flexDirection:'row',flex:1,alignItems:'center'}}>
-            <Image style={{width:100,height:100,marginRight:15}} source={require('../../test/mock_data/1.jpg')}/>
-            <View style={{flex:1}}>
-                <Text>小编</Text>
-                <Text style={{fontSize:12,flex:1}}>女孩请进，男生止步！</Text>
-            </View>
-        </View>
+        <ListItem
+            roundAvatar
+            key={item.id}
+            hideChevron={true}
+            title={item.name}
+            avatar={require('../../assets/mock_data/1.jpg')}
+            onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}
+            containerStyle={[globalStyle.listItem,{marginTop:0}]}
+            {...this.props}
+        />
     );
     render(){
         return (
-            <FlatList
-                data={[{id: 'a',title:'hello'}, {id: 'b',title:'hi'}, {id: 'c',title:'hi'}, {id: 'd',title:'hi'}, {id: 'e',title:'hi'}, {id: 'f',title:'hi'}, {id: 'g',title:'hi'}]}
-                extraData={this.state}
-                keyExtractor={this._keyExtractor}
-                renderItem={this._renderItem}
-                style={styles.container}
-                ItemSeparatorComponent={FenGeXian}
-                ListFooterComponent={Blank}
-                ListHeaderComponent={ZuzhiHeaderComponent}
-                onRefresh={()=>{alert(1)}}
-                refreshing={false}
-            />
+            <ScrollView style={styles.container}
+                        onMomentumScrollEnd = {this._contentViewScroll}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.loading}
+                                onRefresh={this._refresh.bind(this)}
+                            />
+                        }
+            >
+                <FlatList
+                    data={this.state.data}
+                    extraData={this.state}
+                    keyExtractor={this._keyExtractor}
+                    renderItem={this._renderItem}
+                />
+            </ScrollView>
         );
     }
 }
 
-/**
- * 列表头部
- */
-class ZuzhiHeaderComponent extends Component{
-    render(){
-        return (
-            <View style={{flex:1,padding:8,backgroundColor:'#f8f8f8',marginBottom:8}}>
-                <Text>我加入的组织</Text>
-            </View>
-        );
+function select(state) {
+    const {userReducer} = state;
+    return {
+        userReducer
     }
 }
+export default connect(select)(ZuZhi);
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
     },
-    setting_item_container: {
+    thumb:{
+        width:60,
+        height:60,
+        borderRadius:30,
+        marginLeft:20
+    },
+    cell_container:{
         flex:1,
         flexDirection:'row',
-        alignItems:'center',
-        height:40,
     },
-    block:{
-        marginTop:10,
-        backgroundColor:'#ffffff'
+    itemLeft:{
+        flex:1,
+        paddingLeft:10,
     },
 });

@@ -11,13 +11,17 @@ import {
     FlatList
 } from 'react-native';
 //公共头部
-import MyTop from './MyTop';
+import {List, ListItem, Header} from 'react-native-elements';
 import ShouCangTab from './ShouCangTab';
 
 export default class ShouCang extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
-            return <MyTop title="我的收藏" {...HeaderProps}/>
+            return <Header
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                centerComponent={{ text: '我的收藏'}}
+                backgroundColor="#ffffff"
+            />
         }
     };
     render(){

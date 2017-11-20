@@ -55,11 +55,11 @@ function errorSlideResult(){
     }
 }
 
-export function getNoticeAction(callback){
+export function getNoticeAction(page,callback){
     return dispatch => {
         //开始请求网络
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
-        request.get(host + '/api/tool/notice').query({_t:Math.random()}).end((err,res)=>{
+        request.get(host + '/api/tool/notice').query({p:page,_t:Math.random()}).end((err,res)=>{
             if(err){
                 dispatch(errorNoticeResult());
             }else{
@@ -76,6 +76,7 @@ export function getNoticeAction(callback){
                                 title:contentList[i]['title'],
                                 author:contentList[i]['author'] !== null ? contentList[i]['author'] : "",
                                 content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
                             };
                             realmObj.create("Notice",item,true);
                         }

@@ -12,15 +12,14 @@ import {
     Dimensions,
     Button
 } from 'react-native';
+import BlankShoucang from '../../common/BlankShoucang';
 
 export default class DongTai extends Component{
     render(){
         return (
-            <View style={styles.container}>
-                <ScrollView>
-                    <Text>动态</Text>
-                </ScrollView>
-            </View>
+            <ScrollView style={styles.container}>
+                <BlankShoucang/>
+            </ScrollView>
         );
     }
 }
@@ -28,11 +27,6 @@ export default class DongTai extends Component{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f8f8',
-    },
-    block:{
-        backgroundColor:'#ffffff',
-        padding:8,
-        marginBottom:8
+        backgroundColor: '#ffffff',
     },
 });

@@ -18,14 +18,15 @@ import {
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import { List, ListItem, Header } from 'react-native-elements';
+import {getDongtaiAction,getFollowUserAction,getFensiAction,getUserInfoByIdAction} from '../../actions/userAction';
 
 const list = [
     {
         key:0,
-        name: '20次公益',
+        name: '公益活动',
         icon: 'feather',
         iconType:'entypo',
-        subtitle: '最近参加公益5次',
+        subtitle: '最近参加公益0次',
         nav:'my_gongyi'
     },
     {
@@ -84,7 +85,58 @@ const list = [
 export default class MyIndex extends Component{
     constructor(props) {
         super(props);
+        this.state={
+            userid:0,
+            userInfo:{},//我的信息
+            guanzhu:0,//关注人数
+            fensi:0,//粉丝数
+            dongtai:0,//我发布的动态条数
+        }
     }
+
+    componentDidMount(){
+        try{
+            //个人信息
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            let userInfo = realmObj.objects("User").filtered("id="+userid);
+            if(userInfo.length > 0){
+                this.setState({
+                    userid:userid,
+                    userInfo:userInfo[0]
+                });
+            }
+            //关注人数
+            let guanzhu = realmObj.objects("Global").filtered("key == 'guanzhuTotal'");
+            if(guanzhu.length > 0){
+                this.setState({
+                    guanzhu:guanzhu[0].value,
+                });
+            }
+            //粉丝
+            let fensi = realmObj.objects("Global").filtered("key == 'fensiTotal'");
+            if(fensi.length > 0){
+                this.setState({
+                    fensi:fensi[0].value,
+                });
+            }
+            //动态数量
+            let dongtai = realmObj.objects("Global").filtered("key == 'dongtaiTotal'");
+            if(dongtai.length > 0){
+                this.setState({
+                    dongtai:dongtai[0].value,
+                });
+            }
+        }catch(e){
+            console.log(e);
+        }finally {
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            this.props.dispatch(getUserInfoByIdAction(userid));
+            this.props.dispatch(getFollowUserAction(1));
+            this.props.dispatch(getFensiAction(1));
+            this.props.dispatch(getDongtaiAction(userid,1));
+        }
+    }
+
     renderRow = ({item}) => (
         <ListItem
             key={item.key}
@@ -97,7 +149,7 @@ export default class MyIndex extends Component{
         />
     );
 
-    onClick(tag) {
+    onClick(tag,params) {
         let TargetComponent;
         switch (tag) {
             case 'my_xiaoxi':
@@ -110,19 +162,20 @@ export default class MyIndex extends Component{
                 TargetComponent = 'GuanZhu';
                 break;
             case 'my_fensi':
-                TargetComponent = '';
+                TargetComponent = 'Fensi';
                 break;
             case 'my_dongtai':
-                TargetComponent = '';
+                TargetComponent = 'PersonalHome';
                 break;
             case 'my_zuzhi':
                 TargetComponent = 'ZuZhi';
                 break;
             case 'my_rongyu':
-                TargetComponent = '';
+                TargetComponent = 'RongYu';
                 break;
+            case 'my_gongyi':
             case 'my_huodong':
-                TargetComponent = '';
+                TargetComponent = 'GongYi';
                 break;
             case 'my_shoucang':
                 TargetComponent = 'ShouCang';
@@ -139,7 +192,7 @@ export default class MyIndex extends Component{
         }
         if (TargetComponent) {
             //跳转页面
-            this.props.navigation.navigate(TargetComponent);
+            this.props.navigation.navigate(TargetComponent,params);
         }
     }
 
@@ -148,12 +201,9 @@ export default class MyIndex extends Component{
             <ScrollView style={[styles.container]}>
 
                 <Header
-                    rightComponent={<TouchableWithoutFeedback onPress={()=>{HeaderProps.navigation.navigate('XiaoXi')}}>
+                    rightComponent={<TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate('XiaoXi')}}>
                         <View style={styles.header}>
                             <Image source={require('../../assets/icon/iconmessage.png')} style={styles.image} />
-                            <View style={styles.imageTip}>
-                                <Text style={styles.tipText}>3</Text>
-                            </View>
                         </View>
                     </TouchableWithoutFeedback>}
                     backgroundColor="#ffffff"
@@ -167,7 +217,7 @@ export default class MyIndex extends Component{
                             style={[styles.infoImage,{marginRight:10}]}
                         />
                         <View style={{flex:1}}>
-                            <Text>Alice Li245</Text>
+                            <Text>{this.state.userInfo['nickname']}</Text>
                         </View>
                         <Image source={require('../../assets/icon/icongo.png')} style={styles.more}/>
                     </View>
@@ -175,19 +225,19 @@ export default class MyIndex extends Component{
                 <View style={styles.otherInfo}>
                     <TouchableWithoutFeedback onPress={()=>{this.onClick('my_guanzhu')}}>
                         <View style={styles.otherInfoItem}>
-                            <Text>0</Text>
+                            <Text>{this.state.guanzhu}</Text>
                             <Text style={styles.otherInfoItemText}>关注</Text>
                         </View>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{this.onClick('my_fensi')}}>
                         <View style={styles.otherInfoItem}>
-                            <Text>0</Text>
+                            <Text>{this.state.fensi}</Text>
                             <Text style={styles.otherInfoItemText}>粉丝</Text>
                         </View>
                     </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback onPress={()=>{this.onClick('my_dongtai')}}>
+                    <TouchableWithoutFeedback onPress={()=>{this.onClick('my_dongtai',{id:this.state.userid})}}>
                         <View style={styles.otherInfoItem}>
-                            <Text>0</Text>
+                            <Text>{this.state.dongtai}</Text>
                             <Text style={styles.otherInfoItemText}>动态</Text>
                         </View>
                     </TouchableWithoutFeedback>
@@ -196,6 +246,7 @@ export default class MyIndex extends Component{
                     <FlatList
                         renderItem={this.renderRow}
                         data={list}
+                        extraData={this.state}
                     />
                 </List>
             </ScrollView>

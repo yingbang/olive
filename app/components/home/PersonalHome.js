@@ -18,11 +18,11 @@ import {
 import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import {List} from 'react-native-elements';
-import {getDateTimeDiff} from '../common/public';
+import {getDateTimeDiff,inArray} from '../common/public';
 import ParallaxScrollView from '../common/parallax/index';
 import Blank from '../common/Blank';
 import BlankDongtai from '../common/BlankDongtai';
-import {getDongtaiAction,getUserInfoByIdAction} from '../../actions/userAction';
+import {getDongtaiAction,getUserInfoByIdAction,zanDongtaiAction} from '../../actions/userAction';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
@@ -44,7 +44,22 @@ class PersonalHome extends Component{
             loading:false,
             userid:this.props.navigation.state.params.id,//只显示当前用户的动态
             userInfo:{},//会员信息
+            zanDongtaiList:[],//点赞过的动态列表，用于判断是否点赞
         };
+    }
+    //点赞、取消点赞
+    zanDongtai(id,type){
+        this.props.dispatch(zanDongtaiAction(id,type,()=>{this._loadZanDongtaiComplete()}));
+    }
+    _loadZanDongtaiComplete(){
+        try{
+            let contentList = realmObj.objects("ZanDongtai");
+            if(contentList.length > 0){
+                this.setState({
+                    zanDongtaiList:contentList
+                });
+            }
+        }catch(e){}
     }
     //动态项
     renderRow = ({item}) => (
@@ -63,9 +78,16 @@ class PersonalHome extends Component{
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
-                            <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
-                            </TouchableWithoutFeedback>
+                            {
+                                inArray(this.state.zanDongtaiList,item['id'],'id') ?
+                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
+                                        <Image style={{width:15,height:15,tintColor:'#333333',marginRight:15}} source={require('../../assets/icon/iconzan2.png')}/>
+                                    </TouchableWithoutFeedback>
+                                    :
+                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
+                                        <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
+                                    </TouchableWithoutFeedback>
+                            }
                             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
@@ -124,6 +146,13 @@ class PersonalHome extends Component{
             if(userInfo.length > 0){
                 this.setState({
                     userInfo:userInfo[0]
+                });
+            }
+            //获取作者点赞过的动态列表
+            let zanDongtaiList = realmObj.objects("ZanDongtai");
+            if(zanDongtaiList.length > 0){
+                this.setState({
+                    zanDongtaiList:zanDongtaiList
                 });
             }
         }catch(e){

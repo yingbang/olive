@@ -14,16 +14,16 @@ import {
 //公共头部
 import {connect} from 'react-redux';
 import {List, ListItem, Header} from 'react-native-elements';
-import {getFollowUserAction} from '../../actions/userAction';
+import {getZanAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 
-class GuanZhu extends Component{
+class ZanList extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
-                centerComponent={{ text: '我的关注'}}
+                centerComponent={{ text: '点赞会员'}}
                 backgroundColor="#ffffff"
             />
         }
@@ -34,23 +34,24 @@ class GuanZhu extends Component{
             currentPage:1,
             isFinished:false,
             loading:false,
-            data:[]
+            data:[],
+            contentid:this.props.navigation.state.params.id,//动态ID
         }
     }
     //组件加载完成
     componentDidMount() {
         //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
         try{
-            let contentList = realmObj.objects("FollowUser");
-            if(contentList.length > 0){
+            let newsList = realmObj.objects("Zan").filtered("contentid="+this.state.contentid);
+            if(newsList.length > 0){
                 this.setState({
-                    data:contentList
+                    data:newsList
                 });
             }
         }catch(e){
             console.log(e);
         }finally{
-            this.props.dispatch(getFollowUserAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+            this.props.dispatch(getZanAction(this.state.contentid,this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
         }
     }
     //下拉刷新
@@ -58,7 +59,7 @@ class GuanZhu extends Component{
         this.setState({
             loading:true,
         });
-        this.props.dispatch(getFollowUserAction(1,(totalPage)=>{this._loadComplete(totalPage)}));
+        this.props.dispatch(getZanAction(this.state.contentid,1,(totalPage)=>{this._loadComplete(totalPage)}));
     };
     //判断是否滚动到底部
     _contentViewScroll = (e)=>{
@@ -67,18 +68,18 @@ class GuanZhu extends Component{
         let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
         if (offsetY + oriageScrollHeight >= contentSizeHeight){
             if(this.state.isFinished === false){
-                this.props.dispatch(getFollowUserAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+                this.props.dispatch(getZanAction(this.state.contentid,this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
             }
         }
     };
     //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadComplete(totalPage){
         try{
-            let contentList = realmObj.objects("FollowUser");
-            if(contentList.length > 0){
+            let newsList = realmObj.objects("Zan").filtered("contentid="+this.state.contentid);
+            if(newsList.length > 0){
                 let page = this.state.currentPage;
                 this.setState({
-                    data:contentList,
+                    data:newsList,
                     currentPage:page + 1,
                     isFinished:page >= totalPage,
                     loading:false
@@ -94,7 +95,7 @@ class GuanZhu extends Component{
             hideChevron={true}
             title={item.name}
             avatar={require('../../assets/mock_data/1.jpg')}
-            onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}
+            onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item['userid']})}}
             containerStyle={[globalStyle.listItem,{marginTop:0}]}
             {...this.props}
         />
@@ -127,7 +128,7 @@ function select(state) {
         userReducer
     }
 }
-export default connect(select)(GuanZhu);
+export default connect(select)(ZanList);
 
 const styles = StyleSheet.create({
     container: {

@@ -15,10 +15,11 @@ import {
     FlatList
 } from 'react-native';
 import {connect} from 'react-redux';
-import { Header} from 'react-native-elements';
+import { Header,Icon} from 'react-native-elements';
 import HTMLView from 'react-native-htmlview';
-import {getDateTimeDiff} from '../common/public';
-import {getZanAction,getPinglunAction,getZanDongtaiAction} from '../../actions/userAction';
+import {getDateTimeDiff,inArray} from '../common/public';
+import {toastShort} from "../common/ToastTool";
+import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction} from '../../actions/userAction';
 
 class DongTaiDetail extends Component{
     constructor(props){
@@ -27,10 +28,15 @@ class DongTaiDetail extends Component{
             dongtaiId:this.props.navigation.state.params.id,//动态ID
             dongtai:{},//动态内容
             pinglun:[],//评论列表
-            zan:[],//点赞列表
+            zan:[],//这篇动态的点赞者列表
             currentPinglunPage:1,//当前的页码
             loadPinglunFinish:false,//评论是否获取完毕
             loading:false,//下拉刷新显示
+            zanDongtaiList:[],//点赞过的动态列表，用于判断是否点赞
+            isShoucang:false,//是否收藏过
+            pinglunText:"",//当前评论框里面的内容
+            toUserid:0,//用于区分这个评论到底是针对谁的，默认是动态的发布者，如果是回复动态中的某一条评论，则代表发布那条评论的那个人的ID
+            toUsername:"",
         }
     }
     static navigationOptions = {
@@ -49,10 +55,12 @@ class DongTaiDetail extends Component{
             let dongtai = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId);
             if(dongtai.length > 0){
                 this.setState({
-                    dongtai:dongtai[0]
+                    dongtai:dongtai[0],
+                    toUserid:dongtai[0]['userid'],
+                    toUsername:dongtai[0]['name'],
                 });
             }
-            //获取点赞列表
+            //获取这篇动态的点赞者列表
             let zan = realmObj.objects("Zan").filtered("contentid = " + this.state.dongtaiId).slice(0, 6);
             if(zan.length > 0){
                 this.setState({
@@ -62,14 +70,29 @@ class DongTaiDetail extends Component{
             //获取评论列表
             let pinglun = realmObj.objects("Pinglun").filtered("type = 1 and contentid = " + this.state.dongtaiId);
             if(pinglun.length > 0){
+                pinglun = pinglun.sorted('id',true);
                 this.setState({
                     pinglun:pinglun
                 });
             }
+            //获取作者点赞过的动态列表
+            let zanDongtaiList = realmObj.objects("ZanDongtai");
+            if(zanDongtaiList.length > 0){
+                this.setState({
+                    zanDongtaiList:zanDongtaiList
+                });
+            }
         }catch(e){}finally{
             this.props.dispatch(getZanAction(this.state.dongtaiId,1,this._loadZanComplete));
+            this.props.dispatch(getCangStatusAction(this.state.dongtaiId,1,(status)=>{this._loadCangStatusComplete(status)}));
             this.props.dispatch(getPinglunAction(this.state.dongtaiId,this.state.currentPinglunPage,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
         }
+    }
+    //查询收藏状态
+    _loadCangStatusComplete(status){
+        this.setState({
+            isShoucang:status
+        });
     }
     //获取点赞列表完毕
     _loadZanComplete = ()=>{
@@ -87,6 +110,7 @@ class DongTaiDetail extends Component{
         try{
             let contentList = realmObj.objects("Pinglun").filtered("type = 1 and contentid = " + this.state.dongtaiId);
             if(contentList.length > 0){
+                contentList = contentList.sorted('id',true);
                 let page = this.state.currentPinglunPage;
                 this.setState({
                     pinglun:contentList,
@@ -115,6 +139,23 @@ class DongTaiDetail extends Component{
         });
         this.props.dispatch(getPinglunAction(this.state.dongtaiId,1,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
     };
+    //点击回复评论
+    huifu(userid,name){
+        this.setState({
+            toUserid:userid,
+            toUsername:name,
+        });
+        this.pinglunInput.focus();//点击回复评论的时候，光标定位，当光标离开的时候，重新设置toUserid、toUsername
+    }
+    //当离开输入框，并且没有内容的时候
+    onBlurPinglun(){
+        if(this.state.pinglunText === ""){
+            this.setState({
+                toUserid:this.state.dongtai['userid'],
+                toUsername:this.state.dongtai['name'],
+            });
+        }
+    }
     //评论项
     renderRow = ({item}) => (
         <View style={{paddingTop:8,paddingBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8'}}>
@@ -125,13 +166,13 @@ class DongTaiDetail extends Component{
                     <Text style={{fontSize:10}}>{getDateTimeDiff(item['dateline'])}</Text>
                 </View>
                 <View style={{flexDirection:'row'}}>
-                    <TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={()=>{this.huifu(item['userid'],item['name'])}}>
                         <Image style={{width:15,height:15,marginRight:15}} source={require('../../assets/icon/iconhuifu.png')}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback>
                         <View style={{flexDirection:'row'}}>
                             <Image style={{width:15,height:15,marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
-                            <Text style={{fontSize:10}}>4</Text>
+                            <Text style={{fontSize:10}}>{item['zan']}</Text>
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
@@ -141,6 +182,58 @@ class DongTaiDetail extends Component{
             </View>
         </View>
     );
+    //点赞、取消点赞
+    zanDongtai(id,type){
+        this.props.dispatch(zanDongtaiAction(id,type,()=>{this._loadZanDongtaiComplete()}));
+    }
+    _loadZanDongtaiComplete(){
+        try{
+            let contentList = realmObj.objects("ZanDongtai");
+            if(contentList.length > 0){
+                this.setState({
+                    zanDongtaiList:contentList
+                });
+            }
+            this.props.dispatch(getZanAction(this.state.dongtaiId,1,this._loadZanComplete));//更新点赞者列表
+        }catch(e){}
+    }
+    //收藏、取消收藏
+    shoucang(status){
+        let statusNum = status ? 0 : 1;//收藏1、取消收藏0
+        this.props.dispatch(cangDongtaiAction(this.state.dongtaiId,1,statusNum,this._loadCangComplete.bind(this)));
+    }
+    _loadCangComplete(){
+        let status = !this.state.isShoucang;
+        this.setState({
+            isShoucang:status
+        });
+    }
+    //发布评论
+    onSubmitComment(){
+        let content = this.state.pinglunText;
+        if(content === "" || content === null || content === undefined){
+            toastShort("说点什么吧");
+            return false;
+        }
+        this.props.dispatch(pinglunAction(content,this.state.dongtaiId,this.state.toUserid,1,(result)=>{this._PinglunComplete(result)}));
+    }
+    _PinglunComplete(result){
+        if(result.state === 'ok'){
+            toastShort("发布成功！");
+            this.props.dispatch(getPinglunAction(this.state.dongtaiId,1,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
+            this.state.pinglunText = "";//清空内容
+            this.pinglunInput.clear();//清空
+            //更新一下realm中动态的内容，否则不会立即显示
+            realmObj.write(()=>{
+                let dongtai = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId);
+                if(dongtai.length > 0){
+                    dongtai[0].pinglun = dongtai[0].pinglun + 1;
+                }
+            });
+        }else{
+            toastShort("发布失败，请重试！");
+        }
+    }
     //把id当成key，否则会有警告
     _keyExtractor = (item, index) => item.id;
     render(){
@@ -185,7 +278,7 @@ class DongTaiDetail extends Component{
                                                         })
                                                     }
                                                 </ScrollView>
-                                                <TouchableWithoutFeedback>
+                                                <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("ZanList",{id:dongtai['id']})}}>
                                                     <Image style={{width:40,height:40}} source={require('../../assets/icon/icongengduo.png')}/>
                                                 </TouchableWithoutFeedback>
                                             </View>
@@ -222,12 +315,17 @@ class DongTaiDetail extends Component{
                         <TouchableOpacity style={{flex:1,height:40}}>
                             <View style={styles.inputView}>
                                 <TextInput
-                                    placeholder="评论"
+                                    ref={(pinglunInput)=>{this.pinglunInput = pinglunInput;}}
+                                    placeholder={(this.state.toUserid === this.state.dongtai['userid']) ? "评论" : "回复："+this.state.toUsername}
                                     underlineColorAndroid={"#f2f2f2"}
                                     style={styles.textInputStyle}
                                     clearButtonMode="while-editing"
                                     clearTextOnFocus={true}
+                                    multiline={true}
                                     enablesReturnKeyAutomatically={true}
+                                    autoGrow={true}
+                                    onChangeText={(text)=>{this.setState({pinglunText:text})}}
+                                    onBlur={()=>{this.onBlurPinglun()}}
                                 />
                             </View>
                         </TouchableOpacity>
@@ -236,22 +334,33 @@ class DongTaiDetail extends Component{
                         </TouchableOpacity>
                     </View>
                     <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',borderTopColor:'#f8f8f8',borderTopWidth:1,height:30}}>
-                        <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
-                                <Text style={{fontSize:12}}>赞</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
+                        {
+                            inArray(this.state.zanDongtaiList,dongtai['id'],'id') ?
+                                <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(dongtai['id'],0)}}>
+                                    <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
+                                        <Image style={{width:15,height:15,tintColor:'#333333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <Text style={{fontSize:12}}>取消赞</Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                                :
+                                <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(dongtai['id'],1)}}>
+                                    <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
+                                        <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
+                                        <Text style={{fontSize:12}}>赞</Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                        }
                         <TouchableWithoutFeedback onPress={()=>{alert('分享')}}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconfenxiang.png')}/>
                                 <Text style={{fontSize:12}}>分享</Text>
                             </View>
                         </TouchableWithoutFeedback>
-                        <TouchableWithoutFeedback onPress={()=>{alert('收藏')}}>
+                        <TouchableWithoutFeedback onPress={()=>{this.shoucang(this.state.isShoucang)}}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center'}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconshoucang.png')}/>
-                                <Text style={{fontSize:12}}>收藏</Text>
+                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}}
+                                       source={this.state.isShoucang ? require('../../assets/icon/iconshoucang2.png') : require('../../assets/icon/iconshoucang.png')}/>
+                                <Text style={{fontSize:12}}>{this.state.isShoucang ? "取消收藏" : "收藏"}</Text>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -303,7 +412,7 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     textInputStyle:{
-        height:40,
+        //height:40,
         fontSize:12,
         flex:1,
     },

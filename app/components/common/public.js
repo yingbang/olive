@@ -1,3 +1,43 @@
+import request from 'superagent';
+//先把图片转成base64编码，然后上传，参数：上传地址，字段名称，图片数据{name:'',data:''}
+export function imageUploadBase64(url,fieldName,fileData) {
+    return new Promise(function (resolve,reject) {
+        request.post(url)
+            .attach(fieldName, fileData.data)
+            .field('filename', fileData.name)
+            .end((err, response) => {
+                if (err) {
+                    reject(err);
+                }else{
+                    resolve(response.body);
+                }
+            });
+    });
+}
+//通过fetch的post方法进行上传，url中可以带userid=...
+export function imageUploadFetch(url,fieldName,params){
+    return new Promise(function (resolve, reject) {
+        let formData = new FormData();
+        for (let key in params){
+            formData.append(key, params[key]);
+        }
+        let file = {uri: params.path, type: 'application/octet-stream', name: Math.random()+'image.jpg'};
+        formData.append(fieldName, file);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data;charset=utf-8',
+            },
+            body: formData,
+        }).then((response) => response.json())
+            .then((responseData)=> {
+                resolve(responseData);
+            })
+            .catch((err)=> {
+                reject(err);
+            });
+    });
+}
 //计算时间差
 export function getDateTimeDiff(startTime, endTime, isArray) {
     //默认现在时间
@@ -50,10 +90,47 @@ export function getDateTimeDiff(startTime, endTime, isArray) {
     } else if (minutes >= 1) {
         strTime = minutes + "分钟前";
     } else {
+        if(seconds <=0 ) seconds = 1;//防止出现负数
         strTime = seconds + "秒前";
     }
     retValue['PubTime'] = strTime;     //帖子,文章,博客发表时间的一种简短表示方法
     return isArray ? retValue : strTime;
+}
+//返回给定格式的时间：{formatTime(item['starttime'],"yyyy年MM月dd日 周w hh:mm:ss")}
+export function formatTime(timestamp,format) {
+    if(!format){
+        format = "yyyy-MM-dd hh:mm:ss";
+    }
+    let weekday=new Array(7);
+    weekday[0]="日";
+    weekday[1]="一";
+    weekday[2]="二";
+    weekday[3]="三";
+    weekday[4]="四";
+    weekday[5]="五";
+    weekday[6]="六";
+    let newDate = new Date();
+    newDate.setTime(timestamp);
+    let date = {
+        "M+": newDate.getMonth() + 1,
+        "d+": newDate.getDate(),
+        "h+": newDate.getHours(),
+        "m+": newDate.getMinutes(),
+        "s+": newDate.getSeconds(),
+        "q+": Math.floor((newDate.getMonth() + 3) / 3),
+        "S+": newDate.getMilliseconds(),
+        "w+":weekday[newDate.getDay()],//这个是获取星期
+    };
+    if (/(y+)/i.test(format)) {
+        format = format.replace(RegExp.$1, (newDate.getFullYear() + '').substr(4 - RegExp.$1.length));
+    }
+    for (let k in date) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+        }
+    }
+    return format;
 }
 //二维数组去重[{id:1},{id:2},{id:3}] key表示根据哪个字段去重，默认根据id
 export function uniqueArray(arr,key) {

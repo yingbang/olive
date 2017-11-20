@@ -21,15 +21,28 @@ import PublishEdit from './components/publish/PublishEdit';
 //个人主页
 import PersonalHome from './components/home/PersonalHome';
 import DongTaiDetail from './components/home/DongTaiDetail';
+import ZanList from './components/home/ZanList';
 //我的
 import SheZhi from './components/my/Shezhi';
 import XiaoXi from './components/my/XiaoXi';
 import ZiLiao from './components/my/ZiLiao';
 import YiJianFanKui from './components/my/YiJianFanKui';
+import GuanZhu from './components/my/GuanZhu';
+import Fensi from './components/my/Fensi';
+import DingDan from './components/my/DingDan';
+import ShouCang from './components/my/ShouCang';
+import ZuZhi from './components/my/ZuZhi';
+import RongYu from './components/my/RongYu';
+import GongYi from './components/my/GongYi';
+import ZiLiaoUpdate from './components/my/ZiLiaoUpdate';
 //资讯
 import NewsDetail from './components/news/NewsDetail';
+//活动
+import HuodongDetail from './components/find/HuodongDetail';
 //用于显示url
 import ShowUrl from './components/common/ShowUrl';
+//公告
+import NoticeDetail from './components/home/NoticeDetail';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -155,15 +168,28 @@ const Navigator = StackNavigator(
         //个人主页
         PersonalHome: {screen: PersonalHome},
         DongTaiDetail: {screen: DongTaiDetail},
+        ZanList: {screen: ZanList},
         //我的
         SheZhi: {screen: SheZhi},
         XiaoXi: {screen: XiaoXi},
         ZiLiao: {screen: ZiLiao},
         YiJianFanKui: {screen: YiJianFanKui},
+        GuanZhu: {screen: GuanZhu},
+        Fensi: {screen: Fensi},
+        DingDan: {screen: DingDan},
+        ShouCang: {screen: ShouCang},
+        ZuZhi: {screen: ZuZhi},
+        RongYu: {screen: RongYu},
+        GongYi: {screen: GongYi},
+        ZiLiaoUpdate: {screen: ZiLiaoUpdate},
         //资讯
         NewsDetail: {screen: NewsDetail},
+        //活动
+        HuodongDetail: {screen: HuodongDetail},
         //显示网页
         ShowUrl: {screen: ShowUrl},
+        //公告详情
+        NoticeDetail: {screen: NoticeDetail},
     },
     {
         navigationOptions: {

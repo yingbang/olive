@@ -23,6 +23,7 @@ const NoticeSchema = {
         title:{type:'string',default:''},
         author:{type:'string',default:''},
         content:{type:'string',default:''},
+        dateline:{type:'double',default:0},//发布时间戳
     }
 };
 
@@ -85,6 +86,7 @@ const UserSchema = {
         city:{type:'string',default:''},//城市
         area:{type:'string',default:''},//地区
         company:{type:'string',default:''},//公司
+        job:{type:'string',default:''},//职务
         address:{type:'string',default:''},//地址
         renzheng:{type:'string',default:''},//是否认证
         weixin:{type:'string',default:''},//微信
@@ -107,7 +109,9 @@ const JoinCompanySchema = {
     name:"JoinCompany",
     primaryKey:'id',
     properties:{
-        id:'int'
+        id:'int',
+        name:{type:'string',default:''},//姓名
+        avatar:{type:'string',default:''},//头像
     }
 };
 
@@ -116,7 +120,20 @@ const FollowUserSchema = {
     name:"FollowUser",
     primaryKey:'id',
     properties:{
-        id:'int'
+        id:'int',
+        name:{type:'string',default:''},//姓名
+        avatar:{type:'string',default:''},//头像
+    }
+};
+
+//我的粉丝：关注我的人
+const FensiSchema = {
+    name:"Fensi",
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        name:{type:'string',default:''},//姓名
+        avatar:{type:'string',default:''},//头像
     }
 };
 
@@ -151,7 +168,7 @@ const PinglunSchema = {
         touserid:{type:'int',default:0},
         fromuserid:{type:'int',default:0},
         type:{type:'int',default:0},//类型
-        zan:{type:'int',default:0},//评论数
+        zan:{type:'int',default:0},//评论点赞数
         contentid:{type:'int',default:0},//对应的内容ID
         content:{type:'string',default:''},//内容
         dateline:{type:'double',default:0},//发布时间戳
@@ -193,10 +210,32 @@ const CangSchema = {
     }
 };
 
+//活动表
+const HuodongSchema = {
+    name:"Huodong",
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        userid:{type:'int',default:0},//发布者会员ID
+        title:{type:'string',default:''},//标题
+        intro:{type:'string',default:''},//简介
+        content:{type:'string',default:''},//内容
+        pic:{type:'string',default:''},//图片
+        dateline:{type:'double',default:0},//发布时间戳
+        starttime:{type:'double',default:0},//开始时间
+        endtime:{type:'double',default:0},//结束时间
+        address:{type:'string',default:''},//地址
+        quanzi:{type:'int',default:0},//圈子ID
+        number:{type:'int',default:0},//报名人数
+        status:{type:'int',default:0},//是否结束
+        orderby:{type:'int',default:0},//排序
+    }
+};
+
 export default {
     schema: [GlobalSchema,NoticeSchema,SlideSchema,UserSchema,NewsSchema,NewsDataSchema,
-        HiddenUserSchema,JoinCompanySchema,FollowUserSchema,
-        DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema],
-    schemaVersion: 6,
+        HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
+        DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema],
+    schemaVersion: 10,
     migration: () => {}
 };

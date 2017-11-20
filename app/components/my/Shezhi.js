@@ -22,7 +22,7 @@ const contentList = [
     {
         key:0,
         title: '账户资料',
-        action:"",
+        action:"shezhi_ziliao",
     },
     {
         key:1,
@@ -83,7 +83,7 @@ export class Shezhi extends Component{
         let TargetComponent;
         switch (tag) {
             case 'shezhi_ziliao':
-                TargetComponent = '';
+                TargetComponent = 'ZiLiao';
                 break;
             case 'shezhi_xiaoxi':
                 TargetComponent = '';

@@ -8,64 +8,19 @@ import {
     StyleSheet,
     TextInput,
     Button,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
+import request from 'superagent';
 import ImagePicker from 'react-native-image-crop-picker';
 //公共头部
+import {imageUploadFetch,imageUploadBase64} from '../common/public';
 import { Card, List, ListItem, Header} from 'react-native-elements';
+import {getUserInfoByIdAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
+import {toastShort} from '../common/ToastTool';
 
-const contentList = [
-    {
-        key:0,
-        title: '头像',
-        rTitle:' ',
-        avatar:"https://imgsa.baidu.com/news/q%3D100/sign=24c56caafc03918fd1d139ca613c264b/3b87e950352ac65c57da5d39f0f2b21192138a98.jpg",
-        event:'shezhi_ziliao',
-    },
-    {
-        key:1,
-        title: '名字',
-        rTitle:'颜子轩',
-    },
-    {
-        key:2,
-        title: '公司',
-        rTitle:'阿里巴巴',
-    },
-    {
-        key:3,
-        title: '职务',
-        rTitle:'CEO',
-    },
-    {
-        key:4,
-        title: '手机',
-        rTitle:'15958746214',
-        isDivider:true,
-    },
-    {
-        key:5,
-        title: '邮箱',
-        rTitle:'25478412@qq.com',
-    },
-    {
-        key:6,
-        title: '城市',
-        rTitle:'山东青岛',
-    },
-    {
-        key:7,
-        title: '座右铭',
-        rTitle:" ",
-    },
-    {
-        key:8,
-        title: '认证',
-        rTitle:" ",
-    },
-]
 
 export default class ZiLiao extends Component{
     static navigationOptions = {
@@ -78,48 +33,233 @@ export default class ZiLiao extends Component{
             />
         }
     };
-    onClick(tag) {
-        let TargetComponent;
-        switch (tag) {
-            case 'shezhi_ziliao':
-                ImagePicker.openPicker({
-                    width: 300,
-                    height: 400,
-                    cropping: true
-                }).then(image => {
-                    alert(' 图片路径：'+ image);
+    constructor(props){
+        super(props);
+        this.state={
+            avatarSource:{uri:"https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2779070586,3489688379&fm=58"},
+            avatarFile:"",
+            userInfo:{},
+            userid:0,
+            contentList:[],
+        };
+    }
+
+    componentDidMount(){
+        try{
+            //个人信息
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            let userInfo = realmObj.objects("User").filtered("id="+userid);
+            if(userInfo.length > 0){
+                let user = userInfo[0];
+                this.setState({
+                    userid:userid,
+                    userInfo:user,
+                    contentList:[
+                        {
+                            key:1,
+                            title: '昵称',
+                            rTitle:user['nickname'],
+                            event:'ziliao_nickname',
+                        },
+                        {
+                            key:2,
+                            title: '公司',
+                            rTitle:user['company'],
+                            event:'ziliao_company',
+                        },
+                        {
+                            key:3,
+                            title: '职务',
+                            rTitle:user['job'],
+                            event:'ziliao_job',
+                        },
+                        {
+                            key:4,
+                            title: '手机',
+                            rTitle:user['mobile'],
+                            isDivider:true,
+                            event:'ziliao_mobile',
+                        },
+                        {
+                            key:5,
+                            title: '邮箱',
+                            rTitle:user['email'],
+                            event:'ziliao_email',
+                        },
+                        {
+                            key:6,
+                            title: '城市',
+                            rTitle:user['province']+user['city'],
+                            event:'ziliao_chengshi',
+                        },
+                        {
+                            key:7,
+                            title: '个性签名',
+                            rTitle:user['intro'],
+                            event:'ziliao_intro',
+                        },
+                        {
+                            key:8,
+                            title: '认证',
+                            rTitle:" ",
+                            event:'ziliao_renzheng',
+                        },
+                    ]
                 });
+            }
+        }catch(e){
+            console.log(e);
+        }finally {}
+    }
+    //回调
+    updateUserInfo(){
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        let userInfo = realmObj.objects("User").filtered("id="+userid);
+        if(userInfo.length > 0){
+            let user = userInfo[0];
+            this.setState({
+                userid:userid,
+                userInfo:user,
+                contentList:[
+                    {
+                        key:1,
+                        title: '昵称',
+                        rTitle:user['nickname'],
+                        event:'ziliao_nickname',
+                    },
+                    {
+                        key:2,
+                        title: '公司',
+                        rTitle:user['company'],
+                        event:'ziliao_company',
+                    },
+                    {
+                        key:3,
+                        title: '职务',
+                        rTitle:user['job'],
+                        event:'ziliao_job',
+                    },
+                    {
+                        key:4,
+                        title: '手机',
+                        rTitle:user['mobile'],
+                        isDivider:true,
+                        event:'ziliao_mobile',
+                    },
+                    {
+                        key:5,
+                        title: '邮箱',
+                        rTitle:user['email'],
+                        event:'ziliao_email',
+                    },
+                    {
+                        key:6,
+                        title: '城市',
+                        rTitle:user['province']+user['city'],
+                        event:'ziliao_chengshi',
+                    },
+                    {
+                        key:7,
+                        title: '个性签名',
+                        rTitle:user['intro'],
+                        event:'ziliao_intro',
+                    },
+                    {
+                        key:8,
+                        title: '认证',
+                        rTitle:" ",
+                        event:'ziliao_renzheng',
+                    },
+                ]
+            });
+        }
+    }
+
+    openPicker(){
+        ImagePicker.openPicker({
+            width: 300,
+            height: 300,
+            cropping: true,
+            includeBase64:true
+        }).then(images => {
+
+            let source;
+            if (Platform.OS === 'android') {
+                source = {uri: images.path, isStatic: true}
+            } else {
+                source = {uri: images.path.replace('file://', ''), isStatic: true}
+            }
+
+            let file;
+            if(Platform.OS === 'android'){
+                file = images.path
+            }else {
+                file = images.path.replace('file://', '')
+            }
+
+            let fileData = {data:images.data,name:images.path};
+
+            this.setState({
+                avatarSource:source,
+                avatarFile:file
+            });
+
+            //上传图片
+            let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            imageUploadFetch(host + "/api/tool/uploadByFetch?userid=" + userid,'file',{path:file}).then((result)=>{
+                if(result.url){
+                    //alert(result.url)
+                }
+            }).catch((err)=>{});
+            /*imageUploadBase64(host + "/api/tool/uploadBase64?userid="+userid,'file',fileData).then((result)=>{
+                let url = result.url;
+                //保存到realm
+                //更新服务器数据库
+            }).catch((err)=>{});*/
+
+        }).catch(e => {
+            toastShort("未选择图片");
+        });
+    }
+    onClick(item) {
+        let TargetComponent = 'ZiLiaoUpdate';//统一到这个地方处理，如果不是，下面再覆盖
+        let params = {};//可能需要传递参数
+        let tag = item.event;
+        switch (tag) {
+            case 'ziliao_nickname':
+                params = {target:'nickname',text:item.title,defaultValue:item.rTitle,callback:()=>{this.updateUserInfo()}};
                 break;
-            case 'shezhi_xiaoxi':
-                TargetComponent = '';
+            case 'ziliao_company':
+                params = {target:'company',text:item.title,defaultValue:item.rTitle,callback:()=>{this.updateUserInfo()}};
                 break;
-            case 'shezhi_yinsi':
-                TargetComponent = '';
+            case 'ziliao_job':
+                params = {target:'job',text:item.title,defaultValue:item.rTitle,callback:()=>{this.updateUserInfo()}};
                 break;
-            case 'shezhi_yijian':
-                TargetComponent = 'YiJianFanKui';
+            case 'ziliao_mobile':
+                TargetComponent = "";
+                toastShort("手机号不能修改");
                 break;
-            case 'shezhi_pingfen':
-                TargetComponent = '';
+            case 'ziliao_email':
+                params = {target:'email',text:item.title,defaultValue:item.rTitle,callback:()=>{this.updateUserInfo()}};
                 break;
-            case 'shezhi_yaoqing':
-                TargetComponent = '';
+            case 'ziliao_intro':
+                params = {target:'intro',text:item.title,defaultValue:item.rTitle,multiline:true,callback:()=>{this.updateUserInfo()}};
                 break;
-            case 'shezhi_guanyu':
-                TargetComponent = 'Shezhi';
-                break;
+            default:
+                TargetComponent = "";
         }
         if (TargetComponent) {
             //跳转页面
-            this.props.navigation.navigate(TargetComponent);
+            this.props.navigation.navigate(TargetComponent,params);
         }
     }
     renderRow = ({item}) => (
         <ListItem
             title={item.title}
-            rightTitle={item.rTitle}
-            onPress={()=>{this.onClick(item.event)}}
-            rightIcon={item.avatar ? <Image source={{uri:item.avatar}} style={{width:20,height:20}} /> : {name: 'chevron-right'}}
+            rightTitle={item.rTitle ? item.rTitle : null}
+            onPress={()=>{this.onClick(item)}}
+            rightIcon={{name: 'chevron-right'}}
             containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}
         />
     );
@@ -129,7 +269,15 @@ export default class ZiLiao extends Component{
                 <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                     <FlatList
                         renderItem={this.renderRow}
-                        data={contentList}
+                        data={this.state.contentList}
+                        extraData={this.state}
+                        ListHeaderComponent={<ListItem
+                            avatar={<Image style={{width:60,height:60,borderRadius:30}} source={this.state.avatarSource} />}
+                            onPress={()=>{this.openPicker()}}
+                            rightTitle={"修改头像"}
+                            rightIcon={{name: 'chevron-right'}}
+                            containerStyle={[globalStyle.listItem,{marginTop:0}]}
+                        />}
                     />
                 </List>
             </ScrollView>

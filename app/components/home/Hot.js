@@ -16,7 +16,7 @@ import {
     RefreshControl
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
-import {getDateTimeDiff} from '../common/public';
+import {getDateTimeDiff,inArray} from '../common/public';
 import { Card, List, ListItem} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import Carousel from '../common/Carousel';
@@ -25,7 +25,7 @@ import GongYiDaRen from './GongYiDaRen';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import {getSlideAction, getNoticeAction} from '../../actions/toolAction';
-import {getDongtaiAction} from '../../actions/userAction';
+import {getDongtaiAction,getZanDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
 import ScrollVertical from '../common/ScrollVertical';
 
 const { width, height } = Dimensions.get('window');
@@ -40,13 +40,14 @@ export default class Hot extends Component{
         super(props);
 
         this.state = {
-            slide:[],
-            notice:[],
-            currentSlidePage:0,
+            slide:[],//幻灯片
+            notice:[],//头条
+            currentSlidePage:0,//幻灯片索引，从0开始
             loading:false,
-            dongtai:[],
-            currentDongtaiPage:1,
-            loadDongtaiFinish:false,
+            dongtai:[],//动态列表
+            currentDongtaiPage:1,//当前加载的动态页
+            loadDongtaiFinish:false,//某一次动态加载是否完成
+            zanDongtaiList:[],//点赞过的列表
         };
     }
 
@@ -67,9 +68,16 @@ export default class Hot extends Component{
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
-                            <TouchableWithoutFeedback onPress={()=>{alert('赞')}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
-                            </TouchableWithoutFeedback>
+                            {
+                                inArray(this.state.zanDongtaiList,item['id'],'id') ?
+                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
+                                        <Image style={{width:15,height:15,tintColor:'#333333',marginRight:15}} source={require('../../assets/icon/iconzan2.png')}/>
+                                    </TouchableWithoutFeedback>
+                                    :
+                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
+                                        <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
+                                    </TouchableWithoutFeedback>
+                            }
                             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
@@ -83,32 +91,34 @@ export default class Hot extends Component{
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
-                    <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
-                        <View>
-                            {
-                                item['zan'] > 0 ?
-                                    <View style={{flexDirection:'row',marginBottom:8}}>
-                                        <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                        <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
-                                    </View>
-                                    : null
-                            }
+                    <View>
+                        {
+                            item['zan'] > 0 ?
+                                <View style={{flexDirection:'row',marginBottom:8}}>
+                                    <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                    <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
+                                </View>
+                                : null
+                        }
 
-                            <HTMLView
-                                value={item['pinglunlist']}
-                                stylesheet={styles}
-                                addLineBreaks={false}
-                                onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
-                            />
-                            {
-                                item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
-                            }
-                        </View>
-                    </TouchableWithoutFeedback>
+                        <HTMLView
+                            value={item['pinglunlist']}
+                            stylesheet={styles}
+                            addLineBreaks={false}
+                            onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
+                        />
+                        {
+                            item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
+                        }
+                    </View>
                 </View>
             </TouchableWithoutFeedback>
         </View>
     );
+    //点赞、取消点赞
+    zanDongtai(id,type){
+        this.props.screenProps.dispatch(zanDongtaiAction(id,type,()=>{this._loadZanDongtaiComplete()}));
+    }
     //把id当成key，否则会有警告
     _keyExtractor = (item, index) => item.id;
     //获取幻灯片、头条、公益组织、达人、动态等
@@ -138,12 +148,20 @@ export default class Hot extends Component{
                     dongtai:dongtaiList
                 });
             }
+            //点赞列表
+            let zanDongtaiList = realmObj.objects("ZanDongtai");
+            if(zanDongtaiList.length > 0){
+                this.setState({
+                    zanDongtaiList:zanDongtaiList
+                });
+            }
         }catch(e){
             console.log(e);
         }finally {
             this.props.screenProps.dispatch(getSlideAction(this._loadSlideComplete.bind(this)));
-            this.props.screenProps.dispatch(getNoticeAction(this._loadNoticeComplete.bind(this)));
+            this.props.screenProps.dispatch(getNoticeAction(1,this._loadNoticeComplete.bind(this)));
             this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
         }
     }
     //网络请求数据接收完成以后执行，重新从realm中获取数据
@@ -180,6 +198,16 @@ export default class Hot extends Component{
                     currentDongtaiPage:page + 1,
                     loadDongtaiFinish:page >= totalPage,
                     loading:false,
+                });
+            }
+        }catch(e){}
+    }
+    _loadZanDongtaiComplete(){
+        try{
+            let contentList = realmObj.objects("ZanDongtai");
+            if(contentList.length > 0){
+                this.setState({
+                    zanDongtaiList:contentList
                 });
             }
         }catch(e){}
@@ -245,7 +273,7 @@ export default class Hot extends Component{
                                 onChange={(index => {
                                     this.index = index;
                                 })}
-                                onClick={(id)=>{this.props.navigation.navigate("NoticeDetail",{id:id})}}
+                                onClick={(id)=>{this.props.screenProps.navigation.navigate("NoticeDetail",{id:id})}}
                                 enableAnimation={true}
                                 data={realmObj.objects("Notice")}
                                 delay={2500}

@@ -1,5 +1,5 @@
 /**
- * 我的订单：待收货
+ * 我的公益：全部
  */
 import React,{Component} from 'react';
 import {
@@ -12,13 +12,13 @@ import {
     Dimensions,
     Button
 } from 'react-native';
-import BlankOrder from '../../common/BlankOrder';
+import BlankGongYi from '../../common/BlankGongYi';
 
-export default class OrderDaiShouHuo extends Component{
+export default class All extends Component{
     render(){
         return (
             <ScrollView style={styles.container}>
-                <BlankOrder/>
+                <BlankGongYi/>
             </ScrollView>
         );
     }

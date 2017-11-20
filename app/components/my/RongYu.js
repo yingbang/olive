@@ -12,21 +12,23 @@ import {
 } from 'react-native';
 //公共头部
 import {List, ListItem, Header} from 'react-native-elements';
-import DingDanTab from './DingDanTab';
+import BlankRongyu from "../common/BlankRongyu";
 
-export default class DingDan extends Component{
+export default class RongYu extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
-                centerComponent={{ text: '我的订单'}}
+                centerComponent={{ text: '我的荣誉勋章'}}
                 backgroundColor="#ffffff"
             />
         }
     };
     render(){
         return (
-            <DingDanTab screenProps={this.props}/>
+            <ScrollView style={styles.container}>
+                <BlankRongyu/>
+            </ScrollView>
         );
     }
 }
@@ -35,15 +37,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ffffff',
-    },
-    setting_item_container: {
-        flex:1,
-        flexDirection:'row',
-        alignItems:'center',
-        height:40,
-    },
-    block:{
-        marginTop:10,
-        backgroundColor:'#ffffff'
     },
 });
