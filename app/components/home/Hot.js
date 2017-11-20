@@ -27,6 +27,7 @@ import colors from '../common/Colors';
 import {getSlideAction, getNoticeAction} from '../../actions/toolAction';
 import {getDongtaiAction,getZanDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
 import ScrollVertical from '../common/ScrollVertical';
+import ImageRange from '../common/ImageRange';
 
 const { width, height } = Dimensions.get('window');
 
@@ -64,7 +65,8 @@ export default class Hot extends Component{
                         </View>
                     </View>
                     <View>
-                        <Text>{item['content']}</Text>
+                        <Text style={{marginBottom:10}}>{item['content']}</Text>
+                        <ImageRange images={item['pics']} {...this.props}/>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
@@ -81,7 +83,7 @@ export default class Hot extends Component{
                             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
+                            <TouchableWithoutFeedback onPress={()=>{}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconfenxiang.png')}/>
                             </TouchableWithoutFeedback>
                         </View>

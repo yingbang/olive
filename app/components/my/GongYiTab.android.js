@@ -47,8 +47,6 @@ const GongYiTab = TabNavigator(
             indicatorStyle: {
                 height: 2,  // 如TabBar下面显示有一条线，可以设高度为0后隐藏
                 backgroundColor:'#00bfff',
-                width:40,
-                marginLeft:width / 6 - 20,//居中对齐
             },
             inactiveTintColor: '#333333',//未选中的颜色
             activeTintColor: '#00BFFF',//选中的颜色

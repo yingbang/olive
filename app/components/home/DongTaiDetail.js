@@ -20,6 +20,7 @@ import HTMLView from 'react-native-htmlview';
 import {getDateTimeDiff,inArray} from '../common/public';
 import {toastShort} from "../common/ToastTool";
 import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction} from '../../actions/userAction';
+import ImageRange from '../common/ImageRange';
 
 class DongTaiDetail extends Component{
     constructor(props){
@@ -238,6 +239,7 @@ class DongTaiDetail extends Component{
     _keyExtractor = (item, index) => item.id;
     render(){
         const {dongtai} = this.state;
+        const dongtaiPics = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId)[0]['pics'];//刚开始为空，不显示图片，这样的话才显示
         return (
             <View style={styles.container}>
                 <ScrollView style={{flex:1}}
@@ -258,8 +260,9 @@ class DongTaiDetail extends Component{
                                     <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(dongtai['dateline'])}</Text>
                                 </View>
                             </View>
-                            <View style={{marginBottom:20}}>
-                                <Text>{dongtai['content']}</Text>
+                            <View style={{marginBottom:20,overflow:'hidden'}}>
+                                <Text style={{marginBottom:10}}>{dongtai['content']}</Text>
+                                <ImageRange images={dongtaiPics} {...this.props}/>
                             </View>
                             <View>
                                 {

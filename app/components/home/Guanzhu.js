@@ -12,13 +12,15 @@ import {
     Dimensions,
     Button,
     FlatList,
-    RefreshControl
+    RefreshControl,
+    Platform
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {getDateTimeDiff,inArray} from '../common/public';
 import {List} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import {getDongtaiAction,getZanDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
+import ImageRange from '../common/ImageRange';
 
 export default class Guanzhu extends Component{
 
@@ -52,7 +54,8 @@ export default class Guanzhu extends Component{
                         </View>
                     </View>
                     <View>
-                        <Text>{item['content']}</Text>
+                        <Text style={{marginBottom:10}}>{item['content']}</Text>
+                        <ImageRange images={item['pics']} {...this.props}/>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
@@ -190,7 +193,7 @@ export default class Guanzhu extends Component{
                             />
                         }
             >
-                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
+                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,padding:(Platform.OS === 'ios') ? 0 : 8}}>
                     <FlatList
                         renderItem={this.renderRow}
                         data={this.state.dongtai}

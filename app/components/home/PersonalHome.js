@@ -13,7 +13,8 @@ import {
     Dimensions,
     TouchableOpacity,
     RefreshControl,
-    StatusBar
+    StatusBar,
+    Platform
 } from 'react-native';
 import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
@@ -23,6 +24,7 @@ import ParallaxScrollView from '../common/parallax/index';
 import Blank from '../common/Blank';
 import BlankDongtai from '../common/BlankDongtai';
 import {getDongtaiAction,getUserInfoByIdAction,zanDongtaiAction} from '../../actions/userAction';
+import ImageRange from '../common/ImageRange';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
@@ -74,7 +76,8 @@ class PersonalHome extends Component{
                         </View>
                     </View>
                     <View>
-                        <Text>{item['content']}</Text>
+                        <Text style={{marginBottom:10}}>{item['content']}</Text>
+                        <ImageRange images={item['pics']} {...this.props}/>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
                         <View style={{flex:1,flexDirection:'row'}}>
@@ -290,7 +293,7 @@ class PersonalHome extends Component{
                                         />
                                     }
                         >
-                            <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
+                            <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,padding:(Platform.OS === 'ios') ? 0 : 8}}>
                                 <FlatList
                                     renderItem={this.renderRow}
                                     data={this.state.dongtai}

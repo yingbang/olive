@@ -49,7 +49,7 @@ const DingDanTab = TabNavigator(
         tabBarPosition: 'top',
         initialRouteName: 'OrderAll',//默认显示的tab页
         animationEnabled: false,//切换时是否有动画效果
-        swipeEnabled: false,//是否在左右滑动时切换tab
+        swipeEnabled: true,//是否在左右滑动时切换tab
         mode: 'card',// 页面切换模式, 左右是card(相当于iOS中的push效果), 上下是modal(相当于iOS中的modal效果)
         tabBarOptions: {
             style: {
