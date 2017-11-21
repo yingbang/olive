@@ -69,6 +69,7 @@
 		E30B57A91FC46A6200D9851F /* libQBImagePickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E30B57AA1FC46A6200D9851F /* libQBImagePickerController.a */; };
 		E30B57D31FC46A6F00D9851F /* libRSKImageCropper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E30B57D41FC46A6F00D9851F /* libRSKImageCropper.a */; };
 		E30B57D51FC46A8300D9851F /* libimageCropPicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E3B7F0541FC433E500FF4A78 /* libimageCropPicker.a */; };
+		E38A69581FC48DA30086FF9C /* UShare.m in Sources */ = {isa = PBXBuildFile; fileRef = E38A69571FC48DA30086FF9C /* UShare.m */; };
 		E3AC474E1FC3F99D00C2FF70 /* ImageCropPickerSDK in Resources */ = {isa = PBXBuildFile; fileRef = E3AC47271FC3F99C00C2FF70 /* ImageCropPickerSDK */; };
 		E3B7F1271FC44A0500FF4A78 /* libRCTCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E31F221C1FC3D800005F9FB3 /* libRCTCamera.a */; };
 		F188E1D00B082D27EAB279DB /* libPods-oliveTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32B2E726C4874C6D4E74F6D3 /* libPods-oliveTests.a */; };
@@ -440,6 +441,9 @@
 		D1E4D2DA6BDD4AB5A1754A09 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		E30B57AA1FC46A6200D9851F /* libQBImagePickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libQBImagePickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E30B57D41FC46A6F00D9851F /* libRSKImageCropper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRSKImageCropper.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E38A69561FC48D3E0086FF9C /* UShare.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UShare.h; sourceTree = "<group>"; };
+		E38A69571FC48DA30086FF9C /* UShare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UShare.m; sourceTree = "<group>"; };
+		E38A69591FC48DDE0086FF9C /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		E3AC47271FC3F99C00C2FF70 /* ImageCropPickerSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ImageCropPickerSDK; path = "../node_modules/react-native-image-crop-picker/ios/ImageCropPickerSDK"; sourceTree = "<group>"; };
 		E3B7EE761FC40EC400FF4A78 /* QBImagePicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = QBImagePicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3B7EE781FC40ECD00FF4A78 /* RSKImageCropper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RSKImageCropper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -597,6 +601,7 @@
 		13B07FAE1A68108700A75B9A /* olive */ = {
 			isa = PBXGroup;
 			children = (
+				E38A692D1FC48CF90086FF9C /* util */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -798,6 +803,16 @@
 				E3651B1F1FAB6EAB00720954 /* libRNVectorIcons.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E38A692D1FC48CF90086FF9C /* util */ = {
+			isa = PBXGroup;
+			children = (
+				E38A69561FC48D3E0086FF9C /* UShare.h */,
+				E38A69571FC48DA30086FF9C /* UShare.m */,
+				E38A69591FC48DDE0086FF9C /* Constants.h */,
+			);
+			path = util;
 			sourceTree = "<group>";
 		};
 		E3B7EF821FC4259000FF4A78 /* Products */ = {
@@ -1440,6 +1455,8 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-olive/Pods-olive-resources.sh",
 				$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle,
 				"${PODS_ROOT}/RSKImageCropper/RSKImageCropper/RSKImageCropperStrings.bundle",
+				"${PODS_ROOT}/UMengUShare/UShareSDK/UMSocialSDK/UMSocialSDKPromptResources.bundle",
+				"${PODS_ROOT}/UMengUShare/UShareSDK/UMSocialUI/UMSocialSDKResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -1623,6 +1640,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E38A69581FC48DA30086FF9C /* UShare.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);

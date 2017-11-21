@@ -21,6 +21,7 @@ import {getDateTimeDiff,inArray} from '../common/public';
 import {toastShort} from "../common/ToastTool";
 import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
+import UShare from '../common/UShare';
 
 class DongTaiDetail extends Component{
     constructor(props){
@@ -353,7 +354,7 @@ class DongTaiDetail extends Component{
                                     </View>
                                 </TouchableWithoutFeedback>
                         }
-                        <TouchableWithoutFeedback onPress={()=>{alert('分享')}}>
+                        <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","http://mobile.umeng.com/images/pic/home/social/banner-7.png","http://www.baidu.com",()=>{},()=>{})}}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconfenxiang.png')}/>
                                 <Text style={{fontSize:12}}>分享</Text>

@@ -28,6 +28,7 @@ import {getSlideAction, getNoticeAction} from '../../actions/toolAction';
 import {getDongtaiAction,getZanDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
 import ScrollVertical from '../common/ScrollVertical';
 import ImageRange from '../common/ImageRange';
+import UShare from '../common/UShare';
 
 const { width, height } = Dimensions.get('window');
 
@@ -83,7 +84,7 @@ export default class Hot extends Component{
                             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{}}>
+                            <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","http://mobile.umeng.com/images/pic/home/social/banner-7.png","http://www.baidu.com",()=>{},()=>{});}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconfenxiang.png')}/>
                             </TouchableWithoutFeedback>
                         </View>
