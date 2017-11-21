@@ -40,8 +40,12 @@ import NewsDetail from './components/news/NewsDetail';
 import HuodongDetail from './components/find/HuodongDetail';
 //用于显示url
 import ShowUrl from './components/common/ShowUrl';
+//打开摄像头
+import CameraPage from './components/common/CameraPage';
 //公告
 import NoticeDetail from './components/home/NoticeDetail';
+//搜索
+import Search from './components/search/Index';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -125,7 +129,7 @@ const AppTab = TabNavigator(
             }
         }
     }, {
-        initialRouteName: 'MyContainer',//默认显示的tab页
+        initialRouteName: 'HomeContainer',//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -188,8 +192,12 @@ const Navigator = StackNavigator(
         HuodongDetail: {screen: HuodongDetail},
         //显示网页
         ShowUrl: {screen: ShowUrl},
+        //打开摄像头
+        CameraPage: {screen: CameraPage},
         //公告详情
         NoticeDetail: {screen: NoticeDetail},
+        //搜索
+        Search: {screen: Search},
     },
     {
         navigationOptions: {

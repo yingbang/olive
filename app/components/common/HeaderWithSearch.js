@@ -18,10 +18,10 @@ export default class HeaderWithSearch extends Component{
         super(props);
     }
     /**
-     * 点击扫描按钮
+     * 点击扫描按钮，跳转到新页面打开摄像头
      */
     pressScan(){
-        alert('扫描二维码');
+        this.props.navigation.navigate("CameraPage")
     }
     goSearch(){
         //点击后让它失去焦点，要不会一直往搜索页跳

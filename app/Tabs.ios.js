@@ -41,6 +41,8 @@ import NewsDetail from './components/news/NewsDetail';
 import HuodongDetail from './components/find/HuodongDetail';
 //用于显示url
 import ShowUrl from './components/common/ShowUrl';
+//打开摄像头
+import CameraPage from './components/common/CameraPage';
 //公告
 import NoticeDetail from './components/home/NoticeDetail';
 //搜索
@@ -190,6 +192,8 @@ const Navigator = StackNavigator(
         HuodongDetail: {screen: HuodongDetail},
         //显示网页
         ShowUrl: {screen: ShowUrl},
+        //打开摄像头
+        CameraPage: {screen: CameraPage},
         //公告详情
         NoticeDetail: {screen: NoticeDetail},
         //搜索
