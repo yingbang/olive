@@ -1,5 +1,5 @@
 /**
- * 点击搜索框会跳转到搜索页面
+ * 搜索页面使用的头部
  */
 import React, {Component} from 'react';
 import {
@@ -10,29 +10,32 @@ import {
     StyleSheet,
     Platform
 } from 'react-native';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar,Icon } from 'react-native-elements';
 import Colors from './Colors';
 
-export default class HeaderWithSearch extends Component{
+export default class SearchHeader extends Component{
     constructor(props){
         super(props);
     }
     /**
-     * 点击扫描按钮
+     * 点击搜索
      */
-    pressScan(){
-        alert('扫描二维码');
+    pressSearch(){
+        alert('搜索');
     }
-    goSearch(){
-        //点击后让它失去焦点，要不会一直往搜索页跳
+    //加载完将光标置于输入框内
+    componentDidMount(){
+        this.search.focus();
+    }
+    //返回
+    goBack(){
         this.search.blur();
-        this.props.navigation.navigate("Search");
-        //嵌套的时候可能需要使用下面的方法，这里暂时不需要，用的话只需加个if判断即可
-        //this.props.screenProps.navigation.navigate("Search");
+        this.props.navigation.goBack();
     }
     render(){
         return (
             <View style={styles.container}>
+                <Icon name='arrow-back' onPress={()=>{this.goBack()}}/>
                 <SearchBar
                     ref={(search)=>{this.search=search}}
                     lightTheme
@@ -40,10 +43,9 @@ export default class HeaderWithSearch extends Component{
                     containerStyle={styles.searchContainer}
                     inputStyle={Colors.bgF2}
                     placeholderTextColor={'#aaa'}
-                    onFocus={()=>{this.goSearch()}}
                     placeholder='搜索公益圈 文章' />
-                <TouchableWithoutFeedback onPress={()=>this.pressScan()}>
-                    <Image source={require('../../assets/icon/iconscan.png')} style={styles.scanImage}/>
+                <TouchableWithoutFeedback onPress={()=>this.pressSearch()}>
+                    <View><Text>搜索</Text></View>
                 </TouchableWithoutFeedback >
             </View>
         );

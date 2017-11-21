@@ -25,7 +25,7 @@ import ImageRange from '../common/ImageRange';
 export default class Guanzhu extends Component{
 
     static navigationOptions = {
-        header:<HeaderWithSearch/>
+        header:null
     };
 
     constructor(props) {

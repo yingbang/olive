@@ -43,6 +43,8 @@ import HuodongDetail from './components/find/HuodongDetail';
 import ShowUrl from './components/common/ShowUrl';
 //公告
 import NoticeDetail from './components/home/NoticeDetail';
+//搜索
+import Search from './components/search/Index';
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -190,6 +192,8 @@ const Navigator = StackNavigator(
         ShowUrl: {screen: ShowUrl},
         //公告详情
         NoticeDetail: {screen: NoticeDetail},
+        //搜索
+        Search: {screen: Search},
     },
     {
         navigationOptions: {

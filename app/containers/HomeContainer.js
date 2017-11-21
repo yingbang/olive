@@ -11,13 +11,16 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import HomeNavigator from '../components/home/HomeNavigator';
+import HeaderWithSearch from '../components/common/HeaderWithSearch';
 
 class HomeContainer extends Component {
     constructor(props){
         super(props);
     }
     static navigationOptions = {
-        header:null,
+        header:(HeaderProps)=>{
+            return <HeaderWithSearch {...HeaderProps}/>
+        }
     };
     render() {
         return (

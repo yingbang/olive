@@ -34,7 +34,7 @@ const { width, height } = Dimensions.get('window');
 export default class Hot extends Component{
 
     static navigationOptions = {
-        header:<HeaderWithSearch/>
+        header:null
     };
 
     constructor(props) {

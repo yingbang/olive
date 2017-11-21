@@ -15,7 +15,9 @@ import HeaderWithSearch from '../components/common/HeaderWithSearch';
 
 class FindContainer extends Component {
     static navigationOptions = {
-        header:<HeaderWithSearch/>
+        header:(HeaderProps)=>{
+            return <HeaderWithSearch {...HeaderProps}/>
+        }
     };
     render() {
         return (
