@@ -37,7 +37,7 @@
             android:value="59c2623bbbea831d1e000043"/>
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="Channel ID" />
+            android:value="android" />
     </application>
 
 </manifest>

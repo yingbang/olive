@@ -1796,6 +1796,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oliveglobal.app;
 				PRODUCT_NAME = olive;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1830,6 +1831,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oliveglobal.app;
 				PRODUCT_NAME = olive;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

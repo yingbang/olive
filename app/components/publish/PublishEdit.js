@@ -188,7 +188,7 @@ class PublishEdit extends Component{
                 {
                     this.state.images.map((item,i)=>{
                         return (
-                            <TouchableWithoutFeedback key={i} onPress={()=>{alert(i)}}>
+                            <TouchableWithoutFeedback key={i} onPress={()=>{}}>
                                 <View style={styles.selectImage}>
                                     <Image style={styles.selectImageSize} source={item}/>
                                     <TouchableWithoutFeedback onPress={()=>{this.removeImage(i)}}>
