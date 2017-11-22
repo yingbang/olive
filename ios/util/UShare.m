@@ -10,6 +10,7 @@
 //#import "UMSocialUIManager.h"
 #import <UShareUI/UMSocialUIManager.h>
 //#import "UMSocialShareScrollView.h"
+#import <UMSocialCore/UMSocialCore.h>
 
 @implementation UShare
 RCT_EXPORT_MODULE();
@@ -32,13 +33,49 @@ RCT_EXPORT_METHOD(share:(NSString *)title content:(NSString *)content imageUrl:(
     messageObject.shareObject = shareObject;
     
     //调用分享接口
-    [[UMSocialManager defaultManager] shareToPlatform:platformType messageObject:messageObject currentViewController:self completion:^(id data, NSError *error) {
-      
+    [[UMSocialManager defaultManager] shareToPlatform:platformType messageObject:messageObject currentViewController:nil completion:^(id data, NSError *error) {
+      if (error) {
+        UMSocialLogInfo(@"************Share fail with error %@*********",error);
+      }else{
+        if ([data isKindOfClass:[UMSocialShareResponse class]]) {
+          UMSocialShareResponse *resp = data;
+          //分享结果消息
+          UMSocialLogInfo(@"response message is %@",resp.message);
+          //第三方原始返回的数据
+          UMSocialLogInfo(@"response originalResponse data is %@",resp.originalResponse);
+        }else{
+          UMSocialLogInfo(@"response data is %@",data);
+        }
+      }
     }];
   }];
-  
-  
 }
 
+RCT_EXPORT_METHOD(login:(RCTResponseSenderBlock*)successCallback errorCallback:(RCTResponseSenderBlock*)errorCallback )
+{
+  [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_WechatSession currentViewController:nil completion:^(id result, NSError *error) {
+    if (error) {
+      
+    } else {
+      UMSocialUserInfoResponse *resp = result;
+      
+      // 授权信息
+      NSLog(@"Wechat uid: %@", resp.uid);
+      NSLog(@"Wechat openid: %@", resp.openid);
+      NSLog(@"Wechat unionid: %@", resp.unionId);
+      NSLog(@"Wechat accessToken: %@", resp.accessToken);
+      NSLog(@"Wechat refreshToken: %@", resp.refreshToken);
+      NSLog(@"Wechat expiration: %@", resp.expiration);
+      
+      // 用户信息
+      NSLog(@"Wechat name: %@", resp.name);
+      NSLog(@"Wechat iconurl: %@", resp.iconurl);
+      NSLog(@"Wechat gender: %@", resp.unionGender);
+      
+      // 第三方平台SDK源数据
+      NSLog(@"Wechat originalResponse: %@", resp.originalResponse);
+    }
+  }];
+}
 
 @end

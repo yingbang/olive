@@ -5,7 +5,8 @@ import {
     StyleSheet,
     Image,
     ImageBackground,
-    StatusBar
+    StatusBar,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import {
     Container,
@@ -22,6 +23,7 @@ import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import {toastShort} from "../common/ToastTool";
 import {isMobile,isBlank} from "../common/Validate";
+import UShare from '../common/UShare';
 
 export default class LoginScreen extends Component {
 
@@ -101,7 +103,9 @@ export default class LoginScreen extends Component {
                                     <Text style={styles.thirdText}> 第三方账号登录 </Text>
                                     <Text style={styles.line}></Text>
                                 </View>
-                                <FontIcon name="weixin" style={[fonts.font30,colors.cGreen]}/>
+                                <TouchableWithoutFeedback onPress={()=>{UShare.login((info)=>{alert(info)},(err)=>{alert(err)})}}>
+                                    <FontIcon name="weixin" style={[fonts.font30,colors.cGreen]}/>
+                                </TouchableWithoutFeedback>
                             </View>
                         </View>
                     </ImageBackground>

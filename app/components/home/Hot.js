@@ -84,7 +84,7 @@ export default class Hot extends Component{
                             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","http://mobile.umeng.com/images/pic/home/social/banner-7.png","http://www.baidu.com",()=>{},()=>{});}}>
+                            <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png","https://www.baidu.com",()=>{},()=>{});}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconfenxiang.png')}/>
                             </TouchableWithoutFeedback>
                         </View>

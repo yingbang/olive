@@ -354,7 +354,7 @@ class DongTaiDetail extends Component{
                                     </View>
                                 </TouchableWithoutFeedback>
                         }
-                        <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","http://mobile.umeng.com/images/pic/home/social/banner-7.png","http://www.baidu.com",()=>{},()=>{})}}>
+                        <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png","https://www.baidu.com",()=>{},()=>{})}}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
                                 <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconfenxiang.png')}/>
                                 <Text style={{fontSize:12}}>分享</Text>
