@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.olive"
+    package="com.oliveglobal.app"
     android:versionCode="1"
     android:versionName="1.0">
 
@@ -35,9 +35,5 @@
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="59c2623bbbea831d1e000043"/>
-        <meta-data
-            android:name="UMENG_CHANNEL"
-            android:value="android" />
     </application>
-
 </manifest>
