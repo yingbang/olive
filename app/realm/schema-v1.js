@@ -217,6 +217,8 @@ const HuodongSchema = {
     properties:{
         id:'int',
         userid:{type:'int',default:0},//发布者会员ID
+        name:{type:'string',default:''},//发布者名称
+        avatar:{type:'string',default:''},//发布者头像
         title:{type:'string',default:''},//标题
         intro:{type:'string',default:''},//简介
         content:{type:'string',default:''},//内容
@@ -224,6 +226,7 @@ const HuodongSchema = {
         dateline:{type:'double',default:0},//发布时间戳
         starttime:{type:'double',default:0},//开始时间
         endtime:{type:'double',default:0},//结束时间
+        jiezhitime:{type:'double',default:0},//报名截止日期
         address:{type:'string',default:''},//地址
         quanzi:{type:'int',default:0},//圈子ID
         number:{type:'int',default:0},//报名人数
@@ -231,11 +234,39 @@ const HuodongSchema = {
         orderby:{type:'int',default:0},//排序
     }
 };
+//活动报名表
+const HuodongBaomingSchema = {
+    name:"HuodongBaoming",
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        userid:{type:'int',default:0},//会员ID
+        huodongid:{type:'int',default:0},//活动ID
+        name:{type:'string',default:''},//联系人
+        avatar:{type:'string',default:''},//会员头像
+        mobile:{type:'string',default:''},//联系方式
+        dateline:{type:'double',default:0},//报名日期
+    }
+};
+
+//通讯录
+const TongxunluSchema = {
+    name:'Tongxunlu',
+    primaryKey:'id',//对应recordId
+    properties:{
+        id:'string',
+        givenName:{type:'string',default:''},
+        familyName:{type:'string',default:''},//安卓为""
+        middleName:{type:'string',default:''},//安卓为""
+        mobile:{type:'string',default:''},//这个是数组，可能包含固定电话，程序只获取第一个手机号
+        thumbnailPath:{type:'string',default:''},//头像
+    }
+};
 
 export default {
     schema: [GlobalSchema,NoticeSchema,SlideSchema,UserSchema,NewsSchema,NewsDataSchema,
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
-        DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema],
-    schemaVersion: 10,
+        DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,TongxunluSchema,HuodongBaomingSchema],
+    schemaVersion: 13,
     migration: () => {}
 };

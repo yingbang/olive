@@ -96,6 +96,14 @@ export function getDateTimeDiff(startTime, endTime, isArray) {
     retValue['PubTime'] = strTime;     //帖子,文章,博客发表时间的一种简短表示方法
     return isArray ? retValue : strTime;
 }
+//计算是否过期
+export function isExpired(startTime,endTime) {
+    //默认现在时间
+    if(endTime === null || endTime === undefined){
+        endTime = new Date().getTime();
+    }
+    return endTime - startTime >= 0;
+}
 //返回给定格式的时间：{formatTime(item['starttime'],"yyyy年MM月dd日 周w hh:mm:ss")}
 export function formatTime(timestamp,format) {
     if(!format){

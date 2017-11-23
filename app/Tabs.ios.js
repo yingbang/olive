@@ -5,8 +5,12 @@ import React, {Component} from 'react';
 import {
     View,
     Text,
-    StyleSheet
+    StyleSheet,
+    AsyncStorage
 } from 'react-native';
+//引入Realm数据库
+import configureRealm from './realm/configureRealm';
+configureRealm();
 import {StackNavigator, TabNavigator} from 'react-navigation';
 import TabBarItem from './components/TabBarItem';//tab项的封装
 //需要展示在底部菜单上的Screen
@@ -39,6 +43,7 @@ import ZiLiaoUpdate from './components/my/ZiLiaoUpdate';
 import NewsDetail from './components/news/NewsDetail';
 //活动
 import HuodongDetail from './components/find/HuodongDetail';
+import HuodongBaoMing from './components/find/HuodongBaoMing';
 //用于显示url
 import ShowUrl from './components/common/ShowUrl';
 //打开摄像头
@@ -47,7 +52,9 @@ import CameraPage from './components/common/CameraPage';
 import NoticeDetail from './components/home/NoticeDetail';
 //搜索
 import Search from './components/search/Index';
-
+//发现好友、邀请好友
+import FindFriend from './components/my/FindFriend';
+import FindFriendStepTwo from './components/my/FindFriendStepTwo';
 /**
  * 设置底部菜单栏：一般是app的栏目
  */
@@ -130,7 +137,7 @@ const AppTab = TabNavigator(
             }
         }
     }, {
-        initialRouteName: 'HomeContainer',//默认显示的tab页
+        initialRouteName: 'FindContainer',//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -161,6 +168,20 @@ const AppTab = TabNavigator(
     }
 );
 
+//是否为第一次登录，如果是第一次，显示邀请好友
+realmObj.write(()=>{
+    //测试的时候用
+    //realmObj.delete(realmObj.objects("Global").filtered("key == 'hasSkipFindFriend'"))
+});
+function isFirst() {
+    let isFirst = true;
+    let hasSkip = realmObj.objects("Global").filtered("key == 'hasSkipFindFriend'");
+    if(hasSkip && hasSkip[0]){
+        isFirst = false;
+    }
+    return isFirst;
+}
+
 /**
  * 设置顶部导航：页面之间互相切换，比如：点击列表页，进入详情页
  */
@@ -190,6 +211,7 @@ const Navigator = StackNavigator(
         NewsDetail: {screen: NewsDetail},
         //活动
         HuodongDetail: {screen: HuodongDetail},
+        HuodongBaoMing: {screen: HuodongBaoMing},
         //显示网页
         ShowUrl: {screen: ShowUrl},
         //打开摄像头
@@ -198,6 +220,9 @@ const Navigator = StackNavigator(
         NoticeDetail: {screen: NoticeDetail},
         //搜索
         Search: {screen: Search},
+        //发现好友，通讯录
+        FindFriend: {screen: FindFriend},
+        FindFriendStepTwo: {screen: FindFriendStepTwo},
     },
     {
         navigationOptions: {
@@ -209,6 +234,7 @@ const Navigator = StackNavigator(
         },
         //headerMode: 'float',//头部固定，页面从下往上显示
         mode:'modal',//IOS专用，从下往上显示
+        initialRouteName:(isFirst() === true) ? 'FindFriend' : 'Tab'
     });
 
 export default Navigator;

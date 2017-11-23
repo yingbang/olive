@@ -352,5 +352,18 @@ const styles = StyleSheet.create({
     },
     b:{
         color:'#333'
-    }
+    },
+
+
+    //邀请好友界面
+    findFriend:{
+        position:'absolute',
+        left:0,
+        right:0,
+        top:0,
+        bottom:0,
+        flex:1,
+        width:width,
+        height:height
+    },
 });

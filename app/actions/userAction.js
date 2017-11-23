@@ -647,6 +647,7 @@ export function getHuodongAction(page,callback){
                                 dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
                                 starttime:contentList[i]['starttime'] !== null ? parseFloat(contentList[i]['starttime']) : 0,
                                 endtime:contentList[i]['endtime'] !== null ? parseFloat(contentList[i]['endtime']) : 0,
+                                jiezhitime:contentList[i]['jiezhitime'] !== null ? parseFloat(contentList[i]['jiezhitime']) : 0,
                                 title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
                                 intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
                                 content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
@@ -656,6 +657,8 @@ export function getHuodongAction(page,callback){
                                 number:parseInt(contentList[i]['number']),
                                 status:parseInt(contentList[i]['status']),
                                 orderby:parseInt(contentList[i]['orderby']),
+                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
                             };
                             realmObj.create("Huodong",item,true);
                         }
@@ -690,6 +693,7 @@ export function getHuodongInfoByIdAction(id,callback){
                                 dateline:json['dateline'] !== null ? parseFloat(json['dateline']) : 0,
                                 starttime:json['starttime'] !== null ? parseFloat(json['starttime']) : 0,
                                 endtime:json['endtime'] !== null ? parseFloat(json['endtime']) : 0,
+                                jiezhitime:json['jiezhitime'] !== null ? parseFloat(json['jiezhitime']) : 0,
                                 title:json['title'] !== null ? json['title'] : "",
                                 intro:json['intro'] !== null ? json['intro'] : "",
                                 content:json['content'] !== null ? json['content'] : "",
@@ -699,8 +703,68 @@ export function getHuodongInfoByIdAction(id,callback){
                                 number:parseInt(json['number']),
                                 status:parseInt(json['status']),
                                 orderby:parseInt(json['orderby']),
+                                name:json['nickname'] !== null ? json['nickname'] : "",
+                                avatar:json['avatar'] !== null ? json['avatar'] : "",
                             };
                             realmObj.create("Huodong",item,true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}
+//活动报名
+export function huodongBaomingAction(huodongid,name,mobile,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.post(host + '/api/content/huodongBaoming')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send("userid=" + userid)
+            .send("huodongid=" + huodongid)
+            .send("mobile=" + mobile)
+            .send("name=" + name)
+            .end((err,res)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    let json = res.body;
+                    //发送
+                    callback && callback(json);
+                }
+            });
+    }
+}
+//查询是否报名
+export function getBaomingInfoByIdAction(userid,huodongid,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/huodongBaomingInfo').query({userid:userid,huodongid:huodongid,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let item = {
+                                id:parseInt(json['id']),
+                                userid:json['userid'] !== null ? parseInt(json['userid']) : 0,
+                                huodongid:json['huodongid'] !== null ? parseInt(json['huodongid']) : 0,
+                                dateline:json['dateline'] !== null ? parseFloat(json['dateline']) : 0,
+                                mobile:json['mobile'] !== null ? json['mobile'] : "",
+                                name:json['name'] !== null ? json['name'] : "",
+                                avatar:json['avatar'] !== null ? json['avatar'] : "",
+                            };
+                            realmObj.create("HuodongBaoming",item,true);
                         });
                     }catch(e){
                         console.log(e)

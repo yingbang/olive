@@ -134,8 +134,8 @@ export default class FindPassword extends Component {
                                            }}/>
                             </Button>
                         </View>
-                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
-                            <Text style={[colors.cWhite,fonts.font18]} onPress={()=>{this.nextStep()}}> 下一步 </Text>
+                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]} onPress={()=>{this.nextStep()}}>
+                            <Text style={[colors.cWhite,fonts.font18]}> 下一步 </Text>
                         </Button>
                         <View style={styles.bottomBox}></View>
                     </ImageBackground>

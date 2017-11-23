@@ -146,8 +146,8 @@ export default class RegisterMobile extends Component {
                             <Label>请输入密码</Label>
                             <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({password:text});}}/>
                         </Item>
-                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
-                            <Text style={[colors.cWhite,fonts.font18]} onPress={()=>{this.beginReg()}}> 注册 </Text>
+                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]} onPress={()=>{this.beginReg()}}>
+                            <Text style={[colors.cWhite,fonts.font18]}> 注册 </Text>
                         </Button>
                         <View style={styles.bottomBox}>
                             <View style={[styles.thirdView, styles.buttonMargin]}>

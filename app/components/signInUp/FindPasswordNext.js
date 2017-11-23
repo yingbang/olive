@@ -100,8 +100,8 @@ export default class FindPasswordNext extends Component {
                             <Label>请再次输入新密码</Label>
                             <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({repassword:text});}}/>
                         </Item>
-                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>
-                            <Text style={[colors.cWhite,fonts.font18]} onPress={()=>{this.finish()}}> 保存新密码 </Text>
+                        <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]} onPress={()=>{this.finish()}}>
+                            <Text style={[colors.cWhite,fonts.font18]}> 保存新密码 </Text>
                         </Button>
                         <View style={styles.bottomBox}></View>
                     </ImageBackground>

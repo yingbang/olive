@@ -1,5 +1,5 @@
 /**
- * 活动详情页
+ * 活动报名
  */
 import React,{Component} from 'react';
 import {
@@ -7,58 +7,54 @@ import {
     View,
     Text,
     Image,
-    ScrollView
+    ScrollView,
+    TextInput
 } from 'react-native';
 import {connect} from 'react-redux';
 //公共头部
-import HTMLView from 'react-native-htmlview';
-import colors from '../common/Colors';
-import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button,Header} from 'react-native-elements';
-import {formatTime,isExpired} from '../common/public';
-import globalStyle from '../common/GlobalStyle';
-import {getHuodongInfoByIdAction,getBaomingInfoByIdAction} from '../../actions/userAction';
+import {formatTime} from '../common/public';
+import {isMobile} from '../common/Validate';
+import {toastShort} from '../common/ToastTool';
+import {getBaomingInfoByIdAction,huodongBaomingAction} from '../../actions/userAction';
 
-//处理iframe
-function renderNode(node, index) {
-    if (node.name === 'iframe') {
-        return (
-            <View key={index} style={{width: 200, height: 200}}>
-                <Text>
-                    {node.attribs.src}
-                </Text>
-            </View>
-        );
-    }
-}
 
-class HuodongDetail extends Component{
+class HuodongBaoMing extends Component{
     constructor(props){
         super(props);
         this.state={
             id:this.props.navigation.state.params.id,
             huodong:{},
-            baoming:false
+            userInfo:{},
+            baoming:false,//是否报名
+            mobile:"",//有可能会修改电话
         };
     }
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
-                centerComponent={{ text: '活动详情'}}
+                centerComponent={{ text: '活动报名'}}
                 backgroundColor="#ffffff"
             />
         }
     };
     //组件加载完成以后，获取活动内容
     componentDidMount(){
-        //先从realm中读取数据，如果有，直接显示，否则发送action请求网络数据
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
         try{
+            //获取活动信息
             let item = realmObj.objects("Huodong").filtered("id = " + this.state.id);
             if(item !== null && item.length > 0){
                 this.setState({
                     huodong:item[0],
+                });
+            }
+            //获取会员信息
+            let userInfo = realmObj.objects("User").filtered("id == "+userid);
+            if(userInfo !== null && userInfo.length > 0){
+                this.setState({
+                    userInfo:userInfo[0],
                 });
             }
             //是否已经报名
@@ -69,23 +65,44 @@ class HuodongDetail extends Component{
                 });
             }
         }catch(e){}finally{
-            this.props.dispatch(getHuodongInfoByIdAction(this.state.id,this._loadHuodongComplete));
             this.props.dispatch(getBaomingInfoByIdAction(userid,this.state.id,this._loadBaomingComplete));
         }
     }
-    //获取活动内容完毕
-    _loadHuodongComplete = ()=>{
+    //获取报名信息完毕
+    _loadBaomingComplete = ()=>{
         try{
-            let item = realmObj.objects("Huodong").filtered("id = " + this.state.id);
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            let item = realmObj.objects("HuodongBaoming").filtered("userid == "+userid+" and huodongid == "+this.state.id);
             if(item !== null && item.length > 0){
                 this.setState({
-                    content:item[0],
+                    baoming:true,
                 });
             }
         }catch(e){}
     };
+    //确认报名
+    baomingSubmit(){
+        let mobile = this.state.mobile || this.state.userInfo['mobile'];
+        if(isMobile(mobile) !== true){
+            toastShort("手机号码不正确");
+            return;
+        }
+        this.props.dispatch(huodongBaomingAction(this.state.id,this.state.userInfo['nickname'],mobile,(result)=>{this._loadSubmitComplete(result)}));
+    }
+    //报名完成
+    _loadSubmitComplete(result){
+        if(result.state === 'fail'){
+            toastShort("报名失败："+result.msg);
+        }else{
+            toastShort("报名成功！");
+            this.setState({
+                baoming:true,
+            });
+        }
+    }
     render(){
         let item = this.state.huodong;
+        let user = this.state.userInfo;
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.htmlContainer}>
@@ -93,40 +110,37 @@ class HuodongDetail extends Component{
                         <View>
                             <Text style={styles.huodongItemTitle}>{item['title']}</Text>
                             <View style={styles.huodongItemTime}>
-                                <Image style={[styles.huodongItemTimeImage,{width:22,height:22}]} source={require('../../assets/icon/icontime.png')}/>
+                                <Text>活动日期：</Text>
                                 <Text style={{flex:1,fontSize:12}}>{formatTime(item['starttime'],"yyyy年MM月dd日 周w hh:mm")}</Text>
                             </View>
                             <View style={styles.huodongItemTime}>
-                                <Image style={styles.huodongItemTimeImage} source={require('../../assets/icon/iconaddress.png')}/>
+                                <Text>活动地点：</Text>
                                 <Text style={{flex:1,fontSize:12}}>{item['address']}</Text>
+                            </View>
+                            <View style={styles.huodongItemTime}>
+                                <Text>报名人：</Text>
+                                <Text style={{flex:1,fontSize:12}}>{user['nickname']}</Text>
+                            </View>
+                            <View style={styles.huodongItemTime}>
+                                <Text>手机号码：</Text>
+                                <TextInput style={{flex:1,width:null,height: 30, borderColor: '#f2f2f2', borderWidth: 1}} defaultValue={user['mobile']} onChangeText={(text)=>{this.setState({mobile:text});}}/>
                             </View>
                         </View>
                     </Card>
-                    <View style={styles.huodongDetail}>
-                        <Text>活动详情</Text>
-                    </View>
-                    <HTMLView
-                        value={item['content']}
-                        stylesheet={styles}
-                        renderNode={renderNode}
-                        addLineBreaks={false}
-                        onLinkPress={(url) => {this.props.navigation.navigate("ShowUrl",{url:url})}}
-                    />
                 </ScrollView>
                 <View style={styles.baoming}>
                     {
-                        isExpired(item['jiezhitime']) ?
+                        this.state.baoming ?
                             <Button
                                 backgroundColor='#dddddd'
                                 color='#666666'
                                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                title={isExpired(item['endtime']) ? '活动已结束' : '报名已截止'} /> :
+                                title={'您已经报名！'} /> :
                             <Button
-                                backgroundColor={this.state.baoming ? '#dddddd' : '#03A9F4'}
-                                color={this.state.baoming ? '#666666' : '#ffffff'}
+                                backgroundColor='#03A9F4'
                                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                onPress={this.state.baoming ? ()=>{} : () => {this.props.navigation.navigate("HuodongBaoMing",{id:item['id']})}}
-                                title={this.state.baoming ? '您已经报名' : '立即报名'} />
+                                onPress={() => {this.baomingSubmit()}}
+                                title='确认报名' />
                     }
                 </View>
             </View>
@@ -140,7 +154,7 @@ function select(state) {
         userReducer
     }
 }
-export default connect(select)(HuodongDetail);
+export default connect(select)(HuodongBaoMing);
 
 const styles = StyleSheet.create({
     container: {

@@ -19,7 +19,7 @@ import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button} from 'react-native-elements';
-import {formatTime} from '../common/public';
+import {formatTime,isExpired} from '../common/public';
 import {getHuodongAction} from '../../actions/userAction';
 const {width} = Dimensions.get("window");
 
@@ -104,10 +104,26 @@ class FindIndex extends Component{
                         <Text style={{flex:1,fontSize:12}}>{formatTime(item['starttime'],"MM月dd日 周w hh:mm")}</Text>
                         <Text style={{fontSize:12}}>已有<Text style={{color:'#00bfff'}}>{item['number']}</Text>人报名</Text>
                     </View>
-                    <Button
-                        backgroundColor='#03A9F4'
-                        buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                        title='我要报名' />
+                    <View style={styles.baoming}>
+                        <View style={styles.author}>
+                            <Text style={[colors.cBlue,styles.name]}>{item['name'] ? item['name'] : '官方'}</Text>
+                            <Text>发布了该活动</Text>
+                        </View>
+                        {
+                            isExpired(item['jiezhitime']) ?
+                                <Button
+                                    backgroundColor='#dddddd'
+                                    color='#666666'
+                                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+                                    title={isExpired(item['endtime']) ? '活动已结束' : '报名已截止'} /> :
+                                <Button
+                                    backgroundColor='#03A9F4'
+                                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+                                    onPress={() => {this.props.navigation.navigate("HuodongBaoMing",{id:item['id']})}}
+                                    title='我要报名' />
+                        }
+
+                    </View>
                 </View>
             </TouchableWithoutFeedback>
         </Card>
@@ -203,4 +219,15 @@ const styles = StyleSheet.create({
         height:18,
         marginRight:3
     },
+    baoming:{
+        flexDirection:'row',
+        alignItems:'center'
+    },
+    author:{
+        flex:1,
+        flexDirection:'row'
+    },
+    name:{
+        marginRight:5
+    }
 });
