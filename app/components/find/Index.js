@@ -20,7 +20,7 @@ import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button} from 'react-native-elements';
 import {formatTime,isExpired} from '../common/public';
-import {getHuodongAction} from '../../actions/userAction';
+import {getHuodongAction,getQuanziAction} from '../../actions/userAction';
 const {width} = Dimensions.get("window");
 
 class FindIndex extends Component{
@@ -29,6 +29,7 @@ class FindIndex extends Component{
 
         this.state = {
             huodong:[],
+            quanzi:[],
             currentHuodongPage:1,
             loadHuodongFinish:false,
             loading:false,
@@ -45,10 +46,12 @@ class FindIndex extends Component{
                     huodong:huodongList
                 });
             }
+            //获取圈子
         }catch(e){
             console.log(e);
         }finally {
             this.props.dispatch(getHuodongAction(this.state.currentHuodongPage,(totalPage)=>{this._loadHuodongComplete(totalPage)}));
+            this.props.dispatch(getQuanziAction(1,"",1,(totalPage)=>{this._loadQuanziComplete(totalPage)}));
         }
     }
     //网络请求加载完成
@@ -63,6 +66,16 @@ class FindIndex extends Component{
                     currentHuodongPage:page + 1,
                     loadHuodongFinish:page >= totalPage,
                     loading:false,
+                });
+            }
+        }catch(e){}
+    }
+    _loadQuanziComplete(totalPage){
+        try{
+            let contentList = realmObj.objects("Quanzi");
+            if(contentList.length > 0){
+                this.setState({
+                    quanzi:contentList,
                 });
             }
         }catch(e){}
@@ -129,6 +142,14 @@ class FindIndex extends Component{
         </Card>
 
     );
+    renderQuanziRow = ({item}) => (
+        <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("QuanziDongtai",{id:item['id']})}}>
+            <View style={styles.quanziView}>
+                <Image style={styles.quanziImage} source={require('../../assets/mock_data/1.jpg')}/>
+                <Text style={styles.quanziText}>{item['title']}</Text>
+            </View>
+        </TouchableWithoutFeedback>
+    );
     render(){
         return (
             <ScrollView style={styles.container}
@@ -141,26 +162,21 @@ class FindIndex extends Component{
                         }
             >
                 <View style={styles.quanziContainer}>
-                    <ScrollView showsVerticalScrollIndicator={false} horizontal={true}>
-                        <TouchableWithoutFeedback>
-                            <View style={styles.quanziView}>
-                                <Image style={styles.quanziImage} source={require('../../assets/mock_data/1.jpg')}/>
-                                <Text style={styles.quanziText}>我的圈子</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                        <TouchableWithoutFeedback>
-                            <View style={styles.quanziView}>
-                                <Image style={styles.quanziImage} source={require('../../assets/mock_data/1.jpg')}/>
-                                <Text style={styles.quanziText}>科技</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                        <TouchableWithoutFeedback>
-                            <View style={styles.quanziView}>
-                                <Image style={styles.quanziImage} source={require('../../assets/mock_data/1.jpg')}/>
-                                <Text style={styles.quanziText}>软件开发</Text>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </ScrollView>
+                    <FlatList
+                        renderItem={this.renderQuanziRow}
+                        data={this.state.quanzi}
+                        extraData={this.state}
+                        keyExtractor={this._keyExtractor}
+                        showsVerticalScrollIndicator={false}
+                        horizontal={true}
+                        style={{flex:1}}
+                    />
+                    <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("Quanzi")}}>
+                        <View style={styles.quanziView}>
+                            <Image style={styles.quanziMore} source={require('../../assets/icon/icongengduo.png')}/>
+                            <Text style={styles.quanziText}>所有圈子</Text>
+                        </View>
+                    </TouchableWithoutFeedback>
                 </View>
                 <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                     <FlatList
@@ -189,7 +205,9 @@ const styles = StyleSheet.create({
     },
     quanziContainer:{
         backgroundColor:'#ffffff',
-        paddingBottom:8
+        paddingBottom:8,
+        paddingRight:8,
+        flexDirection:'row'
     },
     quanziView:{
         alignItems:'center',
@@ -199,6 +217,13 @@ const styles = StyleSheet.create({
         width:40,
         height:40,
         borderRadius:20
+    },
+    quanziMore:{
+        width:40,
+        height:40,
+        borderRadius:20,
+        alignSelf:'center',
+        tintColor:'#aaaaaa'
     },
     quanziText:{
         fontSize:12,

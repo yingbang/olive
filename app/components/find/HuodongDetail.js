@@ -79,7 +79,19 @@ class HuodongDetail extends Component{
             let item = realmObj.objects("Huodong").filtered("id = " + this.state.id);
             if(item !== null && item.length > 0){
                 this.setState({
-                    content:item[0],
+                    huodong:item[0],
+                });
+            }
+        }catch(e){}
+    };
+    //获取报名信息完毕
+    _loadBaomingComplete = ()=>{
+        try{
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            let item = realmObj.objects("HuodongBaoming").filtered("userid == "+userid+" and huodongid == "+this.state.id);
+            if(item !== null && item.length > 0){
+                this.setState({
+                    baoming:true,
                 });
             }
         }catch(e){}

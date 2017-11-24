@@ -55,6 +55,11 @@ import Search from './components/search/Index';
 //发现好友、邀请好友
 import FindFriend from './components/my/FindFriend';
 import FindFriendStepTwo from './components/my/FindFriendStepTwo';
+//圈子
+import Quanzi from './components/find/Quanzi';
+import QuanziDetail from './components/find/QuanziDetail';
+import QuanziDongtai from './components/find/QuanziDongtai';
+
 /**
  * 设置底部菜单栏：一般是app的栏目
  */
@@ -223,6 +228,10 @@ const Navigator = StackNavigator(
         //发现好友，通讯录
         FindFriend: {screen: FindFriend},
         FindFriendStepTwo: {screen: FindFriendStepTwo},
+        //圈子
+        Quanzi:{screen:Quanzi},
+        QuanziDetail:{screen:QuanziDetail},
+        QuanziDongtai:{screen:QuanziDongtai},
     },
     {
         navigationOptions: {

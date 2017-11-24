@@ -30,13 +30,11 @@ export default class Guanzhu extends Component{
 
     constructor(props) {
         super(props);
-
         this.state = {
             dongtai:[],
             currentDongtaiPage:1,
             loadDongtaiFinish:false,
             loading:false,
-            userid:'1',//默认是显示管理员，多个用逗号隔开
             zanDongtaiList:[],//点赞过的列表
         };
     }
@@ -134,7 +132,7 @@ export default class Guanzhu extends Component{
         }catch(e){
             console.log(e);
         }finally {
-            this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
             this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
         }
     }
@@ -171,7 +169,7 @@ export default class Guanzhu extends Component{
         let oriageScrollHeight = parseInt(e.nativeEvent.layoutMeasurement.height); //scrollView高度
         if (offsetY + oriageScrollHeight >= contentSizeHeight){
             if(this.state.loadDongtaiFinish === false){
-                this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+                this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
             }
         }
     };
@@ -180,7 +178,7 @@ export default class Guanzhu extends Component{
         this.setState({
             loading:true,
         });
-        this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+        this.props.screenProps.dispatch(getDongtaiAction("",1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
     };
     render(){
         return (

@@ -144,6 +144,7 @@ const DongtaiSchema = {
     properties:{
         id:'int',
         userid:{type:'int',default:0},//发布者ID
+        quanzi:{type:'int',default:0},//圈子ID，默认为0
         pinglun:{type:'int',default:0},//评论数
         zan:{type:'int',default:0},//点赞数
         share:{type:'int',default:0},//分享数
@@ -263,10 +264,49 @@ const TongxunluSchema = {
     }
 };
 
+//圈子表
+const QuanziSchema = {
+    name:"Quanzi",
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        userid:{type:'int',default:0},//圈子创建者ID
+        name:{type:'string',default:''},//创建者名称
+        avatar:{type:'string',default:''},//创建者头像
+        title:{type:'string',default:''},//圈子名称
+        intro:{type:'string',default:''},//一句话简介
+        content:{type:'string',default:''},//圈子公告
+        pic:{type:'string',default:''},//圈子头像
+        address:{type:'string',default:''},//圈子地址
+        dateline:{type:'double',default:0},//创建时间
+        erweima:{type:'string',default:''},//二维码
+        number:{type:'int',default:0},//圈子人数
+        status:{type:'int',default:0},//审核状态
+        verify:{type:'int',default:0},//加入圈子是否需要审核
+        hot:{type:'int',default:0},//是否为热门圈子
+    }
+};
+//圈子成员表
+const QuanziUserSchema = {
+    name:"QuanziUser",
+    primaryKey:'id',
+    properties:{
+        id:'int',
+        userid:{type:'int',default:0},//会员ID
+        quanzi:{type:'int',default:0},//圈子ID
+        name:{type:'string',default:''},//姓名
+        avatar:{type:'string',default:''},//头像
+        status:{type:'int',default:''},//审核状态：0待审核、1通过、2未通过
+        memo:{type:'string',default:''},//审核意见
+        dateline:{type:'double',default:0},//申请日期
+    }
+};
+
 export default {
     schema: [GlobalSchema,NoticeSchema,SlideSchema,UserSchema,NewsSchema,NewsDataSchema,
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
-        DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,TongxunluSchema,HuodongBaomingSchema],
-    schemaVersion: 13,
+        DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,
+        TongxunluSchema,HuodongBaomingSchema,QuanziSchema,QuanziUserSchema],
+    schemaVersion: 16,
     migration: () => {}
 };

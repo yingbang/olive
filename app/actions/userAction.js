@@ -315,6 +315,7 @@ export function getDongtaiAction(userid,page,callback){
                             let item = {
                                 id:parseInt(contentList[i]['id']),
                                 userid:parseInt(contentList[i]['userid']),
+                                quanzi:parseInt(contentList[i]['quanzi']),
                                 pinglun:parseInt(contentList[i]['pinglun']),
                                 zan:parseInt(contentList[i]['zan']),
                                 share:parseInt(contentList[i]['share']),
@@ -346,7 +347,7 @@ export function getDongtaiAction(userid,page,callback){
 }
 
 //发布动态
-export function fabuDongtaiAction(content,pics,callback){
+export function fabuDongtaiAction(content,pics,quanzi,callback){
     return dispatch => {
         //开始请求网络
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
@@ -356,6 +357,7 @@ export function fabuDongtaiAction(content,pics,callback){
             .send("userid=" + userid)
             .send("content=" + content)
             .send("pics=" + pics)
+            .send("quanzi=" + quanzi)
             .end((err,res)=>{
             if(err){
                 console.log(err);
@@ -626,6 +628,8 @@ export function cangDongtaiAction(id,type,status,callback){
     }
 }
 
+
+
 //活动列表
 export function getHuodongAction(page,callback){
     return dispatch => {
@@ -672,7 +676,6 @@ export function getHuodongAction(page,callback){
         });
     }
 }
-
 //获取活动信息
 export function getHuodongInfoByIdAction(id,callback){
     return dispatch => {
@@ -761,7 +764,7 @@ export function getBaomingInfoByIdAction(userid,huodongid,callback){
                                 huodongid:json['huodongid'] !== null ? parseInt(json['huodongid']) : 0,
                                 dateline:json['dateline'] !== null ? parseFloat(json['dateline']) : 0,
                                 mobile:json['mobile'] !== null ? json['mobile'] : "",
-                                name:json['name'] !== null ? json['name'] : "",
+                                name:json['name'] !== null ? json['name'] : "",//这个就是name不是nickname
                                 avatar:json['avatar'] !== null ? json['avatar'] : "",
                             };
                             realmObj.create("HuodongBaoming",item,true);
@@ -776,6 +779,206 @@ export function getBaomingInfoByIdAction(userid,huodongid,callback){
         });
     }
 }
+
+
+
+//圈子列表isHot表示是否热门，category表示分类
+export function getQuanziAction(isHot,category,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/quanzi').query({hot:isHot,category:category,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                                userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
+                                intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
+                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
+                                address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
+                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                erweima:contentList[i]['erweima'] !== null ? contentList[i]['erweima'] : "",
+                                number:parseInt(contentList[i]['number']),
+                                status:parseInt(contentList[i]['status']),
+                                verify:parseInt(contentList[i]['verify']),
+                                hot:parseInt(contentList[i]['hot']),
+                            };
+                            realmObj.create("Quanzi",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback(json.totalPage);
+            }
+        });
+    }
+}
+//获取圈子信息
+export function getQuanziInfoByIdAction(id,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/quanziContent').query({id:id,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let item = {
+                                id:parseInt(json['id']),
+                                userid:json['userid'] !== null ? parseInt(json['userid']) : 0,
+                                name:json['nickname'] !== null ? json['nickname'] : "",
+                                avatar:json['avatar'] !== null ? json['avatar'] : "",
+                                title:json['title'] !== null ? json['title'] : "",
+                                intro:json['intro'] !== null ? json['intro'] : "",
+                                content:json['content'] !== null ? json['content'] : "",
+                                pic:json['pic'] !== null ? json['pic'] : "",
+                                address:json['address'] !== null ? json['address'] : "",
+                                dateline:json['dateline'] !== null ? parseFloat(json['dateline']) : 0,
+                                erweima:json['erweima'] !== null ? json['erweima'] : "",
+                                number:parseInt(json['number']),
+                                status:parseInt(json['status']),
+                                verify:parseInt(json['verify']),
+                                hot:parseInt(json['hot']),
+                            };
+                            realmObj.create("Quanzi",item,true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}
+//圈子加入退出
+export function QuanziJoinAction(type,quanzi,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.post(host + '/api/content/quanziJoin')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send("userid=" + userid)
+            .send("quanzi=" + quanzi)
+            .send("type=" + type)
+            .end((err,res)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    let json = res.body;
+                    //删除本地的
+                    if(type === 0){
+                        let join = realmObj.objects("QuanziUser").filtered("userid == "+userid+" and quanzi == "+quanzi);
+                        realmObj.write(()=>{
+                            realmObj.delete(join);
+                        });
+                    }
+                    //发送
+                    callback && callback(json);
+                }
+            });
+    }
+}
+//查询是否加入圈子
+export function getQuanziJoinInfoAction(userid,quanzi,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/quanziJoinInfo').query({userid:userid,quanzi:quanzi,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let item = {
+                                id:parseInt(json['id']),
+                                userid:json['userid'] !== null ? parseInt(json['userid']) : 0,
+                                quanzi:json['quanzi'] !== null ? parseInt(json['quanzi']) : 0,
+                                dateline:json['dateline'] !== null ? parseFloat(json['dateline']) : 0,
+                                status:json['status'] !== null ? parseInt(json['status']) : 0,
+                                memo:json['memo'] !== null ? json['memo'] : "",
+                                name:json['nickname'] !== null ? json['nickname'] : "",
+                                avatar:json['avatar'] !== null ? json['avatar'] : "",
+                            };
+                            realmObj.create("QuanziUser",item,true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                }else{
+                    //如果没有，就删除本地的
+                    let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+                    let join = realmObj.objects("QuanziUser").filtered("userid == "+userid+" and quanzi == "+quanzi);
+                    realmObj.write(()=>{
+                        realmObj.delete(join);
+                    });
+                }
+                //发送
+                callback && callback();
+            }
+        });
+    }
+}
+//获取圈子的所有成员
+export function getQuanziUserAction(id,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/quanziUser').query({id:id,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                //保存到realm
+                try{
+                    realmObj.write(()=>{
+                        let contentList = json.list;
+                        for(let i=0, l=contentList.length; i<l; i++){
+                            let item = {
+                                id:parseInt(contentList[i]['id']),
+                                userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                quanzi:contentList[i]['quanzi'] !== null ? parseInt(contentList[i]['quanzi']) : 0,
+                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                status:contentList[i]['status'] !== null ? parseInt(contentList[i]['status']) : 0,
+                                memo:contentList[i]['memo'] !== null ? contentList[i]['memo'] : "",
+                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                            };
+                            realmObj.create("QuanziUser",item,true);
+                        }
+                    });
+                }catch(e){
+                    console.log(e)
+                }
+                //发送
+                callback && callback(json.totalPage);
+            }
+        });
+    }
+}
+
 
 //反馈意见
 export function fankuiAction(title,content,callback){

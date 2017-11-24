@@ -40,9 +40,17 @@ class PublishEdit extends Component{
             hasChanged:false,//内容是否改变
             content:'',//内容
             urlArr:[],//上传成功的图片地址
+            quanzi:0,//圈子ID
         }
     }
     componentDidMount(){
+        //QuanziDongtai中过来的
+        let quanzi = this.props.navigation.state.params.quanzi;
+        if(quanzi>0){
+            this.setState({
+                quanzi:quanzi
+            });
+        }
         this.props.navigation.setParams({fabu:()=>{this._fabu()}, back:()=>{this._back()}});
     }
     _fabu(){
@@ -61,7 +69,12 @@ class PublishEdit extends Component{
     _fabuComplete(result){
         if(result.state === "ok"){
             toastShort("发布成功！");
-            this.props.navigation.navigate("Tab");
+            //从圈子过来的再返回去
+            if(this.state.quanzi > 0){
+                this.props.navigation.goBack();
+            }else{
+                this.props.navigation.navigate("Tab");
+            }
         }else{
             toastShort("发布失败，请重试！");
         }
@@ -104,7 +117,7 @@ class PublishEdit extends Component{
                 if(i === fileArr.length - 1){
                     //发布动态
                     let pics = this.state.urlArr.join(",");
-                    this.props.dispatch(fabuDongtaiAction(this.state.content,pics,(result)=>{this._fabuComplete(result)}));
+                    this.props.dispatch(fabuDongtaiAction(this.state.content,pics,this.state.quanzi,(result)=>{this._fabuComplete(result)}));
                 }
                 //递归调用，一个一个上传
                 else{
