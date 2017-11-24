@@ -107,7 +107,7 @@ export default class GongYiDaRen extends Component {
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
-                <ScrollView>
+                <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     {
                         this.state.content.map((item, i) => (
                             <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['id']})}}>

@@ -58,8 +58,8 @@ export default class Hot extends Component{
         <View style={{marginBottom:15}}>
             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
-                    <View style={{flexDirection:'row',marginBottom:12}}>
-                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
+                    <View style={globalStyle.dongtaiAvatarView}>
+                        <Image style={globalStyle.dongtaiAvatar} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
                         <View>
                             <Text>{item['name']}</Text>
                             <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
@@ -74,23 +74,23 @@ export default class Hot extends Component{
                             {
                                 inArray(this.state.zanDongtaiList,item['id'],'id') ?
                                     <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                        <Image style={{width:15,height:15,tintColor:'#333333',marginRight:15}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
                                     </TouchableWithoutFeedback>
                                     :
                                     <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                        <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
+                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
                                     </TouchableWithoutFeedback>
                             }
                             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
+                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png","https://www.baidu.com",()=>{},()=>{});}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconfenxiang.png')}/>
+                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
                             </TouchableWithoutFeedback>
                         </View>
                         <View>
-                            <TouchableWithoutFeedback onPress={()=>{alert('更多')}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconmore.png')}/>
+                            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
+                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
@@ -247,6 +247,7 @@ export default class Hot extends Component{
                                 onRefresh={this._refresh.bind(this)}
                             />
                         }
+                        showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
                 <View style={styles.block}>
                     <Carousel

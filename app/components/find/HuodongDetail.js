@@ -100,7 +100,7 @@ class HuodongDetail extends Component{
         let item = this.state.huodong;
         return (
             <View style={styles.container}>
-                <ScrollView style={styles.htmlContainer}>
+                <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} image={require('../../assets/mock_data/2.jpg')}>
                         <View>
                             <Text style={styles.huodongItemTitle}>{item['title']}</Text>

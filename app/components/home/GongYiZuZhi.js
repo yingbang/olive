@@ -11,34 +11,6 @@ import {getArrayItems,inArray} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getJoinCompanyAction} from '../../actions/userAction';
 
-const contentList = [
-    {
-        key:0,
-        id:1,
-        nickname: '青岛慈善集团...',
-    },
-    {
-        key:1,
-        id:2,
-        nickname: '中国红十字协会',
-    },
-    {
-        key:2,
-        id:3,
-        nickname: 'Trips b',
-    },
-    {
-        key:3,
-        id:4,
-        nickname: 'Trips c',
-    },
-    {
-        key:4,
-        id:5,
-        nickname: 'Trips d',
-    },
-]
-
 export default class GongYiZuZhi extends Component {
 
     constructor(props){
@@ -153,7 +125,7 @@ export default class GongYiZuZhi extends Component {
                     <Text style={globalStyle.flex1}>推荐公益组织</Text>
                     <Text style={colors.cBlue} onPress={()=>{this.changeContent()}}>换一批</Text>
                 </View>
-                <ScrollView horizontal={true}>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     {
                         this.state.content.map((item, i) => (
                             <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['id']})}}>
@@ -200,7 +172,10 @@ const styles = StyleSheet.create({
         marginBottom:10
     },
     btn:{
-        padding:5,
+        paddingTop:5,
+        paddingBottom:5,
+        paddingLeft:15,
+        paddingRight:15,
         borderRadius:10,
         fontSize:12
     },

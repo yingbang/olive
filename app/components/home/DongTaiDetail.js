@@ -251,6 +251,7 @@ class DongTaiDetail extends Component{
                                     onRefresh={this._refresh.bind(this)}
                                 />
                             }
+                            showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.block}>
                         <View>

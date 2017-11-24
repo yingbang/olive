@@ -44,7 +44,7 @@ class XiaoXi extends Component{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '我的消息'}}
-                rightComponent={<Text>联系人</Text>}
+                rightComponent={<Text onPress={()=>{HeaderProps.navigation.navigate("ContactsList");}}>联系人</Text>}
                 backgroundColor="#ffffff"
             />
         }
@@ -141,6 +141,7 @@ class XiaoXi extends Component{
                                 onRefresh={this._refresh.bind(this)}
                             />
                         }
+                        showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
                 <List containerStyle={globalStyle.listContainer}>
                     <FlatList

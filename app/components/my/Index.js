@@ -198,7 +198,7 @@ export default class MyIndex extends Component{
 
     render(){
         return (
-            <ScrollView style={[styles.container]}>
+            <ScrollView style={[styles.container]} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
 
                 <Header
                     rightComponent={<TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate('XiaoXi')}}>

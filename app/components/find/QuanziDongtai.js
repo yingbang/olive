@@ -20,6 +20,7 @@ import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import {List,Header,Icon} from 'react-native-elements';
 import {getDateTimeDiff,inArray} from '../common/public';
+import globalStyle from '../common/GlobalStyle';
 import {toastShort} from '../common/ToastTool';
 import Blank from '../common/Blank';
 import BlankQuanzi from '../common/BlankQuanzi';
@@ -76,8 +77,8 @@ class QuanziDongtai extends Component{
         <View style={{marginBottom:15}}>
             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
-                    <View style={{flexDirection:'row',marginBottom:12}}>
-                        <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
+                    <View style={globalStyle.dongtaiAvatarView}>
+                        <Image style={globalStyle.dongtaiAvatar} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
                         <View>
                             <Text>{item['name']}</Text>
                             <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
@@ -92,48 +93,46 @@ class QuanziDongtai extends Component{
                             {
                                 inArray(this.state.zanDongtaiList,item['id'],'id') ?
                                     <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                        <Image style={{width:15,height:15,tintColor:'#333333',marginRight:15}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
                                     </TouchableWithoutFeedback>
                                     :
                                     <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                        <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconzan.png')}/>
+                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
                                     </TouchableWithoutFeedback>
                             }
                             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:15}} source={require('../../assets/icon/iconpinglun.png')}/>
+                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconfenxiang.png')}/>
+                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
                             </TouchableWithoutFeedback>
                         </View>
                         <View>
-                            <TouchableWithoutFeedback onPress={()=>{alert('更多')}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999'}} source={require('../../assets/icon/iconmore.png')}/>
+                            <TouchableWithoutFeedback onPress={()=>{}}>
+                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
-                    <TouchableWithoutFeedback onPress={()=>{alert('评论')}}>
-                        <View>
-                            {
-                                item['zan'] > 0 ?
-                                    <View style={{flexDirection:'row',marginBottom:8}}>
-                                        <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                        <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
-                                    </View>
-                                    : null
-                            }
+                    <View>
+                        {
+                            item['zan'] > 0 ?
+                                <View style={{flexDirection:'row',marginBottom:8}}>
+                                    <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                    <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
+                                </View>
+                                : null
+                        }
 
-                            <HTMLView
-                                value={item['pinglunlist']}
-                                stylesheet={styles}
-                                addLineBreaks={false}
-                                onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
-                            />
-                            {
-                                item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
-                            }
-                        </View>
-                    </TouchableWithoutFeedback>
+                        <HTMLView
+                            value={item['pinglunlist']}
+                            stylesheet={styles}
+                            addLineBreaks={false}
+                            onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
+                        />
+                        {
+                            item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
+                        }
+                    </View>
                 </View>
             </TouchableWithoutFeedback>
         </View>
@@ -250,6 +249,7 @@ class QuanziDongtai extends Component{
                                     onRefresh={this._refresh.bind(this)}
                                 />
                             }
+                            showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
                 >
                     <TouchableWithoutFeedback onPress={()=>{this._goDetail()}}>
                     <View style={{flexDirection:'row',alignItems:'center',marginTop:20}}>

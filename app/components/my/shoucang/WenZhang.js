@@ -17,7 +17,7 @@ import BlankShoucang from '../../common/BlankShoucang';
 export default class WenZhang extends Component{
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                 <BlankShoucang/>
             </ScrollView>
         );

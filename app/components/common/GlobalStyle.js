@@ -55,6 +55,25 @@ const globalStyle = StyleSheet.create({
     listItem:{
         borderBottomColor:'#f8f8f8',
         backgroundColor:'#ffffff'
-    }
+    },
+    //动态下面的点赞、分享、评论图标样式
+    dongtaiIcon:{
+        width:25,
+        height:25,
+        tintColor:'#999999',
+        marginRight:20
+    },
+    //动态头像
+    dongtaiAvatarView:{
+        flexDirection:'row',
+        marginBottom:12,
+        alignItems:'center'
+    },
+    dongtaiAvatar:{
+        width:40,
+        height:40,
+        borderRadius:20,
+        marginRight:10
+    },
 });
 export default globalStyle;

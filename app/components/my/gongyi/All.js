@@ -17,7 +17,7 @@ import BlankGongYi from '../../common/BlankGongYi';
 export default class All extends Component{
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                 <BlankGongYi/>
             </ScrollView>
         );

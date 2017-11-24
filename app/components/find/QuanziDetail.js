@@ -168,6 +168,7 @@ class QuanziDetail extends Component{
                 <ScrollView
                     style={styles.htmlContainer}
                     onMomentumScrollEnd = {this._contentViewScroll}
+                    showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
                 >
                     <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                         <ListItem

@@ -101,7 +101,7 @@ class NewsDetail extends Component{
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>{this.state.title}</Text>
-                <ScrollView style={styles.htmlContainer}>
+                <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     <HTMLView
                         value={this.state.content}
                         stylesheet={styles}

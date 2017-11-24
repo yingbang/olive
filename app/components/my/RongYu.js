@@ -26,7 +26,7 @@ export default class RongYu extends Component{
     };
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                 <BlankRongyu/>
             </ScrollView>
         );

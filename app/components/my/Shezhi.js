@@ -144,7 +144,7 @@ export class Shezhi extends Component{
     );
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                 <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                     <FlatList
                         renderItem={this.renderRow}

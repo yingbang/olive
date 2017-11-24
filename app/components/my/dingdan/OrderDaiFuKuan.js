@@ -17,7 +17,7 @@ import BlankOrder from '../../common/BlankOrder';
 export default class OrderDaiFuKuan extends Component{
     render(){
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView style={styles.container} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                 <BlankOrder/>
             </ScrollView>
         );

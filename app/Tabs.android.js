@@ -37,6 +37,8 @@ import ShouCang from './components/my/ShouCang';
 import ZuZhi from './components/my/ZuZhi';
 import RongYu from './components/my/RongYu';
 import GongYi from './components/my/GongYi';
+import ContactsList from './components/my/ContactsList';
+import ZiLiaoUpdate from './components/my/ZiLiaoUpdate';
 //资讯
 import NewsDetail from './components/news/NewsDetail';
 //活动
@@ -140,7 +142,7 @@ const AppTab = TabNavigator(
             }
         }
     }, {
-        initialRouteName: 'FindContainer',//默认显示的tab页
+        initialRouteName: 'HomeContainer',//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -211,6 +213,8 @@ const Navigator = StackNavigator(
         ZuZhi: {screen: ZuZhi},
         RongYu: {screen: RongYu},
         GongYi: {screen: GongYi},
+        ContactsList: {screen: ContactsList},
+        ZiLiaoUpdate: {screen: ZiLiaoUpdate},
         //资讯
         NewsDetail: {screen: NewsDetail},
         //活动

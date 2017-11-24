@@ -137,6 +137,7 @@ export default class NewsIndex extends Component{
                                 onRefresh={this._refresh.bind(this)}
                             />
                         }
+                        showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
                 <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
                 <FlatList

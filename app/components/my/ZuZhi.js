@@ -109,6 +109,7 @@ class ZuZhi extends Component{
                                 onRefresh={this._refresh.bind(this)}
                             />
                         }
+                        showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
                 <FlatList
                     data={this.state.data}
