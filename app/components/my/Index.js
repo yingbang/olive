@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import { List, ListItem, Header } from 'react-native-elements';
 import {getDongtaiAction,getFollowUserAction,getFensiAction,getUserInfoByIdAction} from '../../actions/userAction';
 
@@ -91,6 +92,7 @@ export default class MyIndex extends Component{
             guanzhu:0,//关注人数
             fensi:0,//粉丝数
             dongtai:0,//我发布的动态条数
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         }
     }
 
@@ -212,10 +214,12 @@ export default class MyIndex extends Component{
 
                 <TouchableWithoutFeedback onPress={()=>{this.onClick('my_ziliao')}}>
                     <View style={styles.baseInfo}>
-                        <Animated.Image
-                            source={require('../../assets/mock_data/2.jpg')}
-                            style={[styles.infoImage,{marginRight:10}]}
-                        />
+                        {
+                            this.state.userInfo['avatar'] ?
+                                <Image style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(this.state.userInfo['avatar'],this.state.host)}}/>
+                                :
+                                <Image style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>
+                        }
                         <View style={{flex:1}}>
                             <Text>{this.state.userInfo['nickname']}</Text>
                         </View>

@@ -13,7 +13,7 @@ import {
 import {connect} from 'react-redux';
 //公共头部
 import { Card, List, ListItem, Button,Header} from 'react-native-elements';
-import {formatTime} from '../common/public';
+import {formatTime,getFullPath} from '../common/public';
 import {isMobile} from '../common/Validate';
 import {toastShort} from '../common/ToastTool';
 import {getBaomingInfoByIdAction,huodongBaomingAction} from '../../actions/userAction';
@@ -28,6 +28,7 @@ class HuodongBaoMing extends Component{
             userInfo:{},
             baoming:false,//是否报名
             mobile:"",//有可能会修改电话
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     static navigationOptions = {
@@ -106,7 +107,7 @@ class HuodongBaoMing extends Component{
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} image={require('../../assets/mock_data/2.jpg')}>
+                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} image={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/images/nopic1.jpg')}>
                         <View>
                             <Text style={styles.huodongItemTitle}>{item['title']}</Text>
                             <View style={styles.huodongItemTime}>

@@ -124,7 +124,7 @@ class XiaoXi extends Component{
                     />
                 </View>
             }
-            avatar={require('../../assets/mock_data/1.jpg')}
+            avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
             avatarStyle={styles.avatar}
             rightTitle={formatTime(item.dateline,"MM-dd")}
             containerStyle={[globalStyle.listItem,{marginTop:item.isDivider ? 8 : 0}]}

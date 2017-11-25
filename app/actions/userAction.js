@@ -38,7 +38,7 @@ export function getUserListAction(page,type,flag,callback){
                                 weixin:contentList[i]['weixin'] !== null ? contentList[i]['weixin'] : "",
                                 intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
                                 renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? host + contentList[i]['avatar'] : "",
+                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
                                 visible:hidden.length <= 0,
                             };
                             realmObj.create("User",user,true);
@@ -85,7 +85,7 @@ export function getUserInfoAction(mobile,callback){
                             weixin:json['weixin'] !== null ? json['weixin'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
                             renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
-                            avatar:json['avatar'] !== null ? host + json['avatar'] : "",
+                            avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:hidden.length <= 0,
                         };
                         realmObj.create("User",user,true);
@@ -132,7 +132,7 @@ export function getUserInfoByIdAction(userid,callback){
                             job:json['job'] !== null ? json['job'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
                             renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
-                            avatar:json['avatar'] !== null ? host + json['avatar'] : "",
+                            avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:hidden.length <= 0,
                         };
                         realmObj.create("User",user,true);
@@ -179,25 +179,27 @@ export function getJoinCompanyAction(page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        realmObj.delete(realmObj.objects("JoinCompany"));
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
-                                avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("JoinCompany",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            realmObj.delete(realmObj.objects("JoinCompany"));
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
+                                    avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("JoinCompany",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -214,27 +216,29 @@ export function getFollowUserAction(page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        realmObj.delete(realmObj.objects("FollowUser"));
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
-                                avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("FollowUser",item,true);
-                        }
-                        //保存总数
-                        realmObj.create("Global",{key:"guanzhuTotal", value:''+json.totalRow},true);
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            realmObj.delete(realmObj.objects("FollowUser"));
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
+                                    avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("FollowUser",item,true);
+                            }
+                            //保存总数
+                            realmObj.create("Global",{key:"guanzhuTotal", value:''+json.totalRow},true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -251,42 +255,44 @@ export function getFensiAction(page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        realmObj.delete(realmObj.objects("Fensi"));
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
-                                avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("Fensi",item,true);
-                            //保存到会员表，要不就浪费了
-                            let hidden = realmObj.objects("HiddenUser").filtered("id = " + contentList[i]['id']);
-                            let user = {
-                                id:parseInt(contentList[i]['id']),
-                                type:parseInt(contentList[i]['type']),
-                                flag:parseInt(contentList[i]['flag']),
-                                name:contentList[i]['name'] !== null ? contentList[i]['name'] : "",
-                                sex:contentList[i]['sex'] !== null ? contentList[i]['sex'] : "",
-                                mobile:contentList[i]['mobile'] !== null ? contentList[i]['mobile'] : "",
-                                nickname:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
-                                username:contentList[i]['username'] !== null ? contentList[i]['username'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? host + contentList[i]['avatar'] : "",
-                                visible:hidden.length <= 0,
-                            };
-                            realmObj.create("User",user,true);
-                        }
-                        //保存总数
-                        realmObj.create("Global",{key:"fensiTotal", value:''+json.totalRow},true);
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            realmObj.delete(realmObj.objects("Fensi"));
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
+                                    avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("Fensi",item,true);
+                                //保存到会员表，要不就浪费了
+                                let hidden = realmObj.objects("HiddenUser").filtered("id = " + contentList[i]['id']);
+                                let user = {
+                                    id:parseInt(contentList[i]['id']),
+                                    type:parseInt(contentList[i]['type']),
+                                    flag:parseInt(contentList[i]['flag']),
+                                    name:contentList[i]['name'] !== null ? contentList[i]['name'] : "",
+                                    sex:contentList[i]['sex'] !== null ? contentList[i]['sex'] : "",
+                                    mobile:contentList[i]['mobile'] !== null ? contentList[i]['mobile'] : "",
+                                    nickname:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                    username:contentList[i]['username'] !== null ? contentList[i]['username'] : "",
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                    visible:hidden.length <= 0,
+                                };
+                                realmObj.create("User",user,true);
+                            }
+                            //保存总数
+                            realmObj.create("Global",{key:"fensiTotal", value:''+json.totalRow},true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -307,40 +313,42 @@ export function getDongtaiAction(userid,page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                userid:parseInt(contentList[i]['userid']),
-                                quanzi:parseInt(contentList[i]['quanzi']),
-                                pinglun:parseInt(contentList[i]['pinglun']),
-                                zan:parseInt(contentList[i]['zan']),
-                                share:parseInt(contentList[i]['share']),
-                                jingxuan:parseInt(contentList[i]['jingxuan']),
-                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
-                                title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
-                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
-                                pics:contentList[i]['pics'] !== null ? contentList[i]['pics'] : "",
-                                pinglunlist:contentList[i]['pinglunlist'] !== null ? contentList[i]['pinglunlist'] : "",
-                                name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
-                                avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
-                                guanzhu:userid ? 1 : 0,//是否为关注者发布的
-                            };
-                            realmObj.create("Dongtai",item,true);
-                        }
-                        //如果查询的是自己的，保存一下总数
-                        if(userid - uid === 0){
-                            realmObj.create("Global",{key:"dongtaiTotal", value:''+json.totalRow},true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:parseInt(contentList[i]['userid']),
+                                    quanzi:parseInt(contentList[i]['quanzi']),
+                                    pinglun:parseInt(contentList[i]['pinglun']),
+                                    zan:parseInt(contentList[i]['zan']),
+                                    share:parseInt(contentList[i]['share']),
+                                    jingxuan:parseInt(contentList[i]['jingxuan']),
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
+                                    content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                    pics:contentList[i]['pics'] !== null ? contentList[i]['pics'] : "",
+                                    pinglunlist:contentList[i]['pinglunlist'] !== null ? contentList[i]['pinglunlist'] : "",
+                                    name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
+                                    avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                    guanzhu:userid ? 1 : 0,//是否为关注者发布的
+                                };
+                                realmObj.create("Dongtai",item,true);
+                            }
+                            //如果查询的是自己的，保存一下总数
+                            if(userid - uid === 0){
+                                realmObj.create("Global",{key:"dongtaiTotal", value:''+json.totalRow},true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -380,31 +388,33 @@ export function getPinglunAction(id,page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                touserid:parseInt(contentList[i]['touserid']),
-                                fromuserid:parseInt(contentList[i]['fromuserid']),
-                                type:contentList[i]['type'] !== null ? parseInt(contentList[i]['type']) : 1,
-                                zan:contentList[i]['zan'] !== null ? parseInt(contentList[i]['zan']) : 0,
-                                contentid:parseInt(contentList[i]['contentid']),
-                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
-                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
-                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("Pinglun",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    touserid:parseInt(contentList[i]['touserid']),
+                                    fromuserid:parseInt(contentList[i]['fromuserid']),
+                                    type:contentList[i]['type'] !== null ? parseInt(contentList[i]['type']) : 1,
+                                    zan:contentList[i]['zan'] !== null ? parseInt(contentList[i]['zan']) : 0,
+                                    contentid:parseInt(contentList[i]['contentid']),
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                    name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("Pinglun",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -445,26 +455,28 @@ export function getZanAction(id,page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                userid:parseInt(contentList[i]['userid']),
-                                contentid:parseInt(contentList[i]['contentid']),
-                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("Zan",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:parseInt(contentList[i]['userid']),
+                                    contentid:parseInt(contentList[i]['contentid']),
+                                    name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("Zan",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -640,38 +652,40 @@ export function getHuodongAction(page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
-                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
-                                starttime:contentList[i]['starttime'] !== null ? parseFloat(contentList[i]['starttime']) : 0,
-                                endtime:contentList[i]['endtime'] !== null ? parseFloat(contentList[i]['endtime']) : 0,
-                                jiezhitime:contentList[i]['jiezhitime'] !== null ? parseFloat(contentList[i]['jiezhitime']) : 0,
-                                title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
-                                intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
-                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
-                                pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
-                                address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
-                                quanzi:parseInt(contentList[i]['quanzi']),
-                                number:parseInt(contentList[i]['number']),
-                                status:parseInt(contentList[i]['status']),
-                                orderby:parseInt(contentList[i]['orderby']),
-                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("Huodong",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    starttime:contentList[i]['starttime'] !== null ? parseFloat(contentList[i]['starttime']) : 0,
+                                    endtime:contentList[i]['endtime'] !== null ? parseFloat(contentList[i]['endtime']) : 0,
+                                    jiezhitime:contentList[i]['jiezhitime'] !== null ? parseFloat(contentList[i]['jiezhitime']) : 0,
+                                    title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
+                                    intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
+                                    content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                    pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
+                                    address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
+                                    quanzi:parseInt(contentList[i]['quanzi']),
+                                    number:parseInt(contentList[i]['number']),
+                                    status:parseInt(contentList[i]['status']),
+                                    orderby:parseInt(contentList[i]['orderby']),
+                                    name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("Huodong",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -792,36 +806,38 @@ export function getQuanziAction(isHot,category,page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
-                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
-                                title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
-                                intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
-                                content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
-                                pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
-                                address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
-                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
-                                erweima:contentList[i]['erweima'] !== null ? contentList[i]['erweima'] : "",
-                                number:parseInt(contentList[i]['number']),
-                                status:parseInt(contentList[i]['status']),
-                                verify:parseInt(contentList[i]['verify']),
-                                hot:parseInt(contentList[i]['hot']),
-                            };
-                            realmObj.create("Quanzi",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                    name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                    title:contentList[i]['title'] !== null ? contentList[i]['title'] : "",
+                                    intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
+                                    content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
+                                    pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
+                                    address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    erweima:contentList[i]['erweima'] !== null ? contentList[i]['erweima'] : "",
+                                    number:parseInt(contentList[i]['number']),
+                                    status:parseInt(contentList[i]['status']),
+                                    verify:parseInt(contentList[i]['verify']),
+                                    hot:parseInt(contentList[i]['hot']),
+                                };
+                                realmObj.create("Quanzi",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }
@@ -951,29 +967,31 @@ export function getQuanziUserAction(id,page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
-                                quanzi:contentList[i]['quanzi'] !== null ? parseInt(contentList[i]['quanzi']) : 0,
-                                dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
-                                status:contentList[i]['status'] !== null ? parseInt(contentList[i]['status']) : 0,
-                                memo:contentList[i]['memo'] !== null ? contentList[i]['memo'] : "",
-                                name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
-                                avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
-                            };
-                            realmObj.create("QuanziUser",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                    quanzi:contentList[i]['quanzi'] !== null ? parseInt(contentList[i]['quanzi']) : 0,
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    status:contentList[i]['status'] !== null ? parseInt(contentList[i]['status']) : 0,
+                                    memo:contentList[i]['memo'] !== null ? contentList[i]['memo'] : "",
+                                    name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("QuanziUser",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback(json.totalPage);
             }
         });
     }

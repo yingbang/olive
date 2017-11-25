@@ -52,7 +52,7 @@ class LoginContainer extends Component {
                             job:json['job'] !== null ? json['job'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
                             renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
-                            avatar:json['avatar'] !== null ? host + json['avatar'] : "",
+                            avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:false,//自己的信息不需要显示在列表中
                         };
                         realmObj.create("User",user,true);

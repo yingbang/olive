@@ -49,5 +49,8 @@ const colors = StyleSheet.create({
     tint99:{
         tintColor:'#999999'
     },
+    tint66:{
+        tintColor:'#666666'
+    },
 });
 export default colors;

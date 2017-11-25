@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import {List, ListItem, Header} from 'react-native-elements';
 import {getFensiAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import colors from '../common/Colors';
 
 class Fensi extends Component{
@@ -34,7 +35,8 @@ class Fensi extends Component{
             currentPage:1,
             isFinished:false,
             loading:false,
-            data:[]
+            data:[],
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         }
     }
     //组件加载完成
@@ -93,7 +95,7 @@ class Fensi extends Component{
             key={item.id}
             hideChevron={true}
             title={item.name}
-            avatar={require('../../assets/mock_data/1.jpg')}
+            avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
             onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}
             containerStyle={[globalStyle.listItem,{marginTop:0}]}
             {...this.props}

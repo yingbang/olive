@@ -46,6 +46,8 @@ import HuodongDetail from './components/find/HuodongDetail';
 import HuodongBaoMing from './components/find/HuodongBaoMing';
 //用于显示url
 import ShowUrl from './components/common/ShowUrl';
+//展示图片
+import ImageShow from './components/common/gallery/ImageShow';
 //打开摄像头
 import CameraPage from './components/common/CameraPage';
 //公告
@@ -222,6 +224,8 @@ const Navigator = StackNavigator(
         HuodongBaoMing: {screen: HuodongBaoMing},
         //显示网页
         ShowUrl: {screen: ShowUrl},
+        //展示图片
+        ImageShow:{screen:ImageShow},
         //打开摄像头
         CameraPage: {screen: CameraPage},
         //公告详情

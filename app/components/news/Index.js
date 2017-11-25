@@ -18,8 +18,8 @@ import {
     Thumbnail,
     Body
 } from 'native-base';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import {getNewsListAction} from '../../actions/newsAction';
-import * as common from '../common/public';
 
 export default class NewsIndex extends Component{
 
@@ -29,7 +29,8 @@ export default class NewsIndex extends Component{
             currentPage:1,
             isFinished:false,
             loading:false,
-            data:[]
+            data:[],
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         }
     }
     //组件加载完成
@@ -111,7 +112,7 @@ export default class NewsIndex extends Component{
                 </View>
             </View>
             </Body>
-            <Thumbnail square style={styles.thumb} source={!!item.pic ? {uri:item.pic} : require('../../assets/mock_data/1.jpg')} />
+            <Thumbnail square style={styles.thumb} source={!!item.pic ? {uri:getFullPath(item.pic,this.state.host)} : require('../../assets/images/nopic1.jpg')} />
         </ListItem>
     );
     //把id当成key，否则会有警告

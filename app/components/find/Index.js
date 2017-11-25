@@ -19,7 +19,7 @@ import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button} from 'react-native-elements';
-import {formatTime,isExpired} from '../common/public';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import {getHuodongAction,getQuanziAction} from '../../actions/userAction';
 const {width} = Dimensions.get("window");
 
@@ -33,6 +33,7 @@ class FindIndex extends Component{
             currentHuodongPage:1,
             loadHuodongFinish:false,
             loading:false,
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     //获取活动
@@ -102,7 +103,7 @@ class FindIndex extends Component{
     };
     //在上面遮罩了一层透明的，这样就可以点击了
     renderRow = ({item}) => (
-        <Card containerStyle={{marginLeft:8,marginRight:8,marginTop:10}} image={require('../../assets/mock_data/2.jpg')}>
+        <Card containerStyle={{marginLeft:8,marginRight:8,marginTop:10}} image={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/images/nopic1.jpg')}>
             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("HuodongDetail",{id:item.id})}}>
                 <View style={{height:150,width:width-18,flex:1,backgroundColor:"transparent",position:'absolute',top:-150,left:0}}>
                     <Text> </Text>
@@ -145,7 +146,12 @@ class FindIndex extends Component{
     renderQuanziRow = ({item}) => (
         <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("QuanziDongtai",{id:item['id']})}}>
             <View style={styles.quanziView}>
-                <Image style={styles.quanziImage} source={require('../../assets/mock_data/1.jpg')}/>
+                {
+                    item['pic'] ?
+                        <Image style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
+                        :
+                        <Image style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>
+                }
                 <Text style={styles.quanziText}>{item['title']}</Text>
             </View>
         </TouchableWithoutFeedback>
@@ -217,7 +223,8 @@ const styles = StyleSheet.create({
     quanziImage:{
         width:40,
         height:40,
-        borderRadius:20
+        borderRadius:20,
+        marginRight:0
     },
     quanziMore:{
         width:40,

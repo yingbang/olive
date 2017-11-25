@@ -14,7 +14,7 @@ import {
 import request from 'superagent';
 import ImagePicker from 'react-native-image-crop-picker';
 //公共头部
-import {imageUploadFetch,imageUploadBase64} from '../common/public';
+import {imageUploadFetch, imageUploadBase64, getFullPath} from '../common/public';
 import { Card, List, ListItem, Header} from 'react-native-elements';
 import {getUserInfoByIdAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
@@ -36,11 +36,12 @@ export default class ZiLiao extends Component{
     constructor(props){
         super(props);
         this.state={
-            avatarSource:{uri:"https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2779070586,3489688379&fm=58"},
+            avatarSource:require('../../assets/icon/iconhead.png'),
             avatarFile:"",
             userInfo:{},
             userid:0,
             contentList:[],
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
 
@@ -104,7 +105,8 @@ export default class ZiLiao extends Component{
                             rTitle:" ",
                             event:'ziliao_renzheng',
                         },
-                    ]
+                    ],
+                    avatarSource:user['avatar'] ? {uri:getFullPath(user['avatar'],this.state.host)} : require('../../assets/icon/iconhead.png')
                 });
             }
         }catch(e){
@@ -170,7 +172,8 @@ export default class ZiLiao extends Component{
                         rTitle:" ",
                         event:'ziliao_renzheng',
                     },
-                ]
+                ],
+                avatarSource:user['avatar'] ? {uri:getFullPath(user['avatar'],this.state.host)} : require('../../assets/icon/iconhead.png')
             });
         }
     }

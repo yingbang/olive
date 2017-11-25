@@ -75,5 +75,23 @@ const globalStyle = StyleSheet.create({
         borderRadius:20,
         marginRight:10
     },
+    //默认头像样式
+    defaultAvatar:{
+        width:70,
+        height:70,
+        borderRadius:35,
+        alignSelf:'center',
+        marginRight:10,
+        borderColor:'#dddddd',
+        borderWidth:1,
+        tintColor:'#dddddd',
+    },
+    defaultAvatarImage:{
+        width:70,
+        height:70,
+        borderRadius:35,
+        alignSelf:'center',
+        marginRight:10,
+    },
 });
 export default globalStyle;

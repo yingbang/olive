@@ -17,7 +17,7 @@ import HTMLView from 'react-native-htmlview';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button,Header} from 'react-native-elements';
-import {formatTime,isExpired} from '../common/public';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import {toastShort} from '../common/ToastTool';
 import {getQuanziInfoByIdAction,getQuanziJoinInfoAction,getQuanziUserAction,QuanziJoinAction} from '../../actions/userAction';
@@ -45,7 +45,8 @@ class QuanziDetail extends Component{
             users:[],//圈子成员
             currentPage:1,
             isFinished:false,
-            loading:false
+            loading:false,
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     static navigationOptions = {
@@ -156,7 +157,7 @@ class QuanziDetail extends Component{
     renderRow = ({item}) => (
         <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item['userid']})}}>
             <View style={styles.quanziView}>
-                <Image style={styles.quanziImage} source={require('../../assets/mock_data/1.jpg')}/>
+                <Image style={styles.quanziImage} source={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : require('../../assets/icon/iconhead.png')}/>
                 <Text>{item['name']}</Text>
             </View>
         </TouchableWithoutFeedback>
@@ -173,7 +174,7 @@ class QuanziDetail extends Component{
                     <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                         <ListItem
                             title={"圈子头像"}
-                            rightIcon={<Image style={{width:60,height:60,borderRadius:30}} source={{uri:"https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2779070586,3489688379&fm=58"}} />}
+                            rightIcon={<Image style={{width:60,height:60,borderRadius:30}} source={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/icon/iconhead.png')} />}
                             containerStyle={[globalStyle.listItem,{marginTop:0}]}
                         />
                         <ListItem
@@ -190,7 +191,7 @@ class QuanziDetail extends Component{
                         />
                         <ListItem
                             title={"圈子二维码"}
-                            rightIcon={<Image style={{width:60,height:60}} source={{uri:"https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2779070586,3489688379&fm=58"}} />}
+                            rightIcon={<Image style={{width:60,height:60}} source={item['erweima'] ? {uri:getFullPath(item['erweima'],this.state.host)} : require('../../assets/images/erweima.png')} />}
                             containerStyle={[globalStyle.listItem,{marginTop:0}]}
                         />
                         <ListItem
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
         width:40,
         height:40,
         borderRadius:20,
-        marginRight:10
+        marginRight:10,
     },
     quanziUser:{
         marginTop:10,

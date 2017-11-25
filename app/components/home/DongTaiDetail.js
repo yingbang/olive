@@ -17,7 +17,8 @@ import {
 import {connect} from 'react-redux';
 import { Header,Icon} from 'react-native-elements';
 import HTMLView from 'react-native-htmlview';
-import {getDateTimeDiff,inArray} from '../common/public';
+import globalStyle from '../common/GlobalStyle';
+import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
 import {toastShort} from "../common/ToastTool";
 import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
@@ -39,6 +40,7 @@ class DongTaiDetail extends Component{
             pinglunText:"",//当前评论框里面的内容
             toUserid:0,//用于区分这个评论到底是针对谁的，默认是动态的发布者，如果是回复动态中的某一条评论，则代表发布那条评论的那个人的ID
             toUsername:"",
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         }
     }
     static navigationOptions = {
@@ -162,7 +164,12 @@ class DongTaiDetail extends Component{
     renderRow = ({item}) => (
         <View style={{paddingTop:8,paddingBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8'}}>
             <View style={{flexDirection:'row'}}>
-                <Image style={{width:30,height:30,borderRadius:15,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
+                {
+                    item['avatar'] !== "" ?
+                        <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                        :
+                        <Image style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                }
                 <View style={{flex:1}}>
                     <Text style={{fontSize:12}}>{item['name']}</Text>
                     <Text style={{fontSize:10}}>{getDateTimeDiff(item['dateline'])}</Text>
@@ -255,13 +262,20 @@ class DongTaiDetail extends Component{
                 >
                     <View style={styles.block}>
                         <View>
+                            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:dongtai['userid']})}}>
                             <View style={{flexDirection:'row',marginBottom:20,marginTop:12}}>
-                                <Image style={{width:40,height:40,borderRadius:20,marginRight:10}} source={require('../../assets/mock_data/1.jpg')}/>
+                                {
+                                    dongtai['avatar'] !== "" ?
+                                        <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(dongtai['avatar'],this.state.host)}}/>
+                                        :
+                                        <Image style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                                }
                                 <View>
                                     <Text>{dongtai['name']}</Text>
                                     <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(dongtai['dateline'])}</Text>
                                 </View>
                             </View>
+                            </TouchableWithoutFeedback>
                             <View style={{marginBottom:20,overflow:'hidden'}}>
                                 <Text style={{marginBottom:10}}>{dongtai['content']}</Text>
                                 <ImageRange images={dongtaiPics} {...this.props}/>
@@ -277,7 +291,12 @@ class DongTaiDetail extends Component{
                                                         this.state.zan.map((item,i)=>{
                                                             return (
                                                                 <TouchableWithoutFeedback key={i} onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item['userid']})}}>
-                                                                    <Image style={{width:40,height:40,borderRadius:20,marginRight:20}} source={require('../../assets/mock_data/1.jpg')}/>
+                                                                    {
+                                                                        item['avatar'] !== "" ?
+                                                                            <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                                                            :
+                                                                            <Image style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                                                                    }
                                                                 </TouchableWithoutFeedback>
                                                             );
                                                         })

@@ -19,7 +19,7 @@ import {
 import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import {List,Header,Icon} from 'react-native-elements';
-import {getDateTimeDiff,inArray} from '../common/public';
+import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import {toastShort} from '../common/ToastTool';
 import Blank from '../common/Blank';
@@ -56,6 +56,7 @@ class QuanziDongtai extends Component{
             quanziInfo:[],//圈子信息
             zanDongtaiList:[],//点赞过的动态列表，用于判断是否点赞
             join:false,
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     //点赞、取消点赞
@@ -78,7 +79,12 @@ class QuanziDongtai extends Component{
             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
                     <View style={globalStyle.dongtaiAvatarView}>
-                        <Image style={globalStyle.dongtaiAvatar} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
+                        {
+                            item['avatar'] !== "" ?
+                                <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                :
+                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                        }
                         <View>
                             <Text>{item['name']}</Text>
                             <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
@@ -253,7 +259,12 @@ class QuanziDongtai extends Component{
                 >
                     <TouchableWithoutFeedback onPress={()=>{this._goDetail()}}>
                     <View style={{flexDirection:'row',alignItems:'center',marginTop:20}}>
-                        <Image style={{width:60,height:60,borderRadius:30,marginRight:10}} source={{uri:"https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=2779070586,3489688379&fm=58"}} />
+                        {
+                            this.state.quanziInfo['pic'] !== "" ?
+                                <Image style={globalStyle.defaultAvatarImage} source={{uri:getFullPath(this.state.quanziInfo['pic'],this.state.host)}}/>
+                                :
+                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                        }
                         <View>
                             <Text style={{fontSize:16,marginBottom:5}}>{this.state.quanziInfo['title']}</Text>
                             <Text>成员{this.state.quanziInfo['number']}</Text>

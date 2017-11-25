@@ -19,7 +19,7 @@ import {
 import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import {List} from 'react-native-elements';
-import {getDateTimeDiff,inArray} from '../common/public';
+import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
 import ParallaxScrollView from '../common/parallax/index';
 import Blank from '../common/Blank';
 import globalStyle from '../common/GlobalStyle';
@@ -48,6 +48,7 @@ class PersonalHome extends Component{
             userid:this.props.navigation.state.params.id,//只显示当前用户的动态
             userInfo:{},//会员信息
             zanDongtaiList:[],//点赞过的动态列表，用于判断是否点赞
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     //点赞、取消点赞
@@ -70,7 +71,12 @@ class PersonalHome extends Component{
             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
                     <View style={globalStyle.dongtaiAvatarView}>
-                        <Image style={globalStyle.dongtaiAvatar} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
+                        {
+                            item['avatar'] !== "" ?
+                                <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                :
+                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                        }
                         <View>
                             <Text>{item['name']}</Text>
                             <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
@@ -242,11 +248,19 @@ class PersonalHome extends Component{
                         )}
                         renderForeground={() => (
                             <View key="parallax-header" style={ styles.parallaxHeader }>
-                                <Image style={ styles.avatar } source={{
-                                    uri: 'https://b-ssl.duitang.com/uploads/item/201708/11/20170811231309_WF8f3.thumb.700_0.jpeg',
-                                    width: AVATAR_SIZE,
-                                    height: AVATAR_SIZE
-                                }}/>
+                                {
+                                    this.state.userInfo['avatar'] ?
+                                        <Image style={ styles.avatar } source={{
+                                            uri: getFullPath(this.state.userInfo['avatar'],this.state.host),
+                                            width: AVATAR_SIZE,
+                                            height: AVATAR_SIZE
+                                        }}/> :
+                                        <Image style={ styles.avatar } source={{
+                                            uri: 'https://b-ssl.duitang.com/uploads/item/201708/11/20170811231309_WF8f3.thumb.700_0.jpeg',
+                                            width: AVATAR_SIZE,
+                                            height: AVATAR_SIZE
+                                        }}/>
+                                }
                                 <Text style={ styles.sectionSpeakerText }>{this.state.userInfo['nickname']}</Text>
                                 <Text style={ styles.sectionTitleText }>
                                     {this.state.userInfo['intro']}

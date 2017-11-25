@@ -15,6 +15,7 @@ import {
 import {connect} from 'react-redux';
 import {List, ListItem, Header} from 'react-native-elements';
 import {getZanAction} from '../../actions/userAction';
+import {getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 
@@ -36,6 +37,7 @@ class ZanList extends Component{
             loading:false,
             data:[],
             contentid:this.props.navigation.state.params.id,//动态ID
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         }
     }
     //组件加载完成
@@ -94,7 +96,7 @@ class ZanList extends Component{
             key={item.id}
             hideChevron={true}
             title={item.name}
-            avatar={require('../../assets/mock_data/1.jpg')}
+            avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : require('../../assets/icon/iconhead.png')}
             onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item['userid']})}}
             containerStyle={[globalStyle.listItem,{marginTop:0}]}
             {...this.props}

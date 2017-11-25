@@ -16,7 +16,7 @@ import {
     RefreshControl
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
-import {getDateTimeDiff,inArray} from '../common/public';
+import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
 import { Card, List, ListItem} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import Carousel from '../common/Carousel';
@@ -50,6 +50,7 @@ export default class Hot extends Component{
             currentDongtaiPage:1,//当前加载的动态页
             loadDongtaiFinish:false,//某一次动态加载是否完成
             zanDongtaiList:[],//点赞过的列表
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
 
@@ -58,13 +59,20 @@ export default class Hot extends Component{
         <View style={{marginBottom:15}}>
             <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
+                    <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['userid']})}}>
                     <View style={globalStyle.dongtaiAvatarView}>
-                        <Image style={globalStyle.dongtaiAvatar} source={item['avatar'] ? {uri:item['avatar']} : require('../../assets/mock_data/1.jpg')}/>
+                        {
+                            item['avatar'] !== "" ?
+                                <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                :
+                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                        }
                         <View>
                             <Text>{item['name']}</Text>
                             <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
                         </View>
                     </View>
+                    </TouchableWithoutFeedback>
                     <View>
                         <Text style={{marginBottom:10}}>{item['content']}</Text>
                         <ImageRange images={item['pics']} {...this.props}/>
@@ -264,7 +272,7 @@ export default class Hot extends Component{
                             this.state.slide.map((item,i)=>{
                                 return (
                                     <View key={i} style={styles.carousel}>
-                                        <Image style={styles.carousel} source={{uri:item['pic']}}/>
+                                        <Image style={styles.carousel} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
                                     </View>
                                 );
                             })

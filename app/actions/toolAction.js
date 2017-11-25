@@ -24,7 +24,7 @@ export function getSlideAction(callback){
                             let slide = {
                                 id:contentList[i]['id']+0,
                                 title:contentList[i]['title'],
-                                pic:contentList[i]['pic'] !== null ? host + contentList[i]['pic'] : "",
+                                pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
                                 url:contentList[i]['url'] !== null ? contentList[i]['url'] : "",
                                 content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
                             };

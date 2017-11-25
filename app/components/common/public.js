@@ -196,3 +196,14 @@ export function inArray(arr, obj, key) {
     }
     return false;
 }
+
+//判断图片是否有前缀，没有的话加上域名
+export function getFullPath(path,host) {
+    if(path === "" || path === undefined || path === null) return;
+    if (path.match(/^(http|https):\/\//)) {
+        return path;
+    } else {
+        host = host || realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value || "";
+        return host + path;
+    }
+}

@@ -15,7 +15,7 @@ import HTMLView from 'react-native-htmlview';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button,Header} from 'react-native-elements';
-import {formatTime,isExpired} from '../common/public';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import {getHuodongInfoByIdAction,getBaomingInfoByIdAction} from '../../actions/userAction';
 
@@ -38,7 +38,8 @@ class HuodongDetail extends Component{
         this.state={
             id:this.props.navigation.state.params.id,
             huodong:{},
-            baoming:false
+            baoming:false,
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     static navigationOptions = {
@@ -101,7 +102,7 @@ class HuodongDetail extends Component{
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} image={require('../../assets/mock_data/2.jpg')}>
+                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} image={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/images/nopic1.jpg')}>
                         <View>
                             <Text style={styles.huodongItemTitle}>{item['title']}</Text>
                             <View style={styles.huodongItemTime}>

@@ -7,7 +7,7 @@ import {Image,Text,View,ScrollView,TouchableWithoutFeedback,StyleSheet} from 're
 import request from 'superagent';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
-import {getArrayItems,inArray} from '../common/public';
+import {getArrayItems,inArray,getFullPath} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getJoinCompanyAction} from '../../actions/userAction';
 
@@ -119,6 +119,7 @@ export default class GongYiZuZhi extends Component {
     }
 
     render() {
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         return(
             <View style={{flex:1}}>
                 <View style={{flexDirection:'row',marginBottom:12}}>
@@ -130,7 +131,12 @@ export default class GongYiZuZhi extends Component {
                         this.state.content.map((item, i) => (
                             <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['id']})}}>
                                 <View style={styles.container}>
-                                    <Image style={styles.img} source={require('../../assets/mock_data/1.jpg')}/>
+                                    {
+                                        item['avatar'] !== "" ?
+                                            <Image style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
+                                            :
+                                            <Image style={[globalStyle.defaultAvatar,{marginBottom:10}]} source={require('../../assets/icon/iconhead.png')}/>
+                                    }
                                     <Text style={{marginBottom:10}}>{item['nickname']}</Text>
                                     {
                                         inArray(this.state.joinList, item['id'], 'id') ?

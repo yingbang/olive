@@ -15,6 +15,7 @@ import {
 import {connect} from 'react-redux';
 import {List, ListItem, Header} from 'react-native-elements';
 import {getQuanziAction} from '../../actions/userAction';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 
@@ -34,7 +35,8 @@ class Quanzi extends Component{
             currentPage:1,
             isFinished:false,
             loading:false,
-            data:[]
+            data:[],
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         }
     }
     //组件加载完成
@@ -94,7 +96,7 @@ class Quanzi extends Component{
             title={item.title}
             subtitle={item.intro}
             rightTitle={'成员：'+item.number}
-            avatar={require('../../assets/mock_data/1.jpg')}
+            avatar={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
             onPress={()=>{this.props.navigation.navigate("QuanziDongtai",{id:item.id})}}
             containerStyle={[globalStyle.listItem,{marginTop:0}]}
             {...this.props}

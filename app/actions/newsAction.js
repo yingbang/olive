@@ -23,7 +23,7 @@ export function getNewsListAction(page,callback) {
                                 id:newsList[i]['id']+0,
                                 cid:newsList[i]['cid']+0,
                                 title:newsList[i]['title'],
-                                pic:newsList[i]['pic'] !== null ? host + newsList[i]['pic'] : "",
+                                pic:newsList[i]['pic'] !== null ? newsList[i]['pic'] : "",
                                 intro:newsList[i]['intro'] !== null ? newsList[i]['intro'] : "",
                                 flags:newsList[i]['flags'] !== null ? newsList[i]['flags'] : "",
                                 author:newsList[i]['author'] !== null ? newsList[i]['author'] : "",
