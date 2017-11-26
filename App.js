@@ -23,7 +23,7 @@ export default class rootApp extends Component {
         SplashScreen.hide();
         //设置公共信息
         realmObj.write(()=>{
-           realmObj.create("Global",{key:"REQUEST_HOST", value:"http://192.168.1.104:8080"},true);
+           realmObj.create("Global",{key:"REQUEST_HOST", value:"http://192.168.1.128:8080"},true);
            //重新加载一下，更新realm
            realmObj.objects("Global");
            //开始加载一些初始化内容

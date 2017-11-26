@@ -180,7 +180,7 @@ const AppTab = TabNavigator(
 //是否为第一次登录，如果是第一次，显示邀请好友
 realmObj.write(()=>{
     //测试的时候用
-    realmObj.delete(realmObj.objects("Global").filtered("key == 'hasSkipFindFriend'"))
+    //realmObj.delete(realmObj.objects("Global").filtered("key == 'hasSkipFindFriend'"))
 });
 function isFirst() {
     let isFirst = true;

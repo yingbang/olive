@@ -31,7 +31,7 @@ export default class ImageShow extends Component {
     }
     render(){
         return (
-            <Modal transparent={true} visible={true} >
+            <Modal onrequestclose={()=>{}} transparent={true} visible={true} >
                 <View style={{alignItems:'center',justifyContent:'center',height:50,width:null,backgroundColor:'#000000'}}>
                     <Text style={{color:'#ffffff'}}>{this.state.page} / {this.state.totalPage}</Text>
                 </View>

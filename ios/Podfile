@@ -18,6 +18,9 @@ target 'olive' do
   pod ‘UMengUShare/Social/ReducedQQ'
   # 集成微博
   pod ‘UMengUShare/Social/ReducedSina'
+  
+  # 键盘遮挡问题
+  pod 'IQKeyboardManager'
 
 
   target 'oliveTests' do
