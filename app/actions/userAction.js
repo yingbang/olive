@@ -353,6 +353,47 @@ export function getDongtaiAction(userid,page,callback){
         });
     }
 }
+//根据ID获取动态内容
+export function getDongtaiInfoByIdAction(id,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/dongtaiContent').query({id:id,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            //保存到动态表
+                            let item = {
+                                id:parseInt(json['id']),
+                                userid:parseInt(json['userid']),
+                                quanzi:parseInt(json['quanzi']),
+                                pinglun:parseInt(json['pinglun']),
+                                zan:parseInt(json['zan']),
+                                share:parseInt(json['share']),
+                                jingxuan:parseInt(json['jingxuan']),
+                                dateline:json['dateline'] !== null ? parseFloat(json['dateline']) : 0,
+                                title:json['title'] !== null ? json['title'] : "",
+                                content:json['content'] !== null ? json['content'] : "",
+                                pics:json['pics'] !== null ? json['pics'] : "",
+                                pinglunlist:json['pinglunlist'] !== null ? json['pinglunlist'] : "",
+                            };
+                            realmObj.create("Dongtai",item,true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback();
+                }
+            }
+        });
+    }
+}
 
 //发布动态
 export function fabuDongtaiAction(content,pics,quanzi,callback){
@@ -377,7 +418,6 @@ export function fabuDongtaiAction(content,pics,quanzi,callback){
         });
     }
 }
-
 //获取某个动态的评论
 export function getPinglunAction(id,page,callback){
     return dispatch => {
@@ -419,7 +459,6 @@ export function getPinglunAction(id,page,callback){
         });
     }
 }
-
 //评论动态或文章
 export function pinglunAction(content,id,to,type,callback){
     return dispatch => {
@@ -444,7 +483,6 @@ export function pinglunAction(content,id,to,type,callback){
             });
     }
 }
-
 //获取某个动态的点赞列表
 export function getZanAction(id,page,callback){
     return dispatch => {
@@ -481,7 +519,6 @@ export function getZanAction(id,page,callback){
         });
     }
 }
-
 //获取点赞过的动态列表，用来判断是否点过赞
 export function getZanDongtaiAction(page,callback){
     return dispatch => {
@@ -513,7 +550,6 @@ export function getZanDongtaiAction(page,callback){
         });
     }
 }
-
 //点赞某个动态或取消点赞
 export function zanDongtaiAction(id,type,callback){
     return dispatch => {
@@ -570,25 +606,27 @@ export function getCangAction(type,page,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let contentList = json.list;
-                        for(let i=0, l=contentList.length; i<l; i++){
-                            let item = {
-                                id:parseInt(contentList[i]['id']),
-                                userid:parseInt(contentList[i]['userid']),
-                                contentid:parseInt(contentList[i]['contentid']),
-                                type:parseInt(contentList[i]['type']),
-                            };
-                            realmObj.create("Cang",item,true);
-                        }
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:parseInt(contentList[i]['userid']),
+                                    contentid:parseInt(contentList[i]['contentid']),
+                                    type:parseInt(contentList[i]['type']),
+                                };
+                                realmObj.create("Cang",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
                 }
-                //发送
-                callback && callback();
             }
         });
     }
@@ -789,6 +827,44 @@ export function getBaomingInfoByIdAction(userid,huodongid,callback){
                 }
                 //发送
                 callback && callback();
+            }
+        });
+    }
+}
+//查询某个会员的所有活动
+export function getHuodongByUseridAction(userid,page,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/getHuodongByUserid').query({userid:userid,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                    huodongid:contentList[i]['huodongid'] !== null ? parseInt(contentList[i]['huodongid']) : 0,
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    mobile:contentList[i]['mobile'] !== null ? contentList[i]['mobile'] : "",
+                                    name:contentList[i]['name'] !== null ? contentList[i]['name'] : "",//这个就是name不是nickname
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("HuodongBaoming",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
+                }
             }
         });
     }

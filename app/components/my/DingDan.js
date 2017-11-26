@@ -13,6 +13,7 @@ import {
 //公共头部
 import {List, ListItem, Header} from 'react-native-elements';
 import DingDanTab from './DingDanTab';
+import globalStyle from '../common/GlobalStyle';
 
 export default class DingDan extends Component{
     static navigationOptions = {
@@ -21,6 +22,7 @@ export default class DingDan extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '我的订单'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

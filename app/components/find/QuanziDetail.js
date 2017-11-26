@@ -55,6 +55,7 @@ class QuanziDetail extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '圈子详情'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

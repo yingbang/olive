@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Header, Icon} from 'react-native-elements';
 import Camera from 'react-native-camera';
+import globalStyle from './GlobalStyle';
 
 export default class CameraPage extends Component {
     static navigationOptions = {
@@ -16,7 +17,8 @@ export default class CameraPage extends Component {
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '扫描二维码'}}
-                backgroundColor="rgba(0,0,0,0.2)"
+                backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

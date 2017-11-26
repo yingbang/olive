@@ -12,11 +12,12 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 //公共头部
-import { Card, List, ListItem, Button,Header} from 'react-native-elements';
+import { Card, List, ListItem, Button,Header,FormInput} from 'react-native-elements';
 import {formatTime,getFullPath} from '../common/public';
 import {isMobile} from '../common/Validate';
 import {toastShort} from '../common/ToastTool';
 import {getBaomingInfoByIdAction,huodongBaomingAction} from '../../actions/userAction';
+import globalStyle from '../common/GlobalStyle';
 
 
 class HuodongBaoMing extends Component{
@@ -37,6 +38,7 @@ class HuodongBaoMing extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '活动报名'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
@@ -111,8 +113,12 @@ class HuodongBaoMing extends Component{
                         <View>
                             <Text style={styles.huodongItemTitle}>{item['title']}</Text>
                             <View style={styles.huodongItemTime}>
-                                <Text>活动日期：</Text>
+                                <Text>活动开始日期：</Text>
                                 <Text style={{flex:1,fontSize:12}}>{formatTime(item['starttime'],"yyyy年MM月dd日 周w hh:mm")}</Text>
+                            </View>
+                            <View style={styles.huodongItemTime}>
+                                <Text>活动结束日期：</Text>
+                                <Text style={{flex:1,fontSize:12}}>{formatTime(item['endtime'],"yyyy年MM月dd日 周w hh:mm")}</Text>
                             </View>
                             <View style={styles.huodongItemTime}>
                                 <Text>活动地点：</Text>
@@ -122,9 +128,9 @@ class HuodongBaoMing extends Component{
                                 <Text>报名人：</Text>
                                 <Text style={{flex:1,fontSize:12}}>{user['nickname']}</Text>
                             </View>
-                            <View style={styles.huodongItemTime}>
+                            <View style={[styles.huodongItemTime,{overflow:'hidden'}]}>
                                 <Text>手机号码：</Text>
-                                <TextInput style={{flex:1,width:null,height: 30, borderColor: '#f2f2f2', borderWidth: 1}} defaultValue={user['mobile']} onChangeText={(text)=>{this.setState({mobile:text});}}/>
+                                <FormInput defaultValue={user['mobile']} onChangeText={(text)=>{this.setState({mobile:text});}}/>
                             </View>
                         </View>
                     </Card>

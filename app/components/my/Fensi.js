@@ -26,6 +26,7 @@ class Fensi extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '我的粉丝'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

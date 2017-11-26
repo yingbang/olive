@@ -21,6 +21,7 @@ class ZiLiaoUpdate extends Component{
                 centerComponent={{ text: HeaderProps.scene.route.params.text}}
                 rightComponent={<Text onPress={()=>{HeaderProps.scene.route.params.save()}}>确定</Text>}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

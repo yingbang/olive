@@ -14,6 +14,10 @@ const globalStyle = StyleSheet.create({
     statusHeight:{
         paddingTop: (Platform.OS === 'ios') ? 20 : 0,
     },
+    //安卓头部高度重新定义
+    androidHeaderStyle:{
+        height: (Platform.OS === 'ios') ? 70 : 50,
+    },
     //显示状态栏
     container:{
         flex:1,

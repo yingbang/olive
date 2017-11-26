@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import { Header} from 'react-native-elements';
+import globalStyle from '../common/GlobalStyle';
 
 //处理iframe
 function renderNode(node, index) {
@@ -42,6 +43,7 @@ export default class NoticeDetail extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '公告详情'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

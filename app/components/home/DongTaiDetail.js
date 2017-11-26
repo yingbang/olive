@@ -50,6 +50,7 @@ class DongTaiDetail extends Component{
                 centerComponent={{ text: '动态详情'}}
                 rightComponent={{ icon: 'more-horiz'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

@@ -13,6 +13,7 @@ import {
 //公共头部
 import {List, ListItem, Header} from 'react-native-elements';
 import BlankRongyu from "../common/BlankRongyu";
+import globalStyle from '../common/GlobalStyle';
 
 export default class RongYu extends Component{
     static navigationOptions = {
@@ -21,6 +22,7 @@ export default class RongYu extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '我的荣誉勋章'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

@@ -16,6 +16,7 @@ import {connect} from 'react-redux';
 import { Card, List, ListItem, Header} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
+import {toastShort} from '../common/ToastTool';
 import {logout} from '../../actions/loginAction';
 
 const contentList = [
@@ -27,12 +28,12 @@ const contentList = [
     {
         key:1,
         title: '消息通知设置',
-        action:"",
+        action:"shezhi_xiaoxi",
     },
     {
         key:2,
         title: '隐私',
-        action:"",
+        action:"shezhi_yinsi",
     },
     {
         key:3,
@@ -42,18 +43,18 @@ const contentList = [
     {
         key:4,
         title: '给橄榄枝评分',
-        action:"",
+        action:"shezhi_pingfen",
     },
     {
         key:5,
         title: '邀请好友使用',
-        action:"",
+        action:"shezhi_yaoqing",
     },
     {
         key:6,
         title: '关于橄榄枝',
         isDivider:true,
-        action:"",
+        action:"shezhi_guanyu",
     },
     {
         key:7,
@@ -76,6 +77,7 @@ export class Shezhi extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '设置'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
@@ -87,21 +89,24 @@ export class Shezhi extends Component{
                 break;
             case 'shezhi_xiaoxi':
                 TargetComponent = '';
+                toastShort("暂未开放此功能！");
                 break;
             case 'shezhi_yinsi':
                 TargetComponent = '';
+                toastShort("暂未开放此功能！");
                 break;
             case 'shezhi_yijian':
                 TargetComponent = 'YiJianFanKui';
                 break;
             case 'shezhi_pingfen':
                 TargetComponent = '';
+                toastShort("暂未开放此功能！");
                 break;
             case 'shezhi_yaoqing':
-                TargetComponent = '';
+                TargetComponent = 'ContactsList';
                 break;
             case 'shezhi_guanyu':
-                TargetComponent = 'Shezhi';
+                TargetComponent = 'AboutUs';
                 break;
             case 'shezhi_tuichu':
                 let _that = this;

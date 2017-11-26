@@ -15,6 +15,8 @@ import HTMLView from 'react-native-htmlview';
 import { Header, Icon} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
 import {getNewsInfoByIdAction} from '../../actions/newsAction';
+import {cangDongtaiAction} from '../../actions/userAction';
+import UShare from '../common/UShare';
 
 //处理iframe
 function renderNode(node, index) {
@@ -36,7 +38,10 @@ class NewsDetail extends Component{
             id:this.props.navigation.state.params.id,
             isCollect:false,
             title:"",
-            content:""
+            content:"",
+            intro:"",
+            pic:"",
+            host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
     static navigationOptions = {
@@ -48,6 +53,7 @@ class NewsDetail extends Component{
                     <Icon style={styles.icon} onPress={()=>{HeaderProps.scene.route.params.share()}} name="share-alt" type="font-awesome"/>
                 </View>}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
@@ -60,6 +66,8 @@ class NewsDetail extends Component{
                 this.setState({
                     title:item[0]['title'],
                     content:item[0]['content'],
+                    intro:item[0]['intro'],
+                    pic:item[0]['pic'],
                     isCollect:item[0]['shoucang'] === 1
                 });
             }
@@ -77,6 +85,8 @@ class NewsDetail extends Component{
                 this.setState({
                     title:item[0]['title'],
                     content:item[0]['content'],
+                    intro:item[0]['intro'],
+                    pic:item[0]['pic'],
                     isCollect:item[0]['shoucang'] === 1
                 });
                 //设置收藏和分享
@@ -91,10 +101,23 @@ class NewsDetail extends Component{
             isCollect:newState
         });
         this.props.navigation.setParams({isCollect:newState});
+        this.shoucang(!newState);
     }
     //分享
     _share(){
-        alert(this.state.id)
+        UShare.share(this.state.title,this.state.intro,this.state.pic,this.state.host,()=>{},()=>{});
+    }
+
+    //收藏、取消收藏
+    shoucang(status){
+        let statusNum = status ? 0 : 1;//收藏1、取消收藏0
+        this.props.dispatch(cangDongtaiAction(this.state.id,0,statusNum,this._loadCangComplete.bind(this)));
+    }
+    _loadCangComplete(){
+        let status = !this.state.isCollect;
+        this.setState({
+            isCollect:status
+        });
     }
 
     render(){

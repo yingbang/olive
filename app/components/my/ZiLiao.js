@@ -30,6 +30,7 @@ export default class ZiLiao extends Component{
                 centerComponent={{ text: '个人资料'}}
                 rightComponent={{icon:'qrcode',type:"font-awesome"}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

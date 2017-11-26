@@ -11,6 +11,7 @@ import {Header} from 'react-native-elements';
 import {connect} from 'react-redux';
 import {toastShort} from '../common/ToastTool';
 import {fankuiAction} from '../../actions/userAction';
+import globalStyle from '../common/GlobalStyle';
 
 class YiJianFanKui extends Component{
     static navigationOptions = {
@@ -19,6 +20,7 @@ class YiJianFanKui extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '意见反馈'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

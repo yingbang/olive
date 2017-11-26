@@ -40,6 +40,7 @@ import RongYu from './components/my/RongYu';
 import GongYi from './components/my/GongYi';
 import ContactsList from './components/my/ContactsList';
 import ZiLiaoUpdate from './components/my/ZiLiaoUpdate';
+import AboutUs from './components/my/AboutUs';
 //资讯
 import NewsDetail from './components/news/NewsDetail';
 //活动
@@ -216,6 +217,7 @@ const Navigator = StackNavigator(
         GongYi: {screen: GongYi},
         ContactsList: {screen: ContactsList},
         ZiLiaoUpdate: {screen: ZiLiaoUpdate},
+        AboutUs: {screen: AboutUs},
         //资讯
         NewsDetail: {screen: NewsDetail},
         //活动

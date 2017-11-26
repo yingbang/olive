@@ -41,6 +41,7 @@ class QuanziDongtai extends Component{
                 centerComponent={{ text: HeaderProps.scene.route.params.title}}
                 rightComponent={{ icon: 'gear',type:'font-awesome', onPress:()=>{HeaderProps.scene.route.params.goDetail()} }}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
@@ -258,7 +259,7 @@ class QuanziDongtai extends Component{
                             showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
                 >
                     <TouchableWithoutFeedback onPress={()=>{this._goDetail()}}>
-                    <View style={{flexDirection:'row',alignItems:'center',marginTop:20}}>
+                    <View style={{flexDirection:'row',alignItems:'center',marginTop:20,padding:8}}>
                         {
                             this.state.quanziInfo['pic'] !== "" ?
                                 <Image style={globalStyle.defaultAvatarImage} source={{uri:getFullPath(this.state.quanziInfo['pic'],this.state.host)}}/>
@@ -271,7 +272,7 @@ class QuanziDongtai extends Component{
                         </View>
                     </View>
                     </TouchableWithoutFeedback>
-                    <View style={{marginTop:20,marginBottom:20}}>
+                    <View style={{marginTop:20,marginBottom:20,padding:8}}>
                         <HTMLView
                             value={this.state.quanziInfo['content']}
                             stylesheet={styles}

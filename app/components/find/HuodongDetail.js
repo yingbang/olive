@@ -48,6 +48,7 @@ class HuodongDetail extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '活动详情'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
@@ -108,6 +109,10 @@ class HuodongDetail extends Component{
                             <View style={styles.huodongItemTime}>
                                 <Image style={[styles.huodongItemTimeImage,{width:22,height:22}]} source={require('../../assets/icon/icontime.png')}/>
                                 <Text style={{flex:1,fontSize:12}}>{formatTime(item['starttime'],"yyyy年MM月dd日 周w hh:mm")}</Text>
+                            </View>
+                            <View style={styles.huodongItemTime}>
+                                <Image style={[styles.huodongItemTimeImage,{width:22,height:22}]} source={require('../../assets/icon/icontime.png')}/>
+                                <Text style={{flex:1,fontSize:12}}>{formatTime(item['endtime'],"yyyy年MM月dd日 周w hh:mm")}</Text>
                             </View>
                             <View style={styles.huodongItemTime}>
                                 <Image style={styles.huodongItemTimeImage} source={require('../../assets/icon/iconaddress.png')}/>

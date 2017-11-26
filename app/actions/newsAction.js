@@ -53,22 +53,37 @@ export function getNewsInfoByIdAction(id,callback){
                 console.log(err);
             }else{
                 let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let item = {
-                            id:json['id']+0,
-                            title:json['title'],
-                            content:json['content'] !== null ? json['content'] : "",
-                            shoucang:json['shoucang']+0,
-                        };
-                        realmObj.create("NewsData",item,true);
-                    });
-                }catch(e){
-                    console.log(e)
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            //保存到新闻详情表
+                            let item = {
+                                id:json['id']+0,
+                                title:json['title'],
+                                content:json['content'] !== null ? json['content'] : "",
+                                shoucang:json['shoucang']+0,
+                            };
+                            realmObj.create("NewsData",item,true);
+                            //保存到新闻表
+                            let news = {
+                                id:json['id']+0,
+                                cid:json['cid']+0,
+                                title:json['title'],
+                                pic:json['pic'] !== null ? json['pic'] : "",
+                                intro:json['intro'] !== null ? json['intro'] : "",
+                                flags:json['flags'] !== null ? json['flags'] : "",
+                                author:json['author'] !== null ? json['author'] : "",
+                                comments:json['comments']+0
+                            };
+                            realmObj.create("News",news,true);
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback();
                 }
-                //发送
-                callback && callback();
             }
         });
     }

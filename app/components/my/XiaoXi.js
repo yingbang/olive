@@ -9,7 +9,8 @@ import {
     TextInput,
     Button,
     FlatList,
-    RefreshControl
+    RefreshControl,
+    Platform
 } from 'react-native';
 //公共头部
 import {connect} from 'react-redux';
@@ -19,25 +20,6 @@ import globalStyle from '../common/GlobalStyle';
 import {formatTime} from '../common/public';
 import HTMLView from 'react-native-htmlview';
 
-const contentList = [
-    {
-        key:0,
-        title: '橄榄枝小助手',
-    },
-    {
-        key:1,
-        title: '莎莎',
-    },
-    {
-        key:2,
-        title: '明明',
-    },
-    {
-        key:3,
-        title: '花花',
-    },
-]
-
 class XiaoXi extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
@@ -46,6 +28,7 @@ class XiaoXi extends Component{
                 centerComponent={{ text: '我的消息'}}
                 rightComponent={<Text onPress={()=>{HeaderProps.navigation.navigate("ContactsList");}}>联系人</Text>}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
@@ -120,10 +103,11 @@ class XiaoXi extends Component{
                         stylesheet={styles}
                         addLineBreaks={false}
                         onLinkPress={(url) => {this.props.navigation.navigate("ShowUrl",{url:url})}}
-                        style={{height:15,overflow:'hidden',marginTop:6}}
+                        style={{height:15,overflow:'hidden',marginTop:5}}
                     />
                 </View>
             }
+            subtitleContainerStyle={(Platform.OS === 'ios') ? {} : {height:15,overflow:'hidden'}}
             avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
             avatarStyle={styles.avatar}
             rightTitle={formatTime(item.dateline,"MM-dd")}

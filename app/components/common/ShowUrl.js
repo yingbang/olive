@@ -14,6 +14,7 @@ import {
     TouchableOpacity
 } from 'react-native';
 import { Header} from 'react-native-elements';
+import globalStyle from '../common/GlobalStyle';
 
 
 export default class ShowUrl extends Component{
@@ -31,6 +32,7 @@ export default class ShowUrl extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.scene.route.params.onBack()} }}
                 centerComponent={{ text: '详情'}}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };
