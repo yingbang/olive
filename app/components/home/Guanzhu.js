@@ -13,7 +13,8 @@ import {
     Button,
     FlatList,
     RefreshControl,
-    Platform
+    Platform,
+    InteractionManager
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
@@ -22,6 +23,7 @@ import {List} from 'react-native-elements';
 import HeaderWithSearch from '../common/HeaderWithSearch';
 import {getDongtaiAction,getZanDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
+import BlankContent from '../common/BlankContent';
 
 export default class Guanzhu extends Component{
 
@@ -123,28 +125,30 @@ export default class Guanzhu extends Component{
 
     //获取动态
     componentDidMount(){
-        try{
-            //动态
-            let dongtaiList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
-            if(dongtaiList.length > 0){
-                dongtaiList = dongtaiList.sorted('id',true);
-                this.setState({
-                    dongtai:dongtaiList
-                });
+        InteractionManager.runAfterInteractions(()=>{
+            try{
+                //动态
+                let dongtaiList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
+                if(dongtaiList.length > 0){
+                    dongtaiList = dongtaiList.sorted('id',true);
+                    this.setState({
+                        dongtai:dongtaiList
+                    });
+                }
+                //点赞列表
+                let zanDongtaiList = realmObj.objects("ZanDongtai");
+                if(zanDongtaiList.length > 0){
+                    this.setState({
+                        zanDongtaiList:zanDongtaiList
+                    });
+                }
+            }catch(e){
+                console.log(e);
+            }finally {
+                this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+                this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
             }
-            //点赞列表
-            let zanDongtaiList = realmObj.objects("ZanDongtai");
-            if(zanDongtaiList.length > 0){
-                this.setState({
-                    zanDongtaiList:zanDongtaiList
-                });
-            }
-        }catch(e){
-            console.log(e);
-        }finally {
-            this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
-            this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
-        }
+        });
     }
     //网络请求加载完成
     _loadDongtaiComplete(totalPage){
@@ -157,6 +161,10 @@ export default class Guanzhu extends Component{
                     dongtai:contentList,
                     currentDongtaiPage:page + 1,
                     loadDongtaiFinish:page >= totalPage,
+                    loading:false,
+                });
+            }else{
+                this.setState({
                     loading:false,
                 });
             }
@@ -208,6 +216,7 @@ export default class Guanzhu extends Component{
                         data={this.state.dongtai}
                         extraData={this.state}
                         keyExtractor={this._keyExtractor}
+                        ListEmptyComponent={BlankContent}
                     />
                 </List>
             </ScrollView>

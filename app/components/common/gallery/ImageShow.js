@@ -31,7 +31,8 @@ export default class ImageShow extends Component {
     }
     render(){
         return (
-            <Modal onrequestclose={()=>{}} transparent={true} visible={true} >
+            <Modal onRequestClose={()=>{this.props.navigation.goBack();}} transparent={true} visible={true} >
+                <StatusBar hidden={true}/>
                 <View style={{alignItems:'center',justifyContent:'center',height:50,width:null,backgroundColor:'#000000'}}>
                     <Text style={{color:'#ffffff'}}>{this.state.page} / {this.state.totalPage}</Text>
                 </View>

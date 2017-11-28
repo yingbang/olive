@@ -14,15 +14,16 @@ import {
 import request from 'superagent';
 import ImagePicker from 'react-native-image-crop-picker';
 //公共头部
+import {connect} from 'react-redux';
 import {imageUploadFetch, imageUploadBase64, getFullPath} from '../common/public';
 import { Card, List, ListItem, Header} from 'react-native-elements';
-import {getUserInfoByIdAction} from '../../actions/userAction';
+import {getUserInfoByIdAction,updateUserInfoAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import {toastShort} from '../common/ToastTool';
 
 
-export default class ZiLiao extends Component{
+class ZiLiao extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
@@ -214,6 +215,11 @@ export default class ZiLiao extends Component{
             imageUploadFetch(host + "/api/tool/uploadByFetch?userid=" + userid,'file',{path:file}).then((result)=>{
                 if(result.url){
                     //alert(result.url)
+                    this.props.dispatch(updateUserInfoAction("avatar="+result.url));
+                    let _that = this;
+                    setTimeout(function () {
+                        _that.props.dispatch(getUserInfoByIdAction(userid),this.updateUserInfo);
+                    },300);
                 }
             }).catch((err)=>{});
             /*imageUploadBase64(host + "/api/tool/uploadBase64?userid="+userid,'file',fileData).then((result)=>{
@@ -288,6 +294,17 @@ export default class ZiLiao extends Component{
         );
     }
 }
+
+
+
+function select(state) {
+    const {loginReducer} = state;
+    return {
+        loginReducer
+    }
+}
+export default connect(select)(ZiLiao);
+
 
 const styles = StyleSheet.create({
     container: {

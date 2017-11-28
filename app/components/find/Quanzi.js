@@ -86,6 +86,10 @@ class Quanzi extends Component{
                     isFinished:page >= totalPage,
                     loading:false
                 });
+            }else{
+                this.setState({
+                    loading:false,
+                });
             }
         }catch(e){}
     }

@@ -9,7 +9,8 @@ import {
     Image,
     ImageBackground,
     StatusBar,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
 import {
     Container,
@@ -180,7 +181,7 @@ export default class ContactsList extends Component {
             title={item.familyName + item.givenName}
             subtitle={item.mobile}
             rightIcon={<Text onPress={()=>{this.yaoqingOne(item['mobile'])}} style={styles.btn}>邀请</Text>}
-            leftIcon={item.thumbnailPath ? <Image style={styles.avatar} source={{uri:item.thumbnailPath}}/>: <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')} />}
+            leftIcon={item.thumbnailPath ? <Image style={styles.avatar} source={(Platform.OS === 'ios') ? {uri:item.thumbnailPath} : require('../../assets/icon/iconhead.png')}/>: <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')} />}
             containerStyle={[globalStyle.listItem,{marginTop:0}]}
             {...this.props}
         />

@@ -11,7 +11,8 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     FlatList,
-    RefreshControl
+    RefreshControl,
+    InteractionManager
 } from 'react-native';
 import {connect} from 'react-redux';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
@@ -22,6 +23,7 @@ import { Card, List, ListItem, Button} from 'react-native-elements';
 import {formatTime,isExpired,getFullPath} from '../common/public';
 import {getHuodongAction,getQuanziAction} from '../../actions/userAction';
 const {width} = Dimensions.get("window");
+import BlankContent from '../common/BlankContent';
 
 class FindIndex extends Component{
     constructor(props) {
@@ -38,22 +40,24 @@ class FindIndex extends Component{
     }
     //获取活动
     componentDidMount(){
-        try{
-            //活动
-            let huodongList = realmObj.objects("Huodong");
-            if(huodongList.length > 0){
-                huodongList = huodongList.sorted('id',true);
-                this.setState({
-                    huodong:huodongList
-                });
+        InteractionManager.runAfterInteractions(()=>{
+            try{
+                //活动
+                let huodongList = realmObj.objects("Huodong");
+                if(huodongList.length > 0){
+                    huodongList = huodongList.sorted('id',true);
+                    this.setState({
+                        huodong:huodongList
+                    });
+                }
+                //获取圈子
+            }catch(e){
+                console.log(e);
+            }finally {
+                this.props.dispatch(getHuodongAction(this.state.currentHuodongPage,(totalPage)=>{this._loadHuodongComplete(totalPage)}));
+                this.props.dispatch(getQuanziAction(1,"",1,(totalPage)=>{this._loadQuanziComplete(totalPage)}));
             }
-            //获取圈子
-        }catch(e){
-            console.log(e);
-        }finally {
-            this.props.dispatch(getHuodongAction(this.state.currentHuodongPage,(totalPage)=>{this._loadHuodongComplete(totalPage)}));
-            this.props.dispatch(getQuanziAction(1,"",1,(totalPage)=>{this._loadQuanziComplete(totalPage)}));
-        }
+        });
     }
     //网络请求加载完成
     _loadHuodongComplete(totalPage){
@@ -66,6 +70,10 @@ class FindIndex extends Component{
                     huodong:contentList,
                     currentHuodongPage:page + 1,
                     loadHuodongFinish:page >= totalPage,
+                    loading:false,
+                });
+            }else{
+                this.setState({
                     loading:false,
                 });
             }
@@ -175,6 +183,7 @@ class FindIndex extends Component{
                         extraData={this.state}
                         keyExtractor={this._keyExtractor}
                         showsVerticalScrollIndicator={false}
+                        showsHorizontalScrollIndicator={false}
                         horizontal={true}
                         style={{flex:1}}
                     />
@@ -191,6 +200,7 @@ class FindIndex extends Component{
                         data={this.state.huodong}
                         extraData={this.state}
                         keyExtractor={this._keyExtractor}
+                        ListEmptyComponent={BlankContent}
                     />
                 </List>
             </ScrollView>

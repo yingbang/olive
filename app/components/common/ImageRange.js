@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 const { width, height } = Dimensions.get('window');
 import {getFullPath} from './public';
+//import {CachedImage} from "react-native-img-cache";
 
 //判断图片是否有前缀，没有的话加上域名
 function getFullUrl(path) {

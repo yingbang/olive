@@ -10,7 +10,8 @@ import {
     Text,
     Platform,
     ScrollView,
-    RefreshControl
+    RefreshControl,
+    InteractionManager
 } from 'react-native';
 import {
     List,
@@ -19,6 +20,7 @@ import {
     Body
 } from 'native-base';
 import {formatTime,isExpired,getFullPath} from '../common/public';
+import BlankContent from '../common/BlankContent';
 import {getNewsListAction} from '../../actions/newsAction';
 
 export default class NewsIndex extends Component{
@@ -35,20 +37,22 @@ export default class NewsIndex extends Component{
     }
     //组件加载完成
     componentDidMount() {
-        //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
-        try{
-            let newsList = realmObj.objects("News");
-            if(newsList.length > 0){
-                newsList = newsList.sorted([['flags',true],['id',true]]);
-                this.setState({
-                    data:newsList
-                });
+        InteractionManager.runAfterInteractions(()=>{
+            //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
+            try{
+                let newsList = realmObj.objects("News");
+                if(newsList.length > 0){
+                    newsList = newsList.sorted([['flags',true],['id',true]]);
+                    this.setState({
+                        data:newsList
+                    });
+                }
+            }catch(e){
+                console.log(e);
+            }finally{
+                this.props.dispatch(getNewsListAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
             }
-        }catch(e){
-            console.log(e);
-        }finally{
-            this.props.dispatch(getNewsListAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
-        }
+        });
     }
     //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadComplete(totalPage){
@@ -62,6 +66,10 @@ export default class NewsIndex extends Component{
                     currentPage:page + 1,
                     isFinished:page >= totalPage,
                     loading:false
+                });
+            }else{
+                this.setState({
+                    loading:false,
                 });
             }
         }catch(e){}
@@ -146,6 +154,7 @@ export default class NewsIndex extends Component{
                     data={this.state.data}
                     extraData={this.state}
                     keyExtractor={this._keyExtractor}
+                    ListEmptyComponent={BlankContent}
                 />
                 </List>
             </ScrollView>

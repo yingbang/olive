@@ -2,10 +2,11 @@ package com.oliveglobal.app;
 
 import android.app.Application;
 
+import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
+import com.RNFetchBlob.RNFetchBlobPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
-import com.oliveglobal.app.BuildConfig;
 import com.olive.u_share.UShareReactPackage;
 import com.olive.u_share.util.Constants;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
@@ -40,6 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFetchBlobPackage(),
             new ReactNativeContacts(),
             new RCTCameraPackage(),
             new PickerPackage(),

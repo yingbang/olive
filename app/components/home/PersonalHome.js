@@ -183,6 +183,10 @@ class PersonalHome extends Component{
                     loadDongtaiFinish:page >= totalPage,
                     loading:false,
                 });
+            }else{
+                this.setState({
+                    loading:false,
+                });
             }
         }catch(e){}
     }
@@ -397,6 +401,8 @@ const styles = StyleSheet.create({
     sectionTitleText: {
         color: 'white',
         fontSize: 12,
-        paddingVertical: 5
+        paddingVertical: 5,
+        paddingLeft:8,
+        paddingRight:8
     },
 });

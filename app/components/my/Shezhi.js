@@ -122,7 +122,19 @@ export class Shezhi extends Component{
                                 let userMobile = realmObj.objects('Global').filtered("key == 'currentUserMobile'");
                                 realmObj.delete(userid);
                                 realmObj.delete(userMobile);
-                                realmObj.objects('Global');//再重新获取一遍，这样realm就会立即更新了
+                                realmObj.delete(realmObj.objects("Global").filtered("key == 'guanzhuTotal'"));
+                                realmObj.delete(realmObj.objects("Global").filtered("key == 'fensiTotal'"));
+                                realmObj.delete(realmObj.objects("Global").filtered("key == 'dongtaiTotal'"));
+                                realmObj.delete(realmObj.objects("User"));
+                                realmObj.delete(realmObj.objects("HiddenUser"));
+                                realmObj.delete(realmObj.objects("JoinCompany"));
+                                realmObj.delete(realmObj.objects("FollowUser"));
+                                realmObj.delete(realmObj.objects("Fensi"));
+                                realmObj.delete(realmObj.objects("ZanDongtai"));
+                                realmObj.delete(realmObj.objects("Cang"));
+                                realmObj.delete(realmObj.objects("HuodongBaoming"));
+                                realmObj.delete(realmObj.objects("Tongxunlu"));
+                                //realmObj.deleteAll();//清空
                             });
                             _that.props.dispatch(logout());
                         }}

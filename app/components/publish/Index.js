@@ -36,7 +36,7 @@ export default class PublishIndex extends Component{
      * 点击发布动态
      */
     pressFabuDongtai(){
-        this.props.navigation.navigate('PublishEdit');
+        this.props.navigation.navigate('PublishEdit',{quanzi:0});
     }
     /**
      * 点击取消按钮

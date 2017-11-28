@@ -13,7 +13,8 @@ import {
     Button,
     Platform,
     FlatList,
-    RefreshControl
+    RefreshControl,
+    InteractionManager
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
@@ -42,7 +43,7 @@ export default class Hot extends Component{
         super(props);
 
         this.state = {
-            slide:[],//幻灯片
+            slide:[{}],//幻灯片
             notice:[],//头条
             currentSlidePage:0,//幻灯片索引，从0开始
             loading:false,
@@ -134,46 +135,48 @@ export default class Hot extends Component{
     _keyExtractor = (item, index) => item.id;
     //获取幻灯片、头条、公益组织、达人、动态等
     componentDidMount(){
-        try{
-            //幻灯片
-            let slideList = realmObj.objects("Slide");
-            if(slideList.length > 0){
-                slideList = slideList.sorted('id',true);
-                this.setState({
-                    slide:slideList
-                });
+        InteractionManager.runAfterInteractions(()=>{
+            try{
+                //幻灯片
+                let slideList = realmObj.objects("Slide");
+                if(slideList.length > 0){
+                    slideList = slideList.sorted('id',true);
+                    this.setState({
+                        slide:slideList
+                    });
+                }
+                //公告头条
+                let noticeList = realmObj.objects("Notice");
+                if(noticeList.length > 0){
+                    noticeList = noticeList.sorted('id',true);
+                    this.setState({
+                        notice:noticeList
+                    });
+                }
+                //动态
+                let dongtaiList = realmObj.objects("Dongtai");
+                if(dongtaiList.length > 0){
+                    dongtaiList = dongtaiList.sorted('id',true);
+                    this.setState({
+                        dongtai:dongtaiList
+                    });
+                }
+                //点赞列表
+                let zanDongtaiList = realmObj.objects("ZanDongtai");
+                if(zanDongtaiList.length > 0){
+                    this.setState({
+                        zanDongtaiList:zanDongtaiList
+                    });
+                }
+            }catch(e){
+                console.log(e);
+            }finally {
+                this.props.screenProps.dispatch(getSlideAction(this._loadSlideComplete.bind(this)));
+                this.props.screenProps.dispatch(getNoticeAction(1,this._loadNoticeComplete.bind(this)));
+                this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+                this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
             }
-            //公告头条
-            let noticeList = realmObj.objects("Notice");
-            if(noticeList.length > 0){
-                noticeList = noticeList.sorted('id',true);
-                this.setState({
-                    notice:noticeList
-                });
-            }
-            //动态
-            let dongtaiList = realmObj.objects("Dongtai");
-            if(dongtaiList.length > 0){
-                dongtaiList = dongtaiList.sorted('id',true);
-                this.setState({
-                    dongtai:dongtaiList
-                });
-            }
-            //点赞列表
-            let zanDongtaiList = realmObj.objects("ZanDongtai");
-            if(zanDongtaiList.length > 0){
-                this.setState({
-                    zanDongtaiList:zanDongtaiList
-                });
-            }
-        }catch(e){
-            console.log(e);
-        }finally {
-            this.props.screenProps.dispatch(getSlideAction(this._loadSlideComplete.bind(this)));
-            this.props.screenProps.dispatch(getNoticeAction(1,this._loadNoticeComplete.bind(this)));
-            this.props.screenProps.dispatch(getDongtaiAction("",this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
-            this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
-        }
+        });
     }
     //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadSlideComplete(){
@@ -208,6 +211,10 @@ export default class Hot extends Component{
                     dongtai:contentList,
                     currentDongtaiPage:page + 1,
                     loadDongtaiFinish:page >= totalPage,
+                    loading:false,
+                });
+            }else{
+                this.setState({
                     loading:false,
                 });
             }

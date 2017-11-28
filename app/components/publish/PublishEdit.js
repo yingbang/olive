@@ -29,6 +29,7 @@ class PublishEdit extends Component{
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.scene.route.params.back()} }}
                 rightComponent={<Text onPress={()=>{HeaderProps.scene.route.params.fabu()}}>发布</Text>}
                 backgroundColor="#ffffff"
+                outerContainerStyles={globalStyle.androidHeaderStyle}
             />
         }
     };

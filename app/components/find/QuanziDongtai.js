@@ -24,7 +24,7 @@ import globalStyle from '../common/GlobalStyle';
 import {toastShort} from '../common/ToastTool';
 import Blank from '../common/Blank';
 import BlankQuanzi from '../common/BlankQuanzi';
-import {getDongtaiAction,getQuanziInfoByIdAction,zanDongtaiAction} from '../../actions/userAction';
+import {getDongtaiAction,getQuanziInfoByIdAction,zanDongtaiAction,getQuanziJoinInfoAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
 
 const window = Dimensions.get('window');
@@ -186,6 +186,7 @@ class QuanziDongtai extends Component{
         }finally {
             //this.props.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
             this.props.dispatch(getQuanziInfoByIdAction(this.state.id,this._loadQuanziComplete));//圈子详情
+            this.props.dispatch(getQuanziJoinInfoAction(userid,this.state.id,this._loadJoinComplete));//是否加入
             this.props.navigation.setParams({goDetail:()=>{this._goDetail()}});
         }
     }
@@ -218,6 +219,19 @@ class QuanziDongtai extends Component{
                 this.props.navigation.setParams({title:item[0]['title']});
             }
         }catch(e){}
+    };
+    _loadJoinComplete = ()=>{
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        let join = realmObj.objects("QuanziUser").filtered("userid == "+userid+" and quanzi == "+this.state.id);
+        if(join !== null && join.length > 0){
+            this.setState({
+                join:true,
+            });
+        }else{
+            this.setState({
+                join:false,
+            });
+        }
     };
     //判断是否滚动到底部
     _contentViewScroll = (e)=>{

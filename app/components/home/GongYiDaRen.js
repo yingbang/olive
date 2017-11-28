@@ -113,25 +113,29 @@ export default class GongYiDaRen extends Component {
                         this.state.content.map((item, i) => (
                             <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['id']})}}>
                                 <View style={styles.view}>
-                                    {
-                                        item['avatar'] !== "" ?
-                                            <Image style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
-                                            :
-                                            <Image style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
-                                    }
+                                    <View>
+                                        {
+                                            item['avatar'] !== "" ?
+                                                <Image style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
+                                                :
+                                                <Image style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
+                                        }
+                                    </View>
                                     <View style={{flex:1}}>
                                         <Text>{item['nickname']}</Text>
                                         <Text style={{fontSize:12,marginTop:8,marginBottom:8}}>{item['intro']}</Text>
                                     </View>
-                                    {
-                                        inArray(this.state.joinList, item['id'], 'id') ?
-                                            <Text onPress={() => {
-                                                this.join(item['id'], 0)
-                                            }} style={[colors.bgF8, colors.c99, styles.btn]}>已关注</Text>
-                                            : <Text onPress={() => {
-                                                this.join(item['id'], 1)
-                                            }} style={[colors.bgBlue, colors.cWhite, styles.btn]}>关注</Text>
-                                    }
+                                    <View>
+                                        {
+                                            inArray(this.state.joinList, item['id'], 'id') ?
+                                                <Text onPress={() => {
+                                                    this.join(item['id'], 0)
+                                                }} style={[colors.bgF8, colors.c99, styles.btn]}>已关注</Text>
+                                                : <Text onPress={() => {
+                                                    this.join(item['id'], 1)
+                                                }} style={[colors.bgBlue, colors.cWhite, styles.btn]}>关注</Text>
+                                        }
+                                    </View>
                                 </View>
                             </TouchableWithoutFeedback>
                         ))
