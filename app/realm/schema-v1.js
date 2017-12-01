@@ -54,6 +54,7 @@ const NewsSchema = {
         flags:{type:'string',default:''},//属性：推荐、头条、热门
         views:{type:'int',default:0},//浏览量
         comments:{type:'int',default:0},//评论数
+        dateline:{type:'double',default:0},//发布时间
     }
 };
 const NewsDataSchema = {
@@ -89,6 +90,13 @@ const UserSchema = {
         job:{type:'string',default:''},//职务
         address:{type:'string',default:''},//地址
         renzheng:{type:'string',default:''},//是否认证
+        renzhengleixing:{type:'int',default:0},//认证类型：0个人、1公司、2公益组织
+        renzhengshijian:{type:'double',default:0},//认证时间
+        renzhengzhuangtai:{type:'int',default:0},//认证状态：0待审核、1审核通过、2审核失败
+        shenfenzheng:{type:'string',default:''},//身份证照片
+        idnumber:{type:'string',default:''},//身份证号
+        zhizhao:{type:'string',default:''},//营业执照：公司和公益组织
+        zuzhi:{type:'string',default:''},//组织机构代码证
         weixin:{type:'string',default:''},//微信
         intro:{type:'string',default:''},//简介
         visible:{type:'bool',default:true},//对当前登录者是否可见
@@ -112,6 +120,7 @@ const JoinCompanySchema = {
         id:'int',
         name:{type:'string',default:''},//姓名
         avatar:{type:'string',default:''},//头像
+        intro:{type:'string',default:''},//简介
     }
 };
 
@@ -123,6 +132,8 @@ const FollowUserSchema = {
         id:'int',
         name:{type:'string',default:''},//姓名
         avatar:{type:'string',default:''},//头像
+        sex:{type:'string',default:''},//性别
+        intro:{type:'string',default:''},//简介
     }
 };
 
@@ -228,6 +239,7 @@ const HuodongSchema = {
         starttime:{type:'double',default:0},//开始时间
         endtime:{type:'double',default:0},//结束时间
         jiezhitime:{type:'double',default:0},//报名截止日期
+        city:{type:'string',default:''},//定位城市
         address:{type:'string',default:''},//地址
         quanzi:{type:'int',default:0},//圈子ID
         number:{type:'int',default:0},//报名人数
@@ -307,6 +319,6 @@ export default {
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
         DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,
         TongxunluSchema,HuodongBaomingSchema,QuanziSchema,QuanziUserSchema],
-    schemaVersion: 16,
+    schemaVersion: 3,
     migration: () => {}
 };

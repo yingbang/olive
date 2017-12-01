@@ -51,12 +51,12 @@ class YiJianFanKui extends Component{
     render(){
         return (
             <View style={styles.container}>
-                <View style={[styles.inputView,{height:80}]}>
+                <View style={[styles.inputView,{height:40}]}>
                     <TextInput
                         placeholder="手机号或QQ号（必填）"
                         placeholderTextColor={"#999999"}
                         underlineColorAndroid={"#ffffff"}
-                        style={[styles.textInputStyle,{height:40}]}
+                        style={[styles.textInputStyle,{height:30}]}
                         autoFocus={false}
                         returnKeyType="search"
                         clearButtonMode="while-editing"

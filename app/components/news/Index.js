@@ -148,7 +148,7 @@ export default class NewsIndex extends Component{
                         }
                         showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
-                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
+                <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,flex:1}}>
                 <FlatList
                     renderItem={this.renderRow}
                     data={this.state.data}
@@ -165,6 +165,7 @@ export default class NewsIndex extends Component{
 const styles = StyleSheet.create({
     container:{
         flex:1,
+        backgroundColor:'#ffffff'
     },
     cell_container:{
         flex:1,

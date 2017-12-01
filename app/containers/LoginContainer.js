@@ -51,13 +51,13 @@ class LoginContainer extends Component {
                             company:json['company'] !== null ? json['company'] : "",
                             job:json['job'] !== null ? json['job'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
+                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "",
                             avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:false,//自己的信息不需要显示在列表中
                         };
                         realmObj.create("User",user,true);
                         //保存当前登录的用户ID和手机号
-                        realmObj.create("Global",{key:"currentUserId",value:json['id']},true);
+                        realmObj.create("Global",{key:"currentUserId",value:json['id']+""},true);
                         realmObj.create("Global",{key:"currentUserMobile",value:json['mobile']},true);
                     });
                 }catch(e){

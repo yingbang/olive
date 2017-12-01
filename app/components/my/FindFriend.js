@@ -151,8 +151,8 @@ export default class FindFriend extends Component {
 
 const styles = StyleSheet.create({
     logo:{
-        width:130,
-        height:130,
+        width:100,
+        height:100,
         tintColor:'#666'
     },
     logoView:{
@@ -176,8 +176,9 @@ const styles = StyleSheet.create({
     text:{
         marginLeft:40,
         marginRight:40,
-        marginTop:20,
-        marginBottom:40
+        marginTop:30,
+        marginBottom:40,
+        lineHeight:30
     },
     skip:{
         alignSelf:'center',

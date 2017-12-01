@@ -20,8 +20,8 @@ import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button} from 'react-native-elements';
-import {formatTime,isExpired,getFullPath} from '../common/public';
-import {getHuodongAction,getQuanziAction} from '../../actions/userAction';
+import {formatTime,isExpired,getFullPath,inArray} from '../common/public';
+import {getHuodongAction,getQuanziAction,getHuodongByUseridAction} from '../../actions/userAction';
 const {width} = Dimensions.get("window");
 import BlankContent from '../common/BlankContent';
 
@@ -32,15 +32,18 @@ class FindIndex extends Component{
         this.state = {
             huodong:[],
             quanzi:[],
+            baoming:[],//我的报名列表
             currentHuodongPage:1,
             loadHuodongFinish:false,
             loading:false,
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
+
     //获取活动
     componentDidMount(){
         InteractionManager.runAfterInteractions(()=>{
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
             try{
                 //活动
                 let huodongList = realmObj.objects("Huodong");
@@ -51,11 +54,25 @@ class FindIndex extends Component{
                     });
                 }
                 //获取圈子
+                let quanziList = realmObj.objects("Quanzi");
+                if(quanziList.length > 0){
+                    this.setState({
+                        quanzi:quanziList,
+                    });
+                }
+                //我已经报名的活动
+                let baoming = realmObj.objects("HuodongBaoming").filtered("userid == "+userid);
+                if(baoming !== null && baoming.length > 0){
+                    this.setState({
+                        baoming:baoming,
+                    });
+                }
             }catch(e){
                 console.log(e);
             }finally {
                 this.props.dispatch(getHuodongAction(this.state.currentHuodongPage,(totalPage)=>{this._loadHuodongComplete(totalPage)}));
                 this.props.dispatch(getQuanziAction(1,"",1,(totalPage)=>{this._loadQuanziComplete(totalPage)}));
+                this.props.dispatch(getHuodongByUseridAction(userid,1));
             }
         });
     }
@@ -119,8 +136,23 @@ class FindIndex extends Component{
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("HuodongDetail",{id:item.id})}}>
                 <View>
-                    <Text style={styles.huodongItemTitle}>{item['title']}</Text>
-                    <Text style={{marginBottom: 10,fontSize:14,color:'#666666'}}>{item['intro']}</Text>
+                    <View style={{flexDirection:'row',alignItems:'center',marginBottom:8,overflow:'hidden'}}>
+                        {item['name'] ? "" :
+                            <Text style={{
+                                color: '#fff',
+                                fontSize: 14,
+                                backgroundColor: '#00bfff',
+                                paddingTop: 3,
+                                paddingBottom: 3,
+                                paddingLeft: 8,
+                                paddingRight: 8,
+                                borderRadius: 10,
+                                marginRight: 8
+                            }}>官方</Text>
+                        }
+                        <Text style={styles.huodongItemTitle}>{item['title']}</Text>
+                    </View>
+                    <Text style={{marginBottom: 10,fontSize:14,color:'#555555'}}>{item['intro']}</Text>
                     <View style={styles.huodongItemTime}>
                         <Image style={styles.huodongItemTimeImage} source={require('../../assets/icon/icontime.png')}/>
                         <Text style={{flex:1,fontSize:12}}>{formatTime(item['starttime'],"MM月dd日 周w hh:mm")}</Text>
@@ -128,28 +160,33 @@ class FindIndex extends Component{
                     </View>
                     <View style={styles.baoming}>
                         <View style={styles.author}>
+                            <Image style={{width:30,height:30,marginRight:5}} source={require('../../assets/icon/iconguan.png')}/>
                             <Text style={[colors.cBlue,styles.name]}>{item['name'] ? item['name'] : '官方'}</Text>
                             <Text>发布了该活动</Text>
+                            <Image style={[styles.huodongItemTimeImage,{marginLeft:8}]} source={require('../../assets/icon/iconaddress.png')}/>
+                            <Text>{item['city']}</Text>
                         </View>
-                        {
-                            isExpired(item['jiezhitime']) ?
-                                <Button
-                                    backgroundColor='#dddddd'
-                                    color='#666666'
-                                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                    title={isExpired(item['endtime']) ? '活动已结束' : '报名已截止'} /> :
-                                <Button
-                                    backgroundColor='#03A9F4'
-                                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                    onPress={() => {this.props.navigation.navigate("HuodongBaoMing",{id:item['id']})}}
-                                    title='我要报名' />
-                        }
-
+                        <View>
+                            {
+                                isExpired(item['jiezhitime']) ?
+                                    <Button
+                                        backgroundColor='#dddddd'
+                                        color='#666666'
+                                        buttonStyle={{padding:8,borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+                                        containerViewStyle={{marginLeft:0,marginRight:0}}
+                                        title={isExpired(item['endtime']) ? '活动已结束' : '报名已截止'} /> :
+                                    <Button
+                                        backgroundColor={inArray(this.state.baoming,item['id'],'huodongid') ? '#e60000' : "#03A9F4"}
+                                        buttonStyle={{padding:8,borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+                                        containerViewStyle={{marginLeft:0,marginRight:0}}
+                                        onPress={() => {this.props.navigation.navigate("HuodongBaoMing",{id:item['id']})}}
+                                        title={inArray(this.state.baoming,item['id'],'huodongid') ? '您已报名' : '我要报名'} />
+                            }
+                        </View>
                     </View>
                 </View>
             </TouchableWithoutFeedback>
         </Card>
-
     );
     renderQuanziRow = ({item}) => (
         <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("QuanziDongtai",{id:item['id']})}}>
@@ -218,7 +255,7 @@ export default connect(select)(FindIndex);
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#ffffff',
     },
     quanziContainer:{
         backgroundColor:'#ffffff',
@@ -250,7 +287,6 @@ const styles = StyleSheet.create({
     huodongItemTitle:{
         fontSize:16,
         color:'#333333',
-        marginBottom:5
     },
     huodongItemTime:{
         flexDirection:'row',
@@ -268,7 +304,8 @@ const styles = StyleSheet.create({
     },
     author:{
         flex:1,
-        flexDirection:'row'
+        flexDirection:'row',
+        alignItems:'center'
     },
     name:{
         marginRight:5

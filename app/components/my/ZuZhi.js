@@ -15,6 +15,7 @@ import {
 import {connect} from 'react-redux';
 import {List, ListItem, Header} from 'react-native-elements';
 import {getJoinCompanyAction} from '../../actions/userAction';
+import {formatTime,isExpired,getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 
@@ -93,16 +94,21 @@ class ZuZhi extends Component{
     }
     _keyExtractor = (item, index) => item.id;
     _renderItem = ({item}) => (
-        <ListItem
-            roundAvatar
-            key={item.id}
-            hideChevron={true}
-            title={item.name}
-            avatar={require('../../assets/mock_data/1.jpg')}
-            onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}
-            containerStyle={[globalStyle.listItem,{marginTop:0}]}
-            {...this.props}
-        />
+        <TouchableWithoutFeedback key={item.id} onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}>
+            <View style={{flexDirection:'row',justifyContent:'center',height:100,borderBottomWidth:1,borderBottomColor:'#f2f2f2'}}>
+                <View style={{justifyContent:'center',marginLeft:10}}>
+                    {
+                        item['avatar'] ?
+                            <Image style={{width:70,height:70}} source={{uri:getFullPath(item['avatar'],this.state.host)}}/> :
+                            <Image style={[globalStyle.defaultAvatar,{width:70,height:70}]} source={require('../../assets/icon/iconhead.png')}/>
+                    }
+                </View>
+                <View style={{justifyContent:'center',flex:1,marginLeft:10}}>
+                    <Text style={{fontSize:16,marginBottom:8}}>{item.name}</Text>
+                    <Text style={{color:'#555'}}>{item.intro}</Text>
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
     );
     render(){
         return (
@@ -116,6 +122,7 @@ class ZuZhi extends Component{
                         }
                         showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
+                <Text style={{height:40,lineHeight:40,color:'#555',backgroundColor:'#f8f8f8',paddingLeft:10}}>我加入的公益组织</Text>
                 <FlatList
                     data={this.state.data}
                     extraData={this.state}

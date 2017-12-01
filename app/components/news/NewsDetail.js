@@ -12,11 +12,13 @@ import {
 import {connect} from 'react-redux';
 //公共头部
 import HTMLView from 'react-native-htmlview';
-import { Header, Icon} from 'react-native-elements';
+import { Card,Header, Icon} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
-import {getNewsInfoByIdAction} from '../../actions/newsAction';
+import {formatTime,isExpired,getFullPath} from '../common/public';
+import {getNewsInfoByIdAction,setNewViewPlus} from '../../actions/newsAction';
 import {cangDongtaiAction} from '../../actions/userAction';
 import UShare from '../common/UShare';
+import AutoSizedImageMy from '../common/AutoSizedImageMy';
 
 //处理iframe
 function renderNode(node, index) {
@@ -28,6 +30,25 @@ function renderNode(node, index) {
                 </Text>
             </View>
         );
+    }
+    if (node.name === 'img') {
+        let width =
+            parseInt(node.attribs['width'], 10) || parseInt(node.attribs['data-width'], 10) || 0;
+        let height =
+            parseInt(node.attribs['height'], 10) ||
+            parseInt(node.attribs['data-height'], 10) ||
+            0;
+        const imgStyle = {
+            width,
+            height,
+        };
+
+        const source = {
+            uri: node.attribs.src,
+            width,
+            height,
+        };
+        return <AutoSizedImageMy key={index} source={source} style={imgStyle} />;
     }
 }
 
@@ -41,6 +62,8 @@ class NewsDetail extends Component{
             content:"",
             intro:"",
             pic:"",
+            dateline:0,
+            views:0,
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
@@ -66,13 +89,24 @@ class NewsDetail extends Component{
                 this.setState({
                     title:item[0]['title'],
                     content:item[0]['content'],
-                    intro:item[0]['intro'],
-                    pic:item[0]['pic'],
-                    isCollect:item[0]['shoucang'] === 1
+                    isCollect:item[0]['shoucang'] === 1,
+                });
+            }
+            let news = realmObj.objects("News").filtered("id = " + this.state.id);
+            if(news !== null && news.length > 0){
+                this.setState({
+                    title:news[0]['title'],
+                    intro:news[0]['intro'],
+                    pic:news[0]['pic'],
+                    views:news[0]['views'],
+                    dateline:news[0]['dateline'],
                 });
             }
         }catch(e){}finally{
+            //获取新闻详情
             this.props.dispatch(getNewsInfoByIdAction(this.state.id,this._loadNewsComplete));
+            //文章阅读数加1
+            this.props.dispatch(setNewViewPlus(this.state.id));
             //设置收藏和分享
             this.props.navigation.setParams({isCollect:this.state.isCollect,collect:()=>{this._collect()}, share:()=>{this._share()}});
         }
@@ -91,6 +125,16 @@ class NewsDetail extends Component{
                 });
                 //设置收藏和分享
                 this.props.navigation.setParams({isCollect:this.state.isCollect});
+            }
+            let news = realmObj.objects("News").filtered("id = " + this.state.id);
+            if(news !== null && news.length > 0){
+                this.setState({
+                    title:news[0]['title'],
+                    intro:news[0]['intro'],
+                    pic:news[0]['pic'],
+                    views:news[0]['views'],
+                    dateline:news[0]['dateline'],
+                });
             }
         }catch(e){}
     };
@@ -123,15 +167,28 @@ class NewsDetail extends Component{
     render(){
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>{this.state.title}</Text>
                 <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-                    <HTMLView
-                        value={this.state.content}
-                        stylesheet={styles}
-                        renderNode={renderNode}
-                        addLineBreaks={false}
-                        onLinkPress={(url) => {this.props.navigation.navigate("ShowUrl",{url:url})}}
-                    />
+                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} imageStyle={{height:200}} imageProps={{resizeMode:"stretch"}} image={this.state.pic ? {uri:getFullPath(this.state.pic,this.state.host)} : require('../../assets/images/nopic3.jpg')}>
+                        <View>
+                            <Text style={styles.newsItemTitle}>{this.state.title}</Text>
+                            <View style={styles.newsItemView}>
+                                <Text style={{flex:1,fontSize:14}}>资讯类型：公司新闻</Text>
+                            </View>
+                            <View style={styles.newsItemView}>
+                                <Text style={{flex:1,fontSize:14}}>发布时间：{formatTime(this.state.dateline,"yyyy/MM/dd hh:mm")}</Text>
+                                <Text style={{fontSize:14}}>阅读：{this.state.views}</Text>
+                            </View>
+                        </View>
+                    </Card>
+                    <View>
+                        <HTMLView
+                            value={this.state.content}
+                            stylesheet={styles}
+                            renderNode={renderNode}
+                            addLineBreaks={false}
+                            onLinkPress={(url) => {this.props.navigation.navigate("ShowUrl",{url:url})}}
+                        />
+                    </View>
                 </ScrollView>
             </View>
         );
@@ -158,15 +215,28 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         fontSize:16
     },
+    newsItemTitle:{
+        fontSize:16,
+        color:'#333333',
+    },
+    newsItemView:{
+        marginTop:15,
+        paddingTop:15,
+        borderTopWidth:1,
+        borderTopColor:'#f2f2f2',
+        flexDirection:'row'
+    },
     htmlContainer:{
         padding:8,
         paddingTop:0
     },
     p:{
-        marginBottom:8
+        marginBottom:8,
+        lineHeight:28,
     },
     div:{
-        marginBottom:8
+        marginBottom:8,
+        lineHeight:28,
     },
     icon:{
         marginLeft:10

@@ -58,7 +58,7 @@ export default class TimerButton extends React.Component {
                     this.setState({selfEnable:false})
                     this.props.onClick(this._shouldStartCountting)
                 };
-            }} style={[{fontSize: 16},textStyle,{color: ((!counting && enable && selfEnable) ? textStyle.color : disableColor || 'gray')}]}>{timerTitle}</Text>
+            }} style={[{fontSize: 16},textStyle,{color: ((!counting && enable && selfEnable) ? textStyle.color : disableColor || '#fff')}]}>{timerTitle}</Text>
         )
     }
 }

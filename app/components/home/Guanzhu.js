@@ -64,7 +64,7 @@ export default class Guanzhu extends Component{
                     </View>
                     </TouchableWithoutFeedback>
                     <View>
-                        <Text style={{marginBottom:10}}>{item['content']}</Text>
+                        <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
                         <ImageRange images={item['pics']} {...this.props}/>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>

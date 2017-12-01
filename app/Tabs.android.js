@@ -12,6 +12,7 @@ import configureRealm from './realm/configureRealm';
 configureRealm();
 import {StackNavigator, TabNavigator} from 'react-navigation';
 import TabBarItem from './components/TabBarItem';//tab项的封装
+import {getUserInfoById} from './actions/userAction';
 //需要展示在底部菜单上的Screen
 import HomeContainer from './containers/HomeContainer';
 import FindContainer from './containers/FindContainer';
@@ -40,6 +41,7 @@ import GongYi from './components/my/GongYi';
 import ContactsList from './components/my/ContactsList';
 import ZiLiaoUpdate from './components/my/ZiLiaoUpdate';
 import AboutUs from './components/my/AboutUs';
+import Renzheng from './components/my/Renzheng';
 //资讯
 import NewsDetail from './components/news/NewsDetail';
 //活动
@@ -62,6 +64,15 @@ import FindFriendStepTwo from './components/my/FindFriendStepTwo';
 import Quanzi from './components/find/Quanzi';
 import QuanziDetail from './components/find/QuanziDetail';
 import QuanziDongtai from './components/find/QuanziDongtai';
+
+
+
+
+//每次点击更新会员信息
+function updateUserInfo(){
+    let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+    getUserInfoById(userid);
+}
 
 /**
  * 设置底部菜单栏：一般是app的栏目
@@ -114,6 +125,10 @@ const AppTab = TabNavigator(
                     />
                 ),
                 tabBarVisible:false,//当点击进去，是否显示底部菜单
+                tabBarOnPress:(scene,jumpToIndex)=>{
+                    updateUserInfo();
+                    jumpToIndex(scene.index);
+                }
             }
         },
         NewsContainer: {
@@ -141,7 +156,11 @@ const AppTab = TabNavigator(
                         normalImage={require('./assets/icon/iconmy.png')}
                         selectedImage={require('./assets/icon/iconmy.png')}
                     />
-                )
+                ),
+                tabBarOnPress:(scene,jumpToIndex)=>{
+                    updateUserInfo();
+                    jumpToIndex(scene.index);
+                }
             }
         }
     }, {
@@ -219,6 +238,7 @@ const Navigator = StackNavigator(
         ContactsList: {screen: ContactsList},
         ZiLiaoUpdate: {screen: ZiLiaoUpdate},
         AboutUs: {screen: AboutUs},
+        Renzheng: {screen: Renzheng},
         //资讯
         NewsDetail: {screen: NewsDetail},
         //活动
@@ -254,4 +274,35 @@ const Navigator = StackNavigator(
         initialRouteName:(isFirst() === true) ? 'FindFriend' : 'Tab'
     });
 
-export default Navigator;
+//export default Navigator;
+//获取当前路由名称，递归获取
+function getCurrentRouteName(navigationState) {
+    if (!navigationState) {
+        return null;
+    }
+    const route = navigationState.routes[navigationState.index];
+    //递归获取
+    if (route.routes) {
+        return getCurrentRouteName(route);
+    }
+    return route.routeName;
+}
+export default () => (
+    <Navigator onNavigationStateChange={(prevState, currentState) => {
+        //这里主要是给中间发布动态关闭时使用的，用来进行跳转
+        let preRouteName = getCurrentRouteName(prevState);
+        //console.log("a:"+preRouteName);
+        //console.log("b:"+currentRouteName)
+        realmObj.write(()=>{
+            if(preRouteName === "HomeContainer" ||
+                preRouteName === "FindContainer" ||
+                preRouteName === "NewsContainer" ||
+                preRouteName === "MyContainer")
+            {
+                realmObj.create("Global",{key:"prevStateRouteIndex", value:preRouteName+""},true);
+                //重新加载一下，更新realm
+                realmObj.objects("Global");
+            }
+        });
+    }}/>
+);

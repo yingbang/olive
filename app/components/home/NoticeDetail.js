@@ -57,6 +57,14 @@ export default class NoticeDetail extends Component{
             });
         }
     }
+    //打开文章中链接
+    linkPress(url){
+        if(this.props.screenProps){
+            this.props.screenProps.navigation.navigate("ShowUrl",{url:url});
+        }else{
+            this.props.navigation.navigate("ShowUrl",{url:url});
+        }
+    }
     render(){
         return (
             <View style={styles.container}>
@@ -67,7 +75,7 @@ export default class NoticeDetail extends Component{
                         stylesheet={styles}
                         renderNode={renderNode}
                         addLineBreaks={false}
-                        onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
+                        onLinkPress={(url) => {this.linkPress(url)}}
                     />
                 </ScrollView>
             </View>

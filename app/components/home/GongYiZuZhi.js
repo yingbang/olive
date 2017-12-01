@@ -123,7 +123,7 @@ export default class GongYiZuZhi extends Component {
         return(
             <View style={{flex:1}}>
                 <View style={{flexDirection:'row',marginBottom:12}}>
-                    <Text style={globalStyle.flex1}>推荐公益组织</Text>
+                    <Text style={[globalStyle.flex1,globalStyle.homeTitle]}>推荐公益组织</Text>
                     <Text style={colors.cBlue} onPress={()=>{this.changeContent()}}>换一批</Text>
                 </View>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>

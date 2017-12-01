@@ -17,7 +17,7 @@ import HTMLView from 'react-native-htmlview';
 import colors from '../common/Colors';
 import fonts from '../common/Fonts';
 import { Card, List, ListItem, Button,Header} from 'react-native-elements';
-import {formatTime,isExpired,getFullPath} from '../common/public';
+import {formatTime,isExpired,getFullPath,removeHTMLTag} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import {toastShort} from '../common/ToastTool';
 import {getQuanziInfoByIdAction,getQuanziJoinInfoAction,getQuanziUserAction,QuanziJoinAction} from '../../actions/userAction';
@@ -191,8 +191,14 @@ class QuanziDetail extends Component{
                             containerStyle={[globalStyle.listItem,{marginTop:0}]}
                         />
                         <ListItem
+                            title={"圈子公告"}
+                            rightTitle={removeHTMLTag(item.content)+" "}
+                            rightIcon={{name: 'chevron-right'}}
+                            containerStyle={[globalStyle.listItem,{marginTop:0}]}
+                        />
+                        <ListItem
                             title={"圈子二维码"}
-                            rightIcon={<Image style={{width:60,height:60}} source={item['erweima'] ? {uri:getFullPath(item['erweima'],this.state.host)} : require('../../assets/images/erweima.png')} />}
+                            rightIcon={<Image style={{width:40,height:40,tintColor:'#bdc6cf'}} source={item['erweima'] ? {uri:getFullPath(item['erweima'],this.state.host)} : require('../../assets/images/erweima.png')} />}
                             containerStyle={[globalStyle.listItem,{marginTop:0}]}
                         />
                         <ListItem

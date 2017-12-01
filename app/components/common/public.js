@@ -207,3 +207,15 @@ export function getFullPath(path,host) {
         return host + path;
     }
 }
+
+//去除所有html标签
+export function removeHTMLTag(str) {
+    if(str === "" || str === null || str === undefined){
+        return "";
+    }
+    str = str.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+    str = str.replace(/[ | ]*\n/g,'\n'); //去除行尾空白
+    //str = str.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
+    str=str.replace(/ /ig,'');//去掉
+    return str;
+}

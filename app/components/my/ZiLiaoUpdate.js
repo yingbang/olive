@@ -66,7 +66,7 @@ class ZiLiaoUpdate extends Component{
                         placeholderTextColor={"#999999"}
                         underlineColorAndroid={"#ffffff"}
                         style={[styles.textInputStyle,{height:this.props.navigation.state.params.multiline ? 160 : 40}]}
-                        autoFocus={true}
+                        autoFocus={false}
                         returnKeyType="search"
                         clearButtonMode="while-editing"
                         clearTextOnFocus={false}

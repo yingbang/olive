@@ -27,6 +27,7 @@ export function getNewsListAction(page,callback) {
                                 intro:newsList[i]['intro'] !== null ? newsList[i]['intro'] : "",
                                 flags:newsList[i]['flags'] !== null ? newsList[i]['flags'] : "",
                                 author:newsList[i]['author'] !== null ? newsList[i]['author'] : "",
+                                dateline:newsList[i]['dateline'] !== null ? newsList[i]['dateline'] : 0,
                                 views:newsList[i]['views']+0,
                                 comments:newsList[i]['comments']+0
                             };
@@ -74,6 +75,7 @@ export function getNewsInfoByIdAction(id,callback){
                                 intro:json['intro'] !== null ? json['intro'] : "",
                                 flags:json['flags'] !== null ? json['flags'] : "",
                                 author:json['author'] !== null ? json['author'] : "",
+                                dateline:json['dateline'] !== null ? json['dateline'] : 0,
                                 comments:json['comments']+0
                             };
                             realmObj.create("News",news,true);
@@ -81,6 +83,35 @@ export function getNewsInfoByIdAction(id,callback){
                     }catch(e){
                         console.log(e)
                     }
+                    //发送
+                    callback && callback();
+                }
+            }
+        });
+    }
+}
+
+//文章阅读数加1
+export function setNewViewPlus(id,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/addViews').query({id:id,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    try{
+                        //保存到新闻表
+                        realmObj.write(()=>{
+                            let news = realmObj.objects("News").filtered("id == "+id);
+                            if(news && news.length > 0){
+                                let oldNumber = news[0].views;
+                                realmObj.create("News",{id:id,views:oldNumber+1},true);
+                            }
+                        });
+                    }catch(e){}
                     //发送
                     callback && callback();
                 }

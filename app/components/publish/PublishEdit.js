@@ -8,7 +8,8 @@ import {
     Dimensions,
     TouchableWithoutFeedback,
     Alert,
-    Platform
+    Platform,
+    StatusBar,
 } from 'react-native';
 import {connect} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -26,8 +27,8 @@ class PublishEdit extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
-                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.scene.route.params.back()} }}
-                rightComponent={<Text onPress={()=>{HeaderProps.scene.route.params.fabu()}}>发布</Text>}
+                leftComponent={{ icon: 'close', onPress:()=>{HeaderProps.scene.route.params.back()} }}
+                rightComponent={<Text style={colors.cBlue} onPress={()=>{HeaderProps.scene.route.params.fabu()}}>发布</Text>}
                 backgroundColor="#ffffff"
                 outerContainerStyles={globalStyle.androidHeaderStyle}
             />
@@ -180,6 +181,7 @@ class PublishEdit extends Component{
     render(){
         return (
             <View style={styles.container}>
+                <StatusBar hidden={false}/>
                 <TouchableWithoutFeedback>
                     <View>
                         <TextInput

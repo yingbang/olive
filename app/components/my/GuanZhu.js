@@ -95,16 +95,22 @@ class GuanZhu extends Component{
     }
     _keyExtractor = (item, index) => item.id;
     _renderItem = ({item}) => (
-        <ListItem
-            roundAvatar
-            key={item.id}
-            hideChevron={true}
-            title={item.name}
-            avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
-            onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}
-            containerStyle={[globalStyle.listItem,{marginTop:0}]}
-            {...this.props}
-        />
+        <TouchableWithoutFeedback key={item.id} onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item.id})}}>
+        <View style={{flexDirection:'row',justifyContent:'center',height:100,borderBottomWidth:1,borderBottomColor:'#f2f2f2'}}>
+            <View style={{justifyContent:'center',marginLeft:10}}>
+                {
+                    item['avatar'] ?
+                        <Image style={{width:70,height:70,borderRadius:35}} source={{uri:getFullPath(item['avatar'],this.state.host)}}/> :
+                        <Image style={[globalStyle.defaultAvatar,{width:70,height:70,borderRadius:35}]} source={require('../../assets/icon/iconhead.png')}/>
+                }
+            </View>
+            <View style={{justifyContent:'center',flex:1,marginLeft:10}}>
+                <Text style={{fontSize:16,marginBottom:8}}>{item.name}</Text>
+                <Text style={{marginBottom:8,color:"#00bfff"}}>{item.sex}</Text>
+                <Text style={{color:'#555'}}>{item.intro}</Text>
+            </View>
+        </View>
+        </TouchableWithoutFeedback>
     );
     render(){
         return (

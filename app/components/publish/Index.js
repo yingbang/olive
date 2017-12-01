@@ -11,7 +11,8 @@ import {
     Dimensions,
     TouchableWithoutFeedback,
     TouchableOpacity,
-    StatusBar
+    StatusBar,
+    Modal
 } from 'react-native';
 import {
     Container,
@@ -31,29 +32,57 @@ const {height, width} = Dimensions.get('window');
 
 export default class PublishIndex extends Component{
 
+    constructor(props){
+        super(props);
+        this.state={
+            renzheng:false
+        }
+    }
+
+    componentDidMount(){
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        let userInfo = realmObj.objects("User").filtered("id == "+userid);
+        if(userInfo && userInfo.length > 0){
+            let renzheng = userInfo[0]['renzhengzhuangtai'];
+            if(renzheng === 1){
+                this.setState({
+                    renzheng:true
+                });
+            }
+        }
+    }
 
     /**
-     * 点击发布动态
+     * 点击发布动态，需要先进行身份验证
      */
     pressFabuDongtai(){
-        this.props.navigation.navigate('PublishEdit',{quanzi:0});
+        if(this.state.renzheng === true){
+            this.props.navigation.navigate('PublishEdit',{quanzi:0});
+        }else{
+            this.props.navigation.navigate('Renzheng');
+        }
     }
     /**
      * 点击取消按钮
      */
     pressCancel(){
-        const resetAction = NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({ routeName: 'Tab'}),
-            ]
+        let prevState = realmObj.objects("Global").filtered("key == 'prevStateRouteIndex'");
+        //console.log("c:"+prevState[0]['value']);
+        let routeName="";
+        if(prevState && prevState.length > 0){
+            routeName = prevState[0]['value'];
+        }
+        const navigateAction = NavigationActions.navigate({
+            routeName: 'Tab',
+            params: {},
+            action: NavigationActions.navigate({ routeName: routeName})
         });
-        this.props.navigation.dispatch(resetAction);
+        this.props.navigation.dispatch(navigateAction);
     }
     render(){
         return (
             <Container style={globalStyle.containerWithoutStatusBar}>
-                <StatusBar hidden={true}/>
+                <StatusBar hidden={false}/>
                 <Content style={globalStyle.content}>
                     <ImageBackground style={globalStyle.wholeBackground} source={require('../../assets/images/publish_bg.jpg')}>
                         <View style={styles.fabuView}>

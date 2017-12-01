@@ -7,9 +7,21 @@ import {
 const {width, height} = Dimensions.get('window');
 
 const globalStyle = StyleSheet.create({
+    //屏幕宽高
+    width:width,
+    height:height,
     //设置flex=1
     flex1:{
         flex:1
+    },
+    //公益圈标题样式
+    homeTitle:{
+        fontSize:16
+    },
+    //动态文字样式
+    homeDongtaiText:{
+        lineHeight:26,
+        marginBottom:10
     },
     statusHeight:{
         paddingTop: (Platform.OS === 'ios') ? 20 : 0,
@@ -62,8 +74,8 @@ const globalStyle = StyleSheet.create({
     },
     //动态下面的点赞、分享、评论图标样式
     dongtaiIcon:{
-        width:25,
-        height:25,
+        width:20,
+        height:20,
         tintColor:'#999999',
         marginRight:20
     },

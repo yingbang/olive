@@ -3,13 +3,15 @@
  *
  */
 import React,{Component} from 'react';
-import {Image,Text,View,ScrollView,TouchableWithoutFeedback,StyleSheet} from 'react-native';
+import {Image,Text,View,ScrollView,TouchableWithoutFeedback,StyleSheet,Dimensions} from 'react-native';
 import request from 'superagent';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import {getArrayItems,inArray,getFullPath} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getFollowUserAction} from '../../actions/userAction';
+
+const { width, height } = Dimensions.get('window');
 
 export default class GongYiDaRen extends Component {
     constructor(props){
@@ -100,7 +102,7 @@ export default class GongYiDaRen extends Component {
         return(
             <View style={{flex:1}}>
                 <View style={{flexDirection:'row',marginBottom:12}}>
-                    <Text style={globalStyle.flex1}>推荐公益达人</Text>
+                    <Text style={[globalStyle.flex1,globalStyle.homeTitle]}>推荐公益达人</Text>
                     <TouchableWithoutFeedback onPress={()=>{this.changeContent()}}>
                         <View style={{flexDirection:'row'}}>
                             <Text style={colors.c99}>更多</Text>
@@ -113,7 +115,7 @@ export default class GongYiDaRen extends Component {
                         this.state.content.map((item, i) => (
                             <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['id']})}}>
                                 <View style={styles.view}>
-                                    <View>
+                                    <View style={{width:80}}>
                                         {
                                             item['avatar'] !== "" ?
                                                 <Image style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
@@ -121,11 +123,11 @@ export default class GongYiDaRen extends Component {
                                                 <Image style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
                                         }
                                     </View>
-                                    <View style={{flex:1}}>
-                                        <Text>{item['nickname']}</Text>
-                                        <Text style={{fontSize:12,marginTop:8,marginBottom:8}}>{item['intro']}</Text>
+                                    <View style={{width:width-158,height:70,overflow:'hidden'}}>
+                                        <Text style={{fontSize:14}}>{item['nickname']}</Text>
+                                        <Text style={{fontSize:12,marginTop:8,marginBottom:8,color:'#555'}}>{item['intro']}</Text>
                                     </View>
-                                    <View>
+                                    <View style={{width:70,justifyContent:'center'}}>
                                         {
                                             inArray(this.state.joinList, item['id'], 'id') ?
                                                 <Text onPress={() => {
@@ -160,8 +162,12 @@ const styles = StyleSheet.create({
         marginRight:10
     },
     btn:{
-        padding:5,
+        paddingTop:5,
+        paddingBottom:5,
+        paddingLeft:15,
+        paddingRight:15,
         borderRadius:10,
-        fontSize:12
+        fontSize:12,
+        alignSelf:'center'
     },
 });

@@ -17,7 +17,7 @@ import {connect} from 'react-redux';
 import { Card, List, ListItem, Header} from 'react-native-elements';
 import {getNoticeAction} from '../../actions/toolAction';
 import globalStyle from '../common/GlobalStyle';
-import {formatTime} from '../common/public';
+import {formatTime,removeHTMLTag} from '../common/public';
 import HTMLView from 'react-native-htmlview';
 
 class XiaoXi extends Component{
@@ -100,17 +100,7 @@ class XiaoXi extends Component{
             roundAvatar
             hideChevron
             title={item.title}
-            subtitle={
-                <View style={styles.subtitleView}>
-                    <HTMLView
-                        value={item.content}
-                        stylesheet={styles}
-                        addLineBreaks={false}
-                        onLinkPress={(url) => {this.props.navigation.navigate("ShowUrl",{url:url})}}
-                        style={{height:15,overflow:'hidden',marginTop:5}}
-                    />
-                </View>
-            }
+            subtitle={removeHTMLTag(item.content)+" "}
             subtitleContainerStyle={(Platform.OS === 'ios') ? {} : {height:15,overflow:'hidden'}}
             avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
             avatarStyle={styles.avatar}

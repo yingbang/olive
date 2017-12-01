@@ -75,7 +75,7 @@ export default class Hot extends Component{
                     </View>
                     </TouchableWithoutFeedback>
                     <View>
-                        <Text style={{marginBottom:10}}>{item['content']}</Text>
+                        <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
                         <ImageRange images={item['pics']} {...this.props}/>
                     </View>
                     <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
@@ -252,6 +252,27 @@ export default class Hot extends Component{
         });
         this.props.screenProps.dispatch(getDongtaiAction("",1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
     };
+    //Flatlist可见区域变化时调用【还没想好怎么用20171129】
+    _onViewableItemsChanged = (info: {
+       viewableItems: Array<{
+           key: string,
+           isViewable: boolean,
+           item: any,
+           index: ?number,
+           section?: any,
+       }>,
+       changed: Array<{
+           key: string,
+           isViewable: boolean,
+           item: any,
+           index: ?number,
+           section?: any,
+       }>
+       }) => {
+        info.viewableItems.map((v) => {
+            //console.log(v)
+        })
+    };
     render(){
         return (
             <ScrollView style={styles.container}
@@ -298,10 +319,12 @@ export default class Hot extends Component{
                                 delay={2500}
                                 duration={1000}
                                 scrollHeight={17}
-                                scrollStyle={{flex:1 }}
+                                scrollStyle={{flex:1}}
                                 kbContainer={{flex:1,marginTop:(Platform.OS === 'ios') ? 4 : 0}}
                                 textStyle={{fontSize: 12 }} />
-                            <Image style={{width:14,height:14}} source={require('../../assets/icon/icongo.png')}/>
+                            <View style={{height:20,position:'absolute',right:0,top:4,backgroundColor:'#ffffff'}}>
+                                <Image style={{width:14,height:14}} source={require('../../assets/icon/icongo.png')}/>
+                            </View>
                         </View>
                     </TouchableWithoutFeedback>
                 </View>
@@ -313,7 +336,7 @@ export default class Hot extends Component{
                 </View>
                 <View style={[styles.block,globalStyle.flex1]}>
                     <View style={{flexDirection:'row',marginBottom:12}}>
-                        <Text style={globalStyle.flex1}>热门公益</Text>
+                        <Text style={[globalStyle.flex1,globalStyle.homeTitle]}>热门公益</Text>
                         <TouchableWithoutFeedback onPress={()=>{alert('更多')}}>
                             <View style={{flexDirection:'row'}}>
                                 <Text style={colors.c99}>更多</Text>
@@ -327,7 +350,7 @@ export default class Hot extends Component{
                 </View>
                 <View style={[styles.block,globalStyle.flex1]}>
                     <View style={{flexDirection:'row',marginBottom:12}}>
-                        <Text style={globalStyle.flex1}>精选动态</Text>
+                        <Text style={[globalStyle.flex1,globalStyle.homeTitle]}>精选动态</Text>
                     </View>
                     <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0}}>
                         <FlatList
@@ -335,6 +358,8 @@ export default class Hot extends Component{
                             data={this.state.dongtai}
                             extraData={this.state}
                             keyExtractor={this._keyExtractor}
+                            initialNumToRender={1}
+                            onViewableItemsChanged={this._onViewableItemsChanged}
                         />
                     </List>
                 </View>
@@ -360,6 +385,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         marginTop:8,
+        overflow:'hidden'
     },
     p:{
         color:'#666',

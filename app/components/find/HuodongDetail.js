@@ -18,6 +18,7 @@ import { Card, List, ListItem, Button,Header} from 'react-native-elements';
 import {formatTime,isExpired,getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import {getHuodongInfoByIdAction,getBaomingInfoByIdAction} from '../../actions/userAction';
+import AutoSizedImageMy from '../common/AutoSizedImageMy';
 
 //处理iframe
 function renderNode(node, index) {
@@ -30,6 +31,25 @@ function renderNode(node, index) {
             </View>
         );
     }
+    if (node.name === 'img') {
+        let width =
+            parseInt(node.attribs['width'], 10) || parseInt(node.attribs['data-width'], 10) || 0;
+        let height =
+            parseInt(node.attribs['height'], 10) ||
+            parseInt(node.attribs['data-height'], 10) ||
+            0;
+        const imgStyle = {
+            width,
+            height,
+        };
+
+        const source = {
+            uri: node.attribs.src,
+            width,
+            height,
+        };
+        return <AutoSizedImageMy key={index} source={source} style={imgStyle} />;
+    }
 }
 
 class HuodongDetail extends Component{
@@ -38,7 +58,7 @@ class HuodongDetail extends Component{
         this.state={
             id:this.props.navigation.state.params.id,
             huodong:{},
-            baoming:false,
+            baoming:false,//是否报名该活动
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
     }
@@ -177,10 +197,12 @@ const styles = StyleSheet.create({
         paddingTop:0
     },
     p:{
-        marginBottom:8
+        marginBottom:8,
+        lineHeight:28,
     },
     div:{
-        marginBottom:8
+        marginBottom:8,
+        lineHeight:28,
     },
     icon:{
         marginLeft:10

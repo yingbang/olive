@@ -54,13 +54,14 @@ class ZiLiao extends Component{
             let userInfo = realmObj.objects("User").filtered("id="+userid);
             if(userInfo.length > 0){
                 let user = userInfo[0];
+                let statusText = ['未审核','审核通过','审核失败'];
                 this.setState({
                     userid:userid,
                     userInfo:user,
                     contentList:[
                         {
                             key:1,
-                            title: '昵称',
+                            title: '姓名',
                             rTitle:user['nickname'],
                             event:'ziliao_nickname',
                         },
@@ -104,7 +105,7 @@ class ZiLiao extends Component{
                         {
                             key:8,
                             title: '认证',
-                            rTitle:" ",
+                            rTitle:(user['renzheng'] !== "") ? statusText[user['renzhengzhuangtai']] : "未认证",
                             event:'ziliao_renzheng',
                         },
                     ],
@@ -121,13 +122,14 @@ class ZiLiao extends Component{
         let userInfo = realmObj.objects("User").filtered("id="+userid);
         if(userInfo.length > 0){
             let user = userInfo[0];
+            let statusText = ['未审核','审核通过','审核失败'];
             this.setState({
                 userid:userid,
                 userInfo:user,
                 contentList:[
                     {
                         key:1,
-                        title: '昵称',
+                        title: '姓名',
                         rTitle:user['nickname'],
                         event:'ziliao_nickname',
                     },
@@ -171,7 +173,7 @@ class ZiLiao extends Component{
                     {
                         key:8,
                         title: '认证',
-                        rTitle:" ",
+                        rTitle:(user['renzheng'] !== "") ? statusText[user['renzhengzhuangtai']] : "未认证",
                         event:'ziliao_renzheng',
                     },
                 ],
@@ -238,6 +240,11 @@ class ZiLiao extends Component{
         let tag = item.event;
         switch (tag) {
             case 'ziliao_nickname':
+                let renzheng = this.state.userInfo['renzhengzhuangtai'];
+                if(renzheng === 1){
+                    toastShort("您已经完成认证，不能修改！");
+                    return;
+                }
                 params = {target:'nickname',text:item.title,defaultValue:item.rTitle,callback:()=>{this.updateUserInfo()}};
                 break;
             case 'ziliao_company':
@@ -255,6 +262,9 @@ class ZiLiao extends Component{
                 break;
             case 'ziliao_intro':
                 params = {target:'intro',text:item.title,defaultValue:item.rTitle,multiline:true,callback:()=>{this.updateUserInfo()}};
+                break;
+            case 'ziliao_renzheng':
+                TargetComponent = 'Renzheng';
                 break;
             default:
                 TargetComponent = "";

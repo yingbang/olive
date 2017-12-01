@@ -60,8 +60,8 @@ export default class FindFriendStepTwo extends Component {
             });
         }
     }
-    //邀请某一个，发送短信，一次支持发送200条短信
-    yaoqingOne(mobile){
+    //邀请某一个，发送短信，一次支持发送200条短信，type=1表示全部邀请
+    yaoqingOne(mobile,type){
         try{
             let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
             let _that = this;
@@ -73,7 +73,9 @@ export default class FindFriendStepTwo extends Component {
                     }else if(res.body.state === 'ok'){
                         toastShort("邀请成功！");
                     }
-                    _that.skipStep();
+                    if(type === 1){
+                        _that.skipStep();
+                    }
                 });
         }catch(e){}
     }
@@ -86,7 +88,7 @@ export default class FindFriendStepTwo extends Component {
         });
         mobile = mobile.substring(0,mobile.length-1);
         if(mobile !== ""){
-            this.yaoqingOne(mobile);
+            this.yaoqingOne(mobile,1);
         }
     }
 
@@ -106,7 +108,7 @@ export default class FindFriendStepTwo extends Component {
             key={item.id}
             title={item.familyName + item.givenName}
             subtitle={item.mobile}
-            rightIcon={<Text onPress={()=>{this.yaoqingOne(item['mobile'])}} style={styles.btn}>邀请</Text>}
+            rightIcon={<Text onPress={()=>{this.yaoqingOne(item['mobile'],0)}} style={styles.btn}>邀请</Text>}
             leftIcon={item.thumbnailPath ? <Image style={styles.avatar} source={(Platform.OS === 'ios') ? {uri:item.thumbnailPath} : require('../../assets/icon/iconhead.png')}/>: <Image style={[styles.avatar,{tintColor:'#dddddd'}]} source={require('../../assets/icon/iconhead.png')} />}
             containerStyle={[globalStyle.listItem,{marginTop:0}]}
             {...this.props}

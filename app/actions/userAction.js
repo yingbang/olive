@@ -37,9 +37,16 @@ export function getUserListAction(page,type,flag,callback){
                                 address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
                                 weixin:contentList[i]['weixin'] !== null ? contentList[i]['weixin'] : "",
                                 intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
-                                renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng'] : "",
+                                renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng']+"" : "",
                                 avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
                                 visible:hidden.length <= 0,
+                                renzhengleixing:contentList[i]['renzhengleixing'] !== null ? contentList[i]['renzhengleixing'] : 0,
+                                renzhengshijian:contentList[i]['renzhengshijian'] !== null ? contentList[i]['renzhengshijian'] : 0,
+                                renzhengzhuangtai:contentList[i]['renzhengzhuangtai'] !== null ? contentList[i]['renzhengzhuangtai'] : 0,
+                                shenfenzheng:contentList[i]['shenfenzheng'] !== null ? contentList[i]['shenfenzheng'] : "",
+                                idnumber:contentList[i]['idnumber'] !== null ? contentList[i]['idnumber'] : "",
+                                zhizhao:contentList[i]['zhizhao'] !== null ? contentList[i]['zhizhao'] : "",
+                                zuzhi:contentList[i]['zuzhi'] !== null ? contentList[i]['zuzhi'] : "",
                             };
                             realmObj.create("User",user,true);
                         }
@@ -84,9 +91,16 @@ export function getUserInfoAction(mobile,callback){
                             address:json['address'] !== null ? json['address'] : "",
                             weixin:json['weixin'] !== null ? json['weixin'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
+                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "",
                             avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:hidden.length <= 0,
+                            renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
+                            renzhengshijian:json['renzhengshijian'] !== null ? json['renzhengshijian'] : 0,
+                            renzhengzhuangtai:json['renzhengzhuangtai'] !== null ? json['renzhengzhuangtai'] : 0,
+                            shenfenzheng:json['shenfenzheng'] !== null ? json['shenfenzheng'] : "",
+                            idnumber:json['idnumber'] !== null ? json['idnumber'] : "",
+                            zhizhao:json['zhizhao'] !== null ? json['zhizhao'] : "",
+                            zuzhi:json['zuzhi'] !== null ? json['zuzhi'] : "",
                         };
                         realmObj.create("User",user,true);
                     });
@@ -102,49 +116,59 @@ export function getUserInfoAction(mobile,callback){
 //根据会员ID获取会员信息
 export function getUserInfoByIdAction(userid,callback){
     return dispatch => {
-        //开始请求网络
-        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
-        request.get(host + '/api/user/infoById').query({userid:userid,_t:Math.random()}).end((err,res)=>{
-            if(err){
-                console.log(err);
-            }else{
-                let json = res.body;
-                //保存到realm
-                try{
-                    realmObj.write(()=>{
-                        let hidden = realmObj.objects("HiddenUser").filtered("id = " + json['id']);
-                        let user = {
-                            id:parseInt(json['id']),
-                            type:parseInt(json['type']),
-                            flag:parseInt(json['flag']),
-                            name:json['name'] !== null ? json['name'] : "",
-                            sex:json['sex'] !== null ? json['sex'] : "",
-                            mobile:json['mobile'] !== null ? json['mobile'] : "",
-                            nickname:json['nickname'] !== null ? json['nickname'] : "",
-                            username:json['username'] !== null ? json['username'] : "",
-                            email:json['email'] !== null ? json['email'] : "",
-                            province:json['province'] !== null ? json['province'] : "",
-                            city:json['city'] !== null ? json['city'] : "",
-                            area:json['area'] !== null ? json['area'] : "",
-                            address:json['address'] !== null ? json['address'] : "",
-                            weixin:json['weixin'] !== null ? json['weixin'] : "",
-                            company:json['company'] !== null ? json['company'] : "",
-                            job:json['job'] !== null ? json['job'] : "",
-                            intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng'] : "",
-                            avatar:json['avatar'] !== null ? json['avatar'] : "",
-                            visible:hidden.length <= 0,
-                        };
-                        realmObj.create("User",user,true);
-                    });
-                }catch(e){
-                    console.log(e)
-                }
-                //发送
-                callback && callback();
-            }
-        });
+        getUserInfoById(userid,callback);
     }
+}
+//这个是纯方法，不用dispatch
+export function getUserInfoById(userid,callback) {
+    let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+    request.get(host + '/api/user/infoById').query({userid:userid,_t:Math.random()}).end((err,res)=>{
+        if(err){
+            console.log(err);
+        }else{
+            let json = res.body;
+            //保存到realm
+            try{
+                realmObj.write(()=>{
+                    let hidden = realmObj.objects("HiddenUser").filtered("id = " + json['id']);
+                    let user = {
+                        id:parseInt(json['id']),
+                        type:parseInt(json['type']),
+                        flag:parseInt(json['flag']),
+                        name:json['name'] !== null ? json['name'] : "",
+                        sex:json['sex'] !== null ? json['sex'] : "",
+                        mobile:json['mobile'] !== null ? json['mobile'] : "",
+                        nickname:json['nickname'] !== null ? json['nickname'] : "",
+                        username:json['username'] !== null ? json['username'] : "",
+                        email:json['email'] !== null ? json['email'] : "",
+                        province:json['province'] !== null ? json['province'] : "",
+                        city:json['city'] !== null ? json['city'] : "",
+                        area:json['area'] !== null ? json['area'] : "",
+                        address:json['address'] !== null ? json['address'] : "",
+                        weixin:json['weixin'] !== null ? json['weixin'] : "",
+                        company:json['company'] !== null ? json['company'] : "",
+                        job:json['job'] !== null ? json['job'] : "",
+                        intro:json['intro'] !== null ? json['intro'] : "",
+                        renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "",
+                        avatar:json['avatar'] !== null ? json['avatar'] : "",
+                        visible:hidden.length <= 0,
+                        renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
+                        renzhengshijian:json['renzhengshijian'] !== null ? json['renzhengshijian'] : 0,
+                        renzhengzhuangtai:json['renzhengzhuangtai'] !== null ? json['renzhengzhuangtai'] : 0,
+                        shenfenzheng:json['shenfenzheng'] !== null ? json['shenfenzheng'] : "",
+                        idnumber:json['idnumber'] !== null ? json['idnumber'] : "",
+                        zhizhao:json['zhizhao'] !== null ? json['zhizhao'] : "",
+                        zuzhi:json['zuzhi'] !== null ? json['zuzhi'] : "",
+                    };
+                    realmObj.create("User",user,true);
+                });
+            }catch(e){
+                console.log(e)
+            }
+            //发送
+            callback && callback();
+        }
+    });
 }
 //修改会员信息，content的写法：a=1&b=2&c=3
 export function updateUserInfoAction(content,callback){
@@ -153,6 +177,27 @@ export function updateUserInfoAction(content,callback){
         let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
         request.post(host + '/api/user/updateUserInfo')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send("userid=" + userid)
+            .send(content)
+            .end((err,res)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    let json = res.body;
+                    //发送
+                    callback && callback(json);
+                }
+            });
+    }
+}
+//会员认证
+export function renzhengAction(content,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.post(host + '/api/user/renzheng')
             .set('Content-Type', 'application/x-www-form-urlencoded')
             .send("userid=" + userid)
             .send(content)
@@ -190,6 +235,7 @@ export function getJoinCompanyAction(page,callback){
                                     id:parseInt(contentList[i]['id']),
                                     name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
                                     avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                    intro:(contentList[i]['intro'] !== null && contentList[i]['intro'] !== undefined) ? contentList[i]['intro'] : "",
                                 };
                                 realmObj.create("JoinCompany",item,true);
                             }
@@ -227,6 +273,8 @@ export function getFollowUserAction(page,callback){
                                     id:parseInt(contentList[i]['id']),
                                     name:(contentList[i]['nickname'] !== null && contentList[i]['nickname'] !== undefined) ? contentList[i]['nickname'] : "",
                                     avatar:(contentList[i]['avatar'] !== null && contentList[i]['avatar'] !== undefined) ? contentList[i]['avatar'] : "",
+                                    sex:(contentList[i]['sex'] !== null && contentList[i]['sex'] !== undefined) ? contentList[i]['sex'] : "",
+                                    intro:(contentList[i]['intro'] !== null && contentList[i]['intro'] !== undefined) ? contentList[i]['intro'] : "",
                                 };
                                 realmObj.create("FollowUser",item,true);
                             }
@@ -707,6 +755,7 @@ export function getHuodongAction(page,callback){
                                     intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
                                     content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
                                     pic:contentList[i]['pic'] !== null ? contentList[i]['pic'] : "",
+                                    city:contentList[i]['city'] !== null ? contentList[i]['city'] : "",
                                     address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
                                     quanzi:parseInt(contentList[i]['quanzi']),
                                     number:parseInt(contentList[i]['number']),
@@ -753,6 +802,7 @@ export function getHuodongInfoByIdAction(id,callback){
                                 intro:json['intro'] !== null ? json['intro'] : "",
                                 content:json['content'] !== null ? json['content'] : "",
                                 pic:json['pic'] !== null ? json['pic'] : "",
+                                city:json['city'] !== null ? json['city'] : "",
                                 address:json['address'] !== null ? json['address'] : "",
                                 quanzi:parseInt(json['quanzi']),
                                 number:parseInt(json['number']),
