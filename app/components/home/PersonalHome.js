@@ -26,6 +26,7 @@ import globalStyle from '../common/GlobalStyle';
 import BlankDongtai from '../common/BlankDongtai';
 import {getDongtaiAction,getUserInfoByIdAction,zanDongtaiAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
+import UShare from '../common/UShare';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
@@ -70,7 +71,7 @@ class PersonalHome extends Component{
         <View style={{marginBottom:15}}>
             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
                 <View>
-                    <View style={globalStyle.dongtaiAvatarView}>
+                    <View style={[globalStyle.dongtaiAvatarView,{padding:8,paddingBottom:0}]}>
                         {
                             item['avatar'] !== "" ?
                                 <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
@@ -82,36 +83,42 @@ class PersonalHome extends Component{
                             <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
                         </View>
                     </View>
-                    <View>
+                    <View style={{padding:8,paddingTop:0}}>
                         <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
                         <ImageRange images={item['pics']} {...this.props}/>
                     </View>
-                    <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
+                    <View style={{flexDirection:'row',backgroundColor:'#f8f8f8',borderTopWidth:1,borderTopColor:'#f2f2f2',padding:8}}>
                         <View style={{flex:1,flexDirection:'row'}}>
                             {
                                 inArray(this.state.zanDongtaiList,item['id'],'id') ?
                                     <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
+                                            <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconzan2.png')}/>
+                                            <Text>取消赞</Text>
+                                        </View>
                                     </TouchableWithoutFeedback>
                                     :
                                     <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
+                                        <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
+                                            <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconzan.png')}/>
+                                            <Text>赞</Text>
+                                        </View>
                                     </TouchableWithoutFeedback>
                             }
                             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
-                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
+                                <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
+                                    <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconpinglun.png')}/>
+                                    <Text>评论</Text>
+                                </View>
                             </TouchableWithoutFeedback>
                         </View>
                         <View>
-                            <TouchableWithoutFeedback onPress={()=>{}}>
-                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
+                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
+                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconshare.png')}/>
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
-                    <View>
+                    <View style={{padding:8}}>
                         {
                             item['zan'] > 0 ?
                                 <View style={{flexDirection:'row',marginBottom:8}}>
@@ -229,6 +236,8 @@ class PersonalHome extends Component{
         this.props.navigation.navigate("ZiLiao");
     }
     render(){
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        let isSelf = (userid - this.state.userid === 0);
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true}/>
@@ -281,7 +290,7 @@ class PersonalHome extends Component{
                                 <Text style={styles.stickySectionText}>{this.state.userInfo['nickname']}</Text>
                                 <TouchableWithoutFeedback onPress={()=>{this.bianji()}}>
                                     <View>
-                                        <Text style={{fontSize:14,marginRight:8}}>编辑</Text>
+                                        <Text style={{fontSize:14,marginRight:8}}>{isSelf ? "编辑" : ""}</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
                             </View>
@@ -295,7 +304,7 @@ class PersonalHome extends Component{
                                 </TouchableWithoutFeedback>
                                 <TouchableWithoutFeedback onPress={()=>{this.bianji()}}>
                                     <View>
-                                        <Text style={{color:'#ffffff',fontSize:14,marginRight:8}}>编辑</Text>
+                                        <Text style={{color:'#ffffff',fontSize:14,marginRight:8}}>{isSelf ? "编辑" : ""}</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
                             </View>
@@ -342,7 +351,6 @@ export default connect(select)(PersonalHome);
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#ffffff',
-        padding:8
     },
     p:{
         color:'#666',

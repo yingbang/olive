@@ -15,9 +15,11 @@ import request from 'superagent';
 import ImagePicker from 'react-native-image-crop-picker';
 //公共头部
 import {connect} from 'react-redux';
+import Picker from 'react-native-picker';
+import area from '../../assets/area.json';
 import {imageUploadFetch, imageUploadBase64, getFullPath} from '../common/public';
 import { Card, List, ListItem, Header} from 'react-native-elements';
-import {getUserInfoByIdAction,updateUserInfoAction} from '../../actions/userAction';
+import {getUserInfoByIdAction,updateUserInfoAction,updateUserAdressAction,getUserInfoById} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
 import {toastShort} from '../common/ToastTool';
@@ -45,6 +47,61 @@ class ZiLiao extends Component{
             contentList:[],
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
+    }
+
+    _createAreaData() {
+        let data = [];
+        let len = area.length;
+        for(let i=0;i<len;i++){
+            let city = [];
+            for(let j=0,cityLen=area[i]['city'].length;j<cityLen;j++){
+                let _city = {};
+                _city[area[i]['city'][j]['name']] = area[i]['city'][j]['area'];
+                city.push(_city);
+            }
+
+            let _data = {};
+            _data[area[i]['name']] = city;
+            data.push(_data);
+        }
+        return data;
+    }
+    _showAreaPicker() {
+        let _that = this;
+        let province = this.state.userInfo['province'] || '山东';
+        let city = this.state.userInfo['city'] || '青岛';
+        let area = this.state.userInfo['area'] || '李沧区';
+        Picker.init({
+            pickerData: this._createAreaData(),
+            selectedValue: [province, city, area],
+            pickerConfirmBtnText:'确定',
+            pickerCancelBtnText:'取消',
+            pickerTitleText:'选择城市',
+            onPickerConfirm: pickedValue => {
+                //toastShort(pickedValue[0]);//返回的本身就是数组
+                _that.props.dispatch(updateUserAdressAction(pickedValue[0],pickedValue[1],pickedValue[2],"",(result)=>{_that.updateComplete(result)}));
+            },
+            onPickerCancel: pickedValue => {
+                //toastShort(pickedValue);
+            },
+            onPickerSelect: pickedValue => {
+                //toastShort(pickedValue);
+            }
+        });
+        Picker.show();
+    }
+    _isPickerShow(){
+        Picker.isPickerShow(status => {
+            return status;
+        });
+    }
+    updateComplete(result){
+        if(result.state === 'ok'){
+            getUserInfoById(this.state.userid,this.updateUserInfo.bind(this));
+            toastShort("保存成功！");
+        }else{
+            toastShort("保存失败！");
+        }
     }
 
     componentDidMount(){
@@ -93,7 +150,7 @@ class ZiLiao extends Component{
                         {
                             key:6,
                             title: '城市',
-                            rTitle:user['province']+user['city'],
+                            rTitle:user['province']+user['city']+user['area'],
                             event:'ziliao_chengshi',
                         },
                         {
@@ -161,7 +218,7 @@ class ZiLiao extends Component{
                     {
                         key:6,
                         title: '城市',
-                        rTitle:user['province']+user['city'],
+                        rTitle:user['province']+user['city']+user['area'],
                         event:'ziliao_chengshi',
                     },
                     {
@@ -259,6 +316,10 @@ class ZiLiao extends Component{
                 break;
             case 'ziliao_email':
                 params = {target:'email',text:item.title,defaultValue:item.rTitle,callback:()=>{this.updateUserInfo()}};
+                break;
+            case 'ziliao_chengshi':
+                TargetComponent = "";
+                this._showAreaPicker();
                 break;
             case 'ziliao_intro':
                 params = {target:'intro',text:item.title,defaultValue:item.rTitle,multiline:true,callback:()=>{this.updateUserInfo()}};

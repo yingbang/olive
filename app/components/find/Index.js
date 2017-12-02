@@ -176,11 +176,11 @@ class FindIndex extends Component{
                                         containerViewStyle={{marginLeft:0,marginRight:0}}
                                         title={isExpired(item['endtime']) ? '活动已结束' : '报名已截止'} /> :
                                     <Button
-                                        backgroundColor={inArray(this.state.baoming,item['id'],'huodongid') ? '#e60000' : "#03A9F4"}
+                                        backgroundColor={inArray(this.state.baoming,item['id'],'huodongid') ? '#ff4343' : "#03A9F4"}
                                         buttonStyle={{padding:8,borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
                                         containerViewStyle={{marginLeft:0,marginRight:0}}
                                         onPress={() => {this.props.navigation.navigate("HuodongBaoMing",{id:item['id']})}}
-                                        title={inArray(this.state.baoming,item['id'],'huodongid') ? '您已报名' : '我要报名'} />
+                                        title={inArray(this.state.baoming,item['id'],'huodongid') ? '取消报名' : '我要报名'} />
                             }
                         </View>
                     </View>

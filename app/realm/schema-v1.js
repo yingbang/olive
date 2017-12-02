@@ -245,6 +245,9 @@ const HuodongSchema = {
         number:{type:'int',default:0},//报名人数
         status:{type:'int',default:0},//是否结束
         orderby:{type:'int',default:0},//排序
+        zhubanfang:{type:'string',default:''},//主办方
+        zan:{type:'int',default:0},//点赞数
+        pinglun:{type:'int',default:0},//评论数
     }
 };
 //活动报名表
@@ -319,6 +322,6 @@ export default {
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
         DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,
         TongxunluSchema,HuodongBaomingSchema,QuanziSchema,QuanziUserSchema],
-    schemaVersion: 3,
+    schemaVersion: 4,
     migration: () => {}
 };

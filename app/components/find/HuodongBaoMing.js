@@ -8,7 +8,8 @@ import {
     Text,
     Image,
     ScrollView,
-    TextInput
+    TextInput,
+    Alert
 } from 'react-native';
 import {connect} from 'react-redux';
 //公共头部
@@ -16,7 +17,7 @@ import { Card, List, ListItem, Button,Header,FormInput} from 'react-native-eleme
 import {formatTime,getFullPath} from '../common/public';
 import {isMobile} from '../common/Validate';
 import {toastShort} from '../common/ToastTool';
-import {getBaomingInfoByIdAction,huodongBaomingAction} from '../../actions/userAction';
+import {getBaomingInfoByIdAction,huodongBaomingAction,cancelBaomingAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
 
 
@@ -101,8 +102,41 @@ class HuodongBaoMing extends Component{
             this.setState({
                 baoming:true,
             });
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            this.props.dispatch(getBaomingInfoByIdAction(userid,this.state.id,this._loadBaomingComplete));
         }
     }
+    //取消报名
+    cancelBaoming(){
+        let _that = this;
+        Alert.alert(
+            "您确定要取消报名吗？",
+            "",
+            [
+                {text: '取消', onPress: ()=>{}},
+                {text: '确定', onPress: ()=>{
+                    _that.props.dispatch(cancelBaomingAction(_that.state.id,(result)=>{_that._loadCancelComplete(result)}));
+                }}
+            ],
+            {cancelable: true}
+        );
+    }
+    //取消报名完毕
+    _loadCancelComplete = (result)=>{
+        if(result.state === 'ok'){
+            toastShort("取消报名成功!");
+            this.setState({
+                baoming:false,
+            });
+            realmObj.write(()=>{
+                let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+                let baoming = realmObj.objects("HuodongBaoming").filtered("userid == "+userid+" and huodongid == "+this.state.id);
+                realmObj.delete(baoming);
+            });
+        }else{
+            toastShort(result.msg);
+        }
+    };
     render(){
         let item = this.state.huodong;
         let user = this.state.userInfo;
@@ -139,10 +173,11 @@ class HuodongBaoMing extends Component{
                     {
                         this.state.baoming ?
                             <Button
-                                backgroundColor='#dddddd'
-                                color='#666666'
+                                backgroundColor='#ff4343'
+                                color='#ffffff'
                                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                title={'您已经报名！'} /> :
+                                onPress={()=>{this.cancelBaoming()}}
+                                title={'取消报名！'} /> :
                             <Button
                                 backgroundColor='#03A9F4'
                                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}

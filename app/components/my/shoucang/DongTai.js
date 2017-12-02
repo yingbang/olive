@@ -88,11 +88,21 @@ class DongTai extends Component{
         }catch(e){}
     }
     renderRow = ({item}) => (
-        <ListItem
-            title={item['content']}
-            onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item.id})}}
-            containerStyle={[globalStyle.listItem,{marginTop:0}]}
-        />
+        <TouchableWithoutFeedback key={item.id} onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item.id})}}>
+            <View style={{flexDirection:'row',justifyContent:'center',height:100,borderBottomWidth:1,borderBottomColor:'#f2f2f2'}}>
+                <View style={{justifyContent:'center',marginLeft:10}}>
+                    {
+                        item['avatar'] ?
+                            <Image style={{width:70,height:70}} source={{uri:getFullPath(item['avatar'],this.state.host)}}/> :
+                            <Image style={[globalStyle.defaultAvatar,{width:70,height:70}]} source={require('../../../assets/icon/iconhead.png')}/>
+                    }
+                </View>
+                <View style={{justifyContent:'center',flex:1,marginLeft:10}}>
+                    <Text style={{fontSize:16,marginBottom:8}}>{item.name}</Text>
+                    <Text style={{color:'#555'}}>{item['content']}</Text>
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
     );
     //判断是否滚动到底部
     _contentViewScroll = (e)=>{

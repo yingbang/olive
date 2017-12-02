@@ -191,6 +191,30 @@ export function updateUserInfoAction(content,callback){
             });
     }
 }
+//修改会员地址：省份、城市、地区、详细地址
+export function updateUserAdressAction(province,city,area,address,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.post(host + '/api/user/updateAddress')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send("userid=" + userid)
+            .send("province=" + province)
+            .send("city=" + city)
+            .send("area=" + area)
+            .send("address=" + address)
+            .end((err,res)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    let json = res.body;
+                    //发送
+                    callback && callback(json);
+                }
+            });
+    }
+}
 //会员认证
 export function renzhengAction(content,callback){
     return dispatch => {
@@ -763,6 +787,9 @@ export function getHuodongAction(page,callback){
                                     orderby:parseInt(contentList[i]['orderby']),
                                     name:contentList[i]['nickname'] !== null ? contentList[i]['nickname'] : "",
                                     avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                    zhubanfang:contentList[i]['zhubanfang'] !== null ? contentList[i]['zhubanfang'] : "",
+                                    zan:contentList[i]['zan'] !== null ? contentList[i]['zan'] : 0,
+                                    pinglun:contentList[i]['pinglun'] !== null ? contentList[i]['pinglun'] : 0,
                                 };
                                 realmObj.create("Huodong",item,true);
                             }
@@ -810,6 +837,9 @@ export function getHuodongInfoByIdAction(id,callback){
                                 orderby:parseInt(json['orderby']),
                                 name:json['nickname'] !== null ? json['nickname'] : "",
                                 avatar:json['avatar'] !== null ? json['avatar'] : "",
+                                zhubanfang:json['zhubanfang'] !== null ? json['zhubanfang'] : "",
+                                zan:json['zan'] !== null ? json['zan'] : 0,
+                                pinglun:json['pinglun'] !== null ? json['pinglun'] : 0,
                             };
                             realmObj.create("Huodong",item,true);
                         });
@@ -835,6 +865,27 @@ export function huodongBaomingAction(huodongid,name,mobile,callback){
             .send("huodongid=" + huodongid)
             .send("mobile=" + mobile)
             .send("name=" + name)
+            .end((err,res)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    let json = res.body;
+                    //发送
+                    callback && callback(json);
+                }
+            });
+    }
+}
+//取消活动报名
+export function cancelBaomingAction(huodongid,callback){
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        request.post(host + '/api/content/cancelBaoming')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send("userid=" + userid)
+            .send("huodongid=" + huodongid)
             .end((err,res)=>{
                 if(err){
                     console.log(err);
@@ -919,7 +970,44 @@ export function getHuodongByUseridAction(userid,page,callback){
         });
     }
 }
-
+//查询某个活动的所有参与者
+export function getHuodongUserAction(huodongid,page,callback) {
+    return dispatch => {
+        //开始请求网络
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        request.get(host + '/api/content/getHuodongUser').query({huodongid:huodongid,p:page,_t:Math.random()}).end((err,res)=>{
+            if(err){
+                console.log(err);
+            }else{
+                let json = res.body;
+                if(json !== null){
+                    //保存到realm
+                    try{
+                        realmObj.write(()=>{
+                            let contentList = json.list;
+                            for(let i=0, l=contentList.length; i<l; i++){
+                                let item = {
+                                    id:parseInt(contentList[i]['id']),
+                                    userid:contentList[i]['userid'] !== null ? parseInt(contentList[i]['userid']) : 0,
+                                    huodongid:contentList[i]['huodongid'] !== null ? parseInt(contentList[i]['huodongid']) : 0,
+                                    dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                    mobile:contentList[i]['mobile'] !== null ? contentList[i]['mobile'] : "",
+                                    name:contentList[i]['name'] !== null ? contentList[i]['name'] : "",//这个就是name不是nickname
+                                    avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
+                                };
+                                realmObj.create("HuodongBaoming",item,true);
+                            }
+                        });
+                    }catch(e){
+                        console.log(e)
+                    }
+                    //发送
+                    callback && callback(json.totalPage);
+                }
+            }
+        });
+    }
+}
 
 
 //圈子列表isHot表示是否热门，category表示分类

@@ -154,7 +154,8 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         paddingTop:10,
-        paddingBottom:10
+        paddingBottom:10,
+        flex:1
     },
     img:{
         width:70,

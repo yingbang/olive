@@ -48,6 +48,7 @@ import NewsDetail from './components/news/NewsDetail';
 //活动
 import HuodongDetail from './components/find/HuodongDetail';
 import HuodongBaoMing from './components/find/HuodongBaoMing';
+import BaomingList from './components/find/BaomingList';
 //用于显示url
 import ShowUrl from './components/common/ShowUrl';
 //展示图片
@@ -241,6 +242,7 @@ const Navigator = StackNavigator(
         //活动
         HuodongDetail: {screen: HuodongDetail},
         HuodongBaoMing: {screen: HuodongBaoMing},
+        BaomingList: {screen: BaomingList},
         //显示网页
         ShowUrl: {screen: ShowUrl},
         //展示图片
