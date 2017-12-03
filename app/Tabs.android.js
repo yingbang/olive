@@ -58,6 +58,7 @@ import CameraPage from './components/common/CameraPage';
 import NoticeDetail from './components/home/NoticeDetail';
 //搜索
 import Search from './components/search/Index';
+import SearchResult from './components/search/Search';
 //发现好友、邀请好友
 import FindFriend from './components/my/FindFriend';
 import FindFriendStepTwo from './components/my/FindFriendStepTwo';
@@ -256,6 +257,7 @@ const Navigator = StackNavigator(
         NoticeDetail: {screen: NoticeDetail},
         //搜索
         Search: {screen: Search},
+        SearchResult: {screen: SearchResult},
         //发现好友，通讯录
         FindFriend: {screen: FindFriend},
         FindFriendStepTwo: {screen: FindFriendStepTwo},

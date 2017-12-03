@@ -20,7 +20,7 @@ import HTMLView from 'react-native-htmlview';
 import globalStyle from '../common/GlobalStyle';
 import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
 import {toastShort} from "../common/ToastTool";
-import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction} from '../../actions/userAction';
+import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction,getDongtaiInfoByIdAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
 import UShare from '../common/UShare';
 
@@ -28,7 +28,7 @@ class DongTaiDetail extends Component{
     constructor(props){
         super(props);
         this.state={
-            dongtaiId:this.props.navigation.state.params.id,//动态ID
+            dongtaiId:this.props.navigation.state.params.id || this.props.screenProps.navigation.state.params.id,//动态ID
             dongtai:{},//动态内容
             pinglun:[],//评论列表
             zan:[],//这篇动态的点赞者列表
@@ -88,9 +88,21 @@ class DongTaiDetail extends Component{
                 });
             }
         }catch(e){}finally{
+            this.props.dispatch(getDongtaiInfoByIdAction(this.state.dongtaiId,this._loadDongtaiComplete.bind(this)));
             this.props.dispatch(getZanAction(this.state.dongtaiId,1,this._loadZanComplete));
             this.props.dispatch(getCangStatusAction(this.state.dongtaiId,1,(status)=>{this._loadCangStatusComplete(status)}));
             this.props.dispatch(getPinglunAction(this.state.dongtaiId,this.state.currentPinglunPage,(totalPage)=>{this._loadPinglunComplete(totalPage)}));
+        }
+    }
+    //获取动态内容
+    _loadDongtaiComplete(){
+        let dongtai = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId);
+        if(dongtai.length > 0){
+            this.setState({
+                dongtai:dongtai[0],
+                toUserid:dongtai[0]['userid'],
+                toUsername:dongtai[0]['name'],
+            });
         }
     }
     //查询收藏状态

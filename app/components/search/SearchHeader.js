@@ -11,17 +11,25 @@ import {
     Platform
 } from 'react-native';
 import { SearchBar,Icon } from 'react-native-elements';
-import Colors from './Colors';
+import Colors from '../common/Colors';
 
 export default class SearchHeader extends Component{
     constructor(props){
         super(props);
+        this.state={
+            keyword:""
+        }
     }
     /**
      * 点击搜索
      */
     pressSearch(){
-        alert('搜索');
+        let keyword = this.state.keyword;
+        if(keyword === "" || keyword === null || keyword === undefined){
+            return false;
+        }
+        this.search.clearText();
+        this.props.navigation.navigate("SearchResult",{keyword:keyword});
     }
     //加载完将光标置于输入框内
     componentDidMount(){
@@ -39,7 +47,7 @@ export default class SearchHeader extends Component{
                 <SearchBar
                     ref={(search)=>{this.search=search}}
                     lightTheme
-                    onChangeText={()=>{}}
+                    onChangeText={(text)=>{this.setState({keyword:text})}}
                     containerStyle={styles.searchContainer}
                     inputStyle={Colors.bgF2}
                     placeholderTextColor={'#aaa'}

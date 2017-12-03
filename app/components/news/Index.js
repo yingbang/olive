@@ -198,12 +198,12 @@ const styles = StyleSheet.create({
         color:'#ff4343',
     },
     bottomText:{
-        fontSize:10,
+        fontSize:14,
         marginRight:10
     },
     bottomImage:{
-        width:12,
-        height:12,
+        width:18,
+        height:18,
         marginRight:2,
         tintColor:'#aaaaaa'
     },

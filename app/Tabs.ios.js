@@ -59,6 +59,7 @@ import CameraPage from './components/common/CameraPage';
 import NoticeDetail from './components/home/NoticeDetail';
 //搜索
 import Search from './components/search/Index';
+import SearchResult from './components/search/Search';
 //发现好友、邀请好友
 import FindFriend from './components/my/FindFriend';
 import FindFriendStepTwo from './components/my/FindFriendStepTwo';
@@ -164,7 +165,7 @@ const AppTab = TabNavigator(
             }
         }
     }, {
-        initialRouteName: 'MyContainer',//默认显示的tab页
+        initialRouteName: 'HomeContainer',//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -253,6 +254,7 @@ const Navigator = StackNavigator(
         NoticeDetail: {screen: NoticeDetail},
         //搜索
         Search: {screen: Search},
+        SearchResult: {screen: SearchResult},
         //发现好友，通讯录
         FindFriend: {screen: FindFriend},
         FindFriendStepTwo: {screen: FindFriendStepTwo},

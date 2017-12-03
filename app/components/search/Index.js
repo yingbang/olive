@@ -12,7 +12,7 @@ import {
     Dimensions,
     Button
 } from 'react-native';
-import SearchHeader from '../common/SearchHeader';
+import SearchHeader from './SearchHeader';
 
 export default class Index extends Component{
     static navigationOptions = {
@@ -25,13 +25,13 @@ export default class Index extends Component{
             <ScrollView style={styles.container}>
                 <Text style={styles.title}>热门搜索</Text>
                 <View style={styles.hot}>
-                    <Text style={styles.item}>跑步</Text>
-                    <Text style={styles.item}>健身</Text>
-                    <Text style={styles.item}>骑行</Text>
-                    <Text style={styles.item}>拉伸</Text>
-                    <Text style={styles.item}>拉伸运动视频</Text>
-                    <Text style={styles.item}>热身</Text>
-                    <Text style={styles.item}>运动团</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"跑步"});}} style={styles.item}>跑步</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"健身"});}} style={styles.item}>健身</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"骑行"});}} style={styles.item}>骑行</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"拉伸"});}} style={styles.item}>拉伸</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"拉伸运动视频"});}} style={styles.item}>拉伸运动视频</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"热身"});}} style={styles.item}>热身</Text>
+                    <Text onPress={()=>{this.props.navigation.navigate("SearchResult",{keyword:"运动团"});}} style={styles.item}>运动团</Text>
                 </View>
             </ScrollView>
         );

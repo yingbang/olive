@@ -219,3 +219,19 @@ export function removeHTMLTag(str) {
     str=str.replace(/ /ig,'');//去掉
     return str;
 }
+
+//截取字符串
+export function strCut(str,n){
+    if(str === null || str === undefined || str === ""){
+        return "";
+    }
+    let r = /[^\x00-\xff]/g;
+    if(str.replace(r,"mm").length <= n){return str;}
+    let m = Math.floor(n/2);
+    for(let i=m;i<str.length;i++){
+        if(str.substr(0,i).replace(r,"mm").length >= n){
+            return str.substr(0,i)+"...";
+        }
+    }
+    return str;
+}
