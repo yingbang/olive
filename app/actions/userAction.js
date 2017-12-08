@@ -20,7 +20,7 @@ export function getUserListAction(page,type,flag,callback){
                     realmObj.write(()=>{
                         let contentList = json.list;
                         for(let i=0, l=contentList.length; i<l; i++){
-                            let hidden = realmObj.objects("HiddenUser").filtered("id = " + contentList[i]['id']);
+                            let hidden = realmObj.objects("HiddenUser").filtered("id == " + contentList[i]['id']);
                             let user = {
                                 id:parseInt(contentList[i]['id']),
                                 type:parseInt(contentList[i]['type']),
@@ -37,7 +37,7 @@ export function getUserListAction(page,type,flag,callback){
                                 address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
                                 weixin:contentList[i]['weixin'] !== null ? contentList[i]['weixin'] : "",
                                 intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
-                                renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng']+"" : "",
+                                renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng']+"" : "-1",
                                 avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
                                 visible:hidden.length <= 0,
                                 renzhengleixing:contentList[i]['renzhengleixing'] !== null ? contentList[i]['renzhengleixing'] : 0,
@@ -74,7 +74,7 @@ export function getUserInfoAction(mobile,callback){
                 //保存到realm
                 try{
                     realmObj.write(()=>{
-                        let hidden = realmObj.objects("HiddenUser").filtered("id = " + json['id']);
+                        let hidden = realmObj.objects("HiddenUser").filtered("id == " + json['id']);
                         let user = {
                             id:parseInt(json['id']),
                             type:parseInt(json['type']),
@@ -91,7 +91,7 @@ export function getUserInfoAction(mobile,callback){
                             address:json['address'] !== null ? json['address'] : "",
                             weixin:json['weixin'] !== null ? json['weixin'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "",
+                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "-1",
                             avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:hidden.length <= 0,
                             renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
@@ -130,7 +130,7 @@ export function getUserInfoById(userid,callback) {
             //保存到realm
             try{
                 realmObj.write(()=>{
-                    let hidden = realmObj.objects("HiddenUser").filtered("id = " + json['id']);
+                    let hidden = realmObj.objects("HiddenUser").filtered("id == " + json['id']);
                     let user = {
                         id:parseInt(json['id']),
                         type:parseInt(json['type']),
@@ -149,7 +149,7 @@ export function getUserInfoById(userid,callback) {
                         company:json['company'] !== null ? json['company'] : "",
                         job:json['job'] !== null ? json['job'] : "",
                         intro:json['intro'] !== null ? json['intro'] : "",
-                        renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "",
+                        renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "-1",
                         avatar:json['avatar'] !== null ? json['avatar'] : "",
                         visible:hidden.length <= 0,
                         renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
@@ -341,7 +341,7 @@ export function getFensiAction(page,callback){
                                 };
                                 realmObj.create("Fensi",item,true);
                                 //保存到会员表，要不就浪费了
-                                let hidden = realmObj.objects("HiddenUser").filtered("id = " + contentList[i]['id']);
+                                let hidden = realmObj.objects("HiddenUser").filtered("id == " + contentList[i]['id']);
                                 let user = {
                                     id:parseInt(contentList[i]['id']),
                                     type:parseInt(contentList[i]['type']),
@@ -644,18 +644,18 @@ export function zanDongtaiAction(id,type,callback){
                                 if(type === 1){
                                     realmObj.create("ZanDongtai",{id:id},true);
                                     //更新动态的点赞数
-                                    let dongtai = realmObj.objects("Dongtai").filtered("id = " + id);
+                                    let dongtai = realmObj.objects("Dongtai").filtered("id == " + id);
                                     //realmObj.create("Dongtai",{id:id,zan:oldZan[0]['zan'] + 1},true);
                                     if(dongtai.length > 0){
                                         dongtai[0].zan = dongtai[0].zan + 1;
                                     }
                                 }else{
-                                    realmObj.delete(realmObj.objects("ZanDongtai").filtered("id = " + id));
-                                    let oldZan = realmObj.objects("Dongtai").filtered("id = " + id);
+                                    realmObj.delete(realmObj.objects("ZanDongtai").filtered("id == " + id));
+                                    let oldZan = realmObj.objects("Dongtai").filtered("id == " + id);
                                     let newZan = oldZan[0]['zan'] - 1;
                                     realmObj.create("Dongtai",{id:id,zan:(newZan>=0) ? newZan : 0},true);
                                     //更新点赞者列表
-                                    realmObj.delete(realmObj.objects("Zan").filtered("contentid = " + id + " and userid = " + userid));
+                                    realmObj.delete(realmObj.objects("Zan").filtered("contentid == " + id + " and userid == " + userid));
                                 }
                             });
                         }catch(e){}

@@ -10,6 +10,8 @@ import colors from '../common/Colors';
 import {getArrayItems,inArray,getFullPath} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getJoinCompanyAction} from '../../actions/userAction';
+import {LazyloadImage} from '../common/lazyload';
+
 
 export default class GongYiZuZhi extends Component {
 
@@ -19,13 +21,14 @@ export default class GongYiZuZhi extends Component {
             content:[],
             currentPage:1,
             joinList:[]
-        }
+        };
+        this.lazyloadName = this.props.name;//懒加载的name
     }
 
     componentDidMount(){
         try{
-            let contentList = realmObj.objects("User").filtered("visible = true and type = 1 and flag = 1");
-            if(contentList && contentList.length > 0){
+            let contentList = realmObj.objects("User").filtered("visible == true and type == 1 and flag == 1");
+            if(contentList && contentList.length >= 0){
                 this.setState({
                     content:getArrayItems(contentList,10)
                 });
@@ -40,8 +43,8 @@ export default class GongYiZuZhi extends Component {
     //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadComplete(){
         try{
-            let contentList = realmObj.objects("User").filtered("visible = true and type = 1 and flag = 1");
-            if(contentList.length > 0){
+            let contentList = realmObj.objects("User").filtered("visible == true and type == 1 and flag == 1");
+            if(contentList.length >= 0){
                 this.setState({
                     content:getArrayItems(contentList,10),
                     currentPage:this.state.currentPage++
@@ -52,7 +55,7 @@ export default class GongYiZuZhi extends Component {
     _loadCompanyComplete(){
         try{
             let contentList = realmObj.objects("JoinCompany");
-            if(contentList && contentList.length > 0){
+            if(contentList && contentList.length >= 0){
                 this.setState({
                     joinList:contentList
                 });
@@ -74,10 +77,10 @@ export default class GongYiZuZhi extends Component {
                             realmObj.create("JoinCompany",{id:id},true);
                         }else{
                             text = '退出';
-                            realmObj.delete(realmObj.objects("JoinCompany").filtered("id = " + id));
+                            realmObj.delete(realmObj.objects("JoinCompany").filtered("id == " + id));
                         }
                         let contentList = realmObj.objects("JoinCompany");
-                        if(contentList && contentList.length > 0){
+                        if(contentList && contentList.length >= 0){
                             this.setState({
                                 joinList:contentList
                             });
@@ -94,7 +97,7 @@ export default class GongYiZuZhi extends Component {
     //不显示会员
     hideUser(id,key){
         try{
-            let user = realmObj.objects("User").filtered("id = " + id);
+            let user = realmObj.objects("User").filtered("id == " + id);
             if(user && user.length > 0){
                 realmObj.write(()=>{
                     realmObj.create('User', {id: id, visible:false}, true);
@@ -133,9 +136,9 @@ export default class GongYiZuZhi extends Component {
                                 <View style={styles.container}>
                                     {
                                         item['avatar'] !== "" ?
-                                            <Image style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
+                                            <LazyloadImage host={this.lazyloadName} style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
                                             :
-                                            <Image style={[globalStyle.defaultAvatar,{marginBottom:10}]} source={require('../../assets/icon/iconhead.png')}/>
+                                            <LazyloadImage host={this.lazyloadName} style={[globalStyle.defaultAvatar,{marginBottom:10}]} source={require('../../assets/icon/iconhead.png')}/>
                                     }
                                     <Text style={{marginBottom:10}}>{item['nickname']}</Text>
                                     {

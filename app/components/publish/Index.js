@@ -40,16 +40,18 @@ export default class PublishIndex extends Component{
     }
 
     componentDidMount(){
-        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-        let userInfo = realmObj.objects("User").filtered("id == "+userid);
-        if(userInfo && userInfo.length > 0){
-            let renzheng = userInfo[0]['renzhengzhuangtai'];
-            if(renzheng === 1){
-                this.setState({
-                    renzheng:true
-                });
+        try{
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            let userInfo = realmObj.objects("User").filtered("id == "+userid);
+            if(userInfo && userInfo.length > 0){
+                let renzheng = userInfo[0]['renzhengzhuangtai'];
+                if(renzheng === 1){
+                    this.setState({
+                        renzheng:true
+                    });
+                }
             }
-        }
+        }catch(e){}
     }
 
     /**
@@ -68,7 +70,7 @@ export default class PublishIndex extends Component{
     pressCancel(){
         let prevState = realmObj.objects("Global").filtered("key == 'prevStateRouteIndex'");
         //console.log("c:"+prevState[0]['value']);
-        let routeName="";
+        let routeName="HomeContainer";
         if(prevState && prevState.length > 0){
             routeName = prevState[0]['value'];
         }

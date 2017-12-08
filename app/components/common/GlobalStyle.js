@@ -7,9 +7,6 @@ import {
 const {width, height} = Dimensions.get('window');
 
 const globalStyle = StyleSheet.create({
-    //屏幕宽高
-    width:width,
-    height:height,
     //设置flex=1
     flex1:{
         flex:1

@@ -14,16 +14,11 @@ import {
     FlatList,
     RefreshControl,
     Platform,
-    InteractionManager
 } from 'react-native';
-import HTMLView from 'react-native-htmlview';
-import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
-import globalStyle from '../common/GlobalStyle';
 import {List} from 'react-native-elements';
-import HeaderWithSearch from '../common/HeaderWithSearch';
-import {getDongtaiAction,getZanDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
-import ImageRange from '../common/ImageRange';
-import BlankContent from '../common/BlankContent';
+import {getDongtaiAction,zanDongtaiAction} from '../../actions/userAction';
+import DongtaiItem from '../common/DongtaiItem';
+import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
 
 export default class Guanzhu extends Component{
 
@@ -42,79 +37,12 @@ export default class Guanzhu extends Component{
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
             userid:'1',//管理员
         };
+        this.lazyloadName = "lazyload-guanzhulist";//懒加载的name
     }
 
     //动态项
     renderRow = ({item}) => (
-        <View style={{marginBottom:15}}>
-            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                <View>
-                    <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['userid']})}}>
-                    <View style={globalStyle.dongtaiAvatarView}>
-                        {
-                            item['avatar'] !== "" ?
-                                <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
-                                :
-                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
-                        }
-                        <View>
-                            <Text>{item['name']}</Text>
-                            <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
-                        </View>
-                    </View>
-                    </TouchableWithoutFeedback>
-                    <View>
-                        <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
-                        <ImageRange images={item['pics']} {...this.props}/>
-                    </View>
-                    <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
-                        <View style={{flex:1,flexDirection:'row'}}>
-                            {
-                                inArray(this.state.zanDongtaiList,item['id'],'id') ?
-                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
-                                    </TouchableWithoutFeedback>
-                                    :
-                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
-                                    </TouchableWithoutFeedback>
-                            }
-                            <TouchableWithoutFeedback onPress={()=>{this.props.screenProps.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
-                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
-                            </TouchableWithoutFeedback>
-                        </View>
-                        <View>
-                            <TouchableWithoutFeedback onPress={()=>{}}>
-                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
-                    <View>
-                        {
-                            item['zan'] > 0 ?
-                                <View style={{flexDirection:'row',marginBottom:8}}>
-                                    <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                    <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
-                                </View>
-                                : null
-                        }
-
-                        <HTMLView
-                            value={item['pinglunlist']}
-                            stylesheet={styles}
-                            addLineBreaks={false}
-                            onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
-                        />
-                        {
-                            item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
-                        }
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        </View>
+        <DongtaiItem name={this.lazyloadName} item={item} zan={this.state.zanDongtaiList} {...this.props}/>
     );
     //点赞、取消点赞
     zanDongtai(id,type){
@@ -125,36 +53,26 @@ export default class Guanzhu extends Component{
 
     //获取动态
     componentDidMount(){
-        InteractionManager.runAfterInteractions(()=>{
-            try{
-                //动态
-                let dongtaiList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
-                if(dongtaiList.length > 0){
-                    dongtaiList = dongtaiList.sorted('id',true);
-                    this.setState({
-                        dongtai:dongtaiList
-                    });
-                }
-                //点赞列表
-                let zanDongtaiList = realmObj.objects("ZanDongtai");
-                if(zanDongtaiList.length > 0){
-                    this.setState({
-                        zanDongtaiList:zanDongtaiList
-                    });
-                }
-            }catch(e){
-                console.log(e);
-            }finally {
-                this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
-                this.props.screenProps.dispatch(getZanDongtaiAction(1,this._loadZanDongtaiComplete.bind(this)));
-            }
-        });
+        try{
+            //动态
+            let dongtaiList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
+            //点赞列表
+            let zanDongtaiList = realmObj.objects("ZanDongtai");
+            this.setState({
+                dongtai:dongtaiList.length >= 0 ? dongtaiList.sorted('id',true) : [],
+                zanDongtaiList:zanDongtaiList.length >= 0 ? zanDongtaiList : [],
+            });
+        }catch(e){
+            console.log(e);
+        }finally {
+            this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+        }
     }
     //网络请求加载完成
     _loadDongtaiComplete(totalPage){
         try{
             let contentList = realmObj.objects("Dongtai").filtered("guanzhu = 1");
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 contentList = contentList.sorted('id',true);
                 let page = this.state.currentDongtaiPage;
                 this.setState({
@@ -162,20 +80,6 @@ export default class Guanzhu extends Component{
                     currentDongtaiPage:page + 1,
                     loadDongtaiFinish:page >= totalPage,
                     loading:false,
-                });
-            }else{
-                this.setState({
-                    loading:false,
-                });
-            }
-        }catch(e){}
-    }
-    _loadZanDongtaiComplete(){
-        try{
-            let contentList = realmObj.objects("ZanDongtai");
-            if(contentList.length > 0){
-                this.setState({
-                    zanDongtaiList:contentList
                 });
             }
         }catch(e){}
@@ -200,7 +104,7 @@ export default class Guanzhu extends Component{
     };
     render(){
         return (
-            <ScrollView style={styles.container}
+            <LazyloadScrollView name={this.lazyloadName} style={styles.container}
                         onMomentumScrollEnd = {this._contentViewScroll}
                         refreshControl={
                             <RefreshControl
@@ -216,10 +120,9 @@ export default class Guanzhu extends Component{
                         data={this.state.dongtai}
                         extraData={this.state}
                         keyExtractor={this._keyExtractor}
-                        ListEmptyComponent={BlankContent}
                     />
                 </List>
-            </ScrollView>
+            </LazyloadScrollView>
         );
     }
 }

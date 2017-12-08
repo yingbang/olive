@@ -22,6 +22,9 @@ import {
 import {formatTime,isExpired,getFullPath} from '../common/public';
 import BlankContent from '../common/BlankContent';
 import {getNewsListAction} from '../../actions/newsAction';
+import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
+
+const lazyloadName = "lazyload-newsList";//懒加载的name
 
 export default class NewsIndex extends Component{
 
@@ -37,28 +40,26 @@ export default class NewsIndex extends Component{
     }
     //组件加载完成
     componentDidMount() {
-        InteractionManager.runAfterInteractions(()=>{
-            //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
-            try{
-                let newsList = realmObj.objects("News");
-                if(newsList.length > 0){
-                    newsList = newsList.sorted([['flags',true],['id',true]]);
-                    this.setState({
-                        data:newsList
-                    });
-                }
-            }catch(e){
-                console.log(e);
-            }finally{
-                this.props.dispatch(getNewsListAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+        //从realm中读取数据，如果没有内容，则发送action请求网络数据，收到数据以后，先保存到realm数据库，然后执行回调函数，重新读取realm
+        try{
+            let newsList = realmObj.objects("News");
+            if(newsList.length >= 0){
+                newsList = newsList.sorted([['flags',true],['id',true]]);
+                this.setState({
+                    data:newsList
+                });
             }
-        });
+        }catch(e){
+            console.log(e);
+        }finally{
+            this.props.dispatch(getNewsListAction(this.state.currentPage,(totalPage)=>{this._loadComplete(totalPage)}));
+        }
     }
     //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadComplete(totalPage){
         try{
             let newsList = realmObj.objects("News");
-            if(newsList.length > 0){
+            if(newsList.length >= 0){
                 newsList = newsList.sorted([['flags',true],['id',true]]);
                 let page = this.state.currentPage;
                 this.setState({
@@ -66,10 +67,6 @@ export default class NewsIndex extends Component{
                     currentPage:page + 1,
                     isFinished:page >= totalPage,
                     loading:false
-                });
-            }else{
-                this.setState({
-                    loading:false,
                 });
             }
         }catch(e){}
@@ -120,7 +117,7 @@ export default class NewsIndex extends Component{
                 </View>
             </View>
             </Body>
-            <Thumbnail square style={styles.thumb} source={!!item.pic ? {uri:getFullPath(item.pic,this.state.host)} : require('../../assets/images/nopic1.jpg')} />
+            <LazyloadImage host={lazyloadName} square style={styles.thumb} source={!!item.pic ? {uri:getFullPath(item.pic,this.state.host)} : require('../../assets/images/nopic1.jpg')} />
         </ListItem>
     );
     //把id当成key，否则会有警告
@@ -138,7 +135,7 @@ export default class NewsIndex extends Component{
     };
     render(){
         return (
-            <ScrollView style={styles.container}
+            <LazyloadScrollView name={lazyloadName} style={styles.container}
                         onMomentumScrollEnd = {this._contentViewScroll}
                         refreshControl={
                             <RefreshControl
@@ -154,10 +151,9 @@ export default class NewsIndex extends Component{
                     data={this.state.data}
                     extraData={this.state}
                     keyExtractor={this._keyExtractor}
-                    ListEmptyComponent={BlankContent}
                 />
                 </List>
-            </ScrollView>
+            </LazyloadScrollView>
         );
     }
 }
@@ -181,10 +177,11 @@ const styles = StyleSheet.create({
         marginBottom:8
     },
     leftMiddle:{
-        fontSize:14,
+        fontSize:15,
         color:'#333333',
         marginBottom:8,
-        flex:1
+        flex:1,
+        lineHeight:26
     },
     leftBottom:{
         flexDirection:'row',
@@ -205,7 +202,7 @@ const styles = StyleSheet.create({
         width:18,
         height:18,
         marginRight:2,
-        tintColor:'#aaaaaa'
+        tintColor:'#cecece'
     },
     thumb:{
         width:100,

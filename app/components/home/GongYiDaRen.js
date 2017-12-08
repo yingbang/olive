@@ -10,6 +10,7 @@ import colors from '../common/Colors';
 import {getArrayItems,inArray,getFullPath} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getFollowUserAction} from '../../actions/userAction';
+import {LazyloadImage} from '../common/lazyload';
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,12 +21,13 @@ export default class GongYiDaRen extends Component {
             content:[],
             currentPage:1,
             joinList:[]
-        }
+        };
+        this.lazyloadName = this.props.name;//懒加载的name
     }
 
     componentDidMount(){
         try{
-            let contentList = realmObj.objects("User").filtered("visible = true and type = 0 and flag = 1");
+            let contentList = realmObj.objects("User").filtered("visible == true and type == 0 and flag == 1");
             if(contentList && contentList.length > 0){
                 this.setState({
                     content:getArrayItems(contentList,5)
@@ -41,7 +43,7 @@ export default class GongYiDaRen extends Component {
     //网络请求数据接收完成以后执行，重新从realm中获取数据
     _loadComplete(){
         try{
-            let contentList = realmObj.objects("User").filtered("visible = true and type = 0 and flag = 1");
+            let contentList = realmObj.objects("User").filtered("visible == true and type == 0 and flag == 1");
             if(contentList.length > 0){
                 this.setState({
                     content:getArrayItems(contentList,5),
@@ -75,16 +77,17 @@ export default class GongYiDaRen extends Component {
                             realmObj.create("FollowUser",{id:id},true);
                         }else{
                             text = '取消关注';
-                            realmObj.delete(realmObj.objects("FollowUser").filtered("id = " + id));
+                            realmObj.delete(realmObj.objects("FollowUser").filtered("id == " + id));
                         }
                         let contentList = realmObj.objects("FollowUser");
-                        if(contentList && contentList.length > 0){
+                        if(contentList && contentList.length >= 0){
                             this.setState({
                                 joinList:contentList
                             });
                         }
+                        toastShort(text + "成功");
                     });
-                    toastShort(text + "成功");
+
                 }else{
                     toastShort(text + "失败，请重试")
                 }
@@ -118,9 +121,9 @@ export default class GongYiDaRen extends Component {
                                     <View style={{width:80}}>
                                         {
                                             item['avatar'] !== "" ?
-                                                <Image style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
+                                                <LazyloadImage host={this.lazyloadName} style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
                                                 :
-                                                <Image style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
+                                                <LazyloadImage host={this.lazyloadName} style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
                                         }
                                     </View>
                                     <View style={{width:width-158,height:70,overflow:'hidden'}}>

@@ -14,7 +14,7 @@ import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import { Card,Header, Icon} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
-import {formatTime,isExpired,getFullPath} from '../common/public';
+import {formatTime,getFullPath} from '../common/public';
 import {getNewsInfoByIdAction,setNewViewPlus} from '../../actions/newsAction';
 import {cangDongtaiAction} from '../../actions/userAction';
 import UShare from '../common/UShare';
@@ -72,8 +72,8 @@ class NewsDetail extends Component{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 rightComponent={<View style={globalStyle.flexRow}>
-                    <Icon style={styles.icon} onPress={()=>{HeaderProps.scene.route.params.collect()}} name={HeaderProps.scene.route.params.isCollect ? "star" : "star-o"} type="font-awesome"/>
-                    <Icon style={styles.icon} onPress={()=>{HeaderProps.scene.route.params.share()}} name="share-alt" type="font-awesome"/>
+                    <Icon style={styles.icon} size={20} color={"#cecece"} onPress={()=>{HeaderProps.scene.route.params.collect()}} name={HeaderProps.scene.route.params.isCollect ? "star" : "star-o"} type="font-awesome"/>
+                    <Icon style={styles.icon} size={20} color={"#cecece"} onPress={()=>{HeaderProps.scene.route.params.share()}} name="share-alt" type="font-awesome"/>
                 </View>}
                 backgroundColor="#ffffff"
                 outerContainerStyles={globalStyle.androidHeaderStyle}
@@ -84,16 +84,16 @@ class NewsDetail extends Component{
     componentDidMount(){
         //先从realm中读取数据，如果有，直接显示，否则发送action请求网络数据
         try{
-            let item = realmObj.objects("NewsData").filtered("id = " + this.state.id);
-            if(item !== null && item.length > 0){
+            let item = realmObj.objects("NewsData").filtered("id == " + this.state.id);
+            if(item !== null && item.length >= 0){
                 this.setState({
                     title:item[0]['title'],
                     content:item[0]['content'],
                     isCollect:item[0]['shoucang'] === 1,
                 });
             }
-            let news = realmObj.objects("News").filtered("id = " + this.state.id);
-            if(news !== null && news.length > 0){
+            let news = realmObj.objects("News").filtered("id == " + this.state.id);
+            if(news !== null && news.length >= 0){
                 this.setState({
                     title:news[0]['title'],
                     intro:news[0]['intro'],
@@ -114,8 +114,8 @@ class NewsDetail extends Component{
     //获取新闻内容完毕
     _loadNewsComplete = ()=>{
         try{
-            let item = realmObj.objects("NewsData").filtered("id = " + this.state.id);
-            if(item !== null && item.length > 0){
+            let item = realmObj.objects("NewsData").filtered("id == " + this.state.id);
+            if(item !== null && item.length >= 0){
                 this.setState({
                     title:item[0]['title'],
                     content:item[0]['content'],
@@ -126,8 +126,8 @@ class NewsDetail extends Component{
                 //设置收藏和分享
                 this.props.navigation.setParams({isCollect:this.state.isCollect});
             }
-            let news = realmObj.objects("News").filtered("id = " + this.state.id);
-            if(news !== null && news.length > 0){
+            let news = realmObj.objects("News").filtered("id == " + this.state.id);
+            if(news !== null && news.length >= 0){
                 this.setState({
                     title:news[0]['title'],
                     intro:news[0]['intro'],
@@ -157,12 +157,7 @@ class NewsDetail extends Component{
         let statusNum = status ? 0 : 1;//收藏1、取消收藏0
         this.props.dispatch(cangDongtaiAction(this.state.id,0,statusNum,this._loadCangComplete.bind(this)));
     }
-    _loadCangComplete(){
-        let status = !this.state.isCollect;
-        this.setState({
-            isCollect:status
-        });
-    }
+    _loadCangComplete(){}
 
     render(){
         return (
@@ -171,9 +166,6 @@ class NewsDetail extends Component{
                     <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} imageStyle={{height:200}} imageProps={{resizeMode:"stretch"}} image={this.state.pic ? {uri:getFullPath(this.state.pic,this.state.host)} : require('../../assets/images/nopic3.jpg')}>
                         <View>
                             <Text style={styles.newsItemTitle}>{this.state.title}</Text>
-                            <View style={styles.newsItemView}>
-                                <Text style={{flex:1,fontSize:14}}>资讯类型：公司新闻</Text>
-                            </View>
                             <View style={styles.newsItemView}>
                                 <Text style={{flex:1,fontSize:14}}>发布时间：{formatTime(this.state.dateline,"yyyy/MM/dd hh:mm")}</Text>
                                 <Text style={{fontSize:14}}>阅读：{this.state.views}</Text>
@@ -239,6 +231,6 @@ const styles = StyleSheet.create({
         lineHeight:28,
     },
     icon:{
-        marginLeft:10
+        marginLeft:10,
     }
 });

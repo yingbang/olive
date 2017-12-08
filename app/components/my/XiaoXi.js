@@ -100,7 +100,7 @@ class XiaoXi extends Component{
             roundAvatar
             hideChevron
             title={item.title}
-            subtitle={removeHTMLTag(item.content)+" "}
+            subtitle={item.content ? removeHTMLTag(item.content)+" " : null}
             subtitleContainerStyle={(Platform.OS === 'ios') ? {} : {height:15,overflow:'hidden'}}
             avatar={item['avatar'] ? {uri:getFullPath(item['avatar'],this.state.host)} : <Image style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>}
             avatarStyle={styles.avatar}
@@ -122,6 +122,20 @@ class XiaoXi extends Component{
                         showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
             >
                 <List containerStyle={globalStyle.listContainer}>
+                    <ListItem
+                        title={"橄榄枝小助手"}
+                        avatar={<View style={{width:40,height:40,borderRadius:20,backgroundColor:"#00bfff",marginRight:10,alignItems:'center',justifyContent:'center'}}>
+                            <Image style={{width:26,height:26,tintColor:'#ffffff'}} source={require('../../assets/icon/iconcase.png')}/></View>}
+                        containerStyle={[globalStyle.listItem,{marginTop:0}]}
+                        onPress={()=>{this.props.navigation.navigate("XiaoxiDetail",{id:1})}}
+                    />
+                    <ListItem
+                        title={"橄榄枝小喇叭"}
+                        avatar={<View style={{width:40,height:40,borderRadius:20,backgroundColor:"#00bfff",marginRight:10,alignItems:'center',justifyContent:'center'}}>
+                            <Image style={{width:20,height:20,tintColor:'#ffffff'}} source={require('../../assets/icon/iconlaba.png')}/></View>}
+                        containerStyle={[globalStyle.listItem,{marginTop:0}]}
+                        onPress={()=>{this.props.navigation.navigate("XiaoxiDetail",{id:2})}}
+                    />
                     <FlatList
                         data={this.state.data}
                         extraData={this.state}
@@ -149,7 +163,7 @@ const styles = StyleSheet.create({
     },
     avatar:{
         width:40,
-        height:40
+        height:40,
     },
     subtitleView: {
         flexDirection: 'row',

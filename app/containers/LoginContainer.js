@@ -51,9 +51,16 @@ class LoginContainer extends Component {
                             company:json['company'] !== null ? json['company'] : "",
                             job:json['job'] !== null ? json['job'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "",
+                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "-1",
                             avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:false,//自己的信息不需要显示在列表中
+                            renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
+                            renzhengshijian:json['renzhengshijian'] !== null ? json['renzhengshijian'] : 0,
+                            renzhengzhuangtai:json['renzhengzhuangtai'] !== null ? json['renzhengzhuangtai'] : 0,
+                            shenfenzheng:json['shenfenzheng'] !== null ? json['shenfenzheng'] : "",
+                            idnumber:json['idnumber'] !== null ? json['idnumber'] : "",
+                            zhizhao:json['zhizhao'] !== null ? json['zhizhao'] : "",
+                            zuzhi:json['zuzhi'] !== null ? json['zuzhi'] : "",
                         };
                         realmObj.create("User",user,true);
                         //保存当前登录的用户ID和手机号

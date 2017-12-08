@@ -13,9 +13,10 @@ import {
     Modal,
     TouchableWithoutFeedback
 } from 'react-native';
-const { width, height } = Dimensions.get('window');
 import {getFullPath} from './public';
-//import {CachedImage} from "react-native-img-cache";
+import {LazyloadImage} from './lazyload';
+
+const { width, height } = Dimensions.get('window');
 
 //判断图片是否有前缀，没有的话加上域名
 function getFullUrl(path) {
@@ -36,11 +37,12 @@ function showImage(images,currentIndex,that){
 class OneImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <Image style={styles.oneImage} source={{uri:getFullUrl(images[0])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.oneImage} source={{uri:getFullUrl(images[0])}}/>
                     </TouchableWithoutFeedback>
                 </View>
             </View>
@@ -51,14 +53,15 @@ class OneImage extends Component{
 class TwoImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <Image style={styles.twoImage} source={{uri:getFullUrl(images[0])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.twoImage} source={{uri:getFullUrl(images[0])}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                        <Image style={styles.twoImage} source={{uri:getFullUrl(images[1])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.twoImage} source={{uri:getFullUrl(images[1])}}/>
                     </TouchableWithoutFeedback>
                 </View>
             </View>
@@ -69,18 +72,19 @@ class TwoImage extends Component{
 class ThreeImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <Image style={styles.threeImageL} source={{uri:getFullUrl(images[0])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.threeImageL} source={{uri:getFullUrl(images[0])}}/>
                     </TouchableWithoutFeedback>
                     <View>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                            <Image style={styles.threeImageR} source={{uri:getFullUrl(images[1])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.threeImageR} source={{uri:getFullUrl(images[1])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                            <Image style={styles.threeImageR} source={{uri:getFullUrl(images[2])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.threeImageR} source={{uri:getFullUrl(images[2])}}/>
                         </TouchableWithoutFeedback>
                     </View>
                 </View>
@@ -92,20 +96,21 @@ class ThreeImage extends Component{
 class FourImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View style={{flexDirection:'row',flexWrap:'wrap'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <Image style={styles.fourImage} source={{uri:getFullUrl(images[0])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[0])}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                        <Image style={styles.fourImage} source={{uri:getFullUrl(images[1])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[1])}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                        <Image style={styles.fourImage} source={{uri:getFullUrl(images[2])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[2])}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,3,this)}}>
-                        <Image style={styles.fourImage} source={{uri:getFullUrl(images[3])}}/>
+                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[3])}}/>
                     </TouchableWithoutFeedback>
                 </View>
             </View>
@@ -116,26 +121,27 @@ class FourImage extends Component{
 class FiveImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View>
                     <View style={{flexDirection:'row'}}>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                            <Image style={styles.fiveImageT} source={{uri:getFullUrl(images[0])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.fiveImageT} source={{uri:getFullUrl(images[0])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                            <Image style={styles.fiveImageT} source={{uri:getFullUrl(images[1])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.fiveImageT} source={{uri:getFullUrl(images[1])}}/>
                         </TouchableWithoutFeedback>
                     </View>
                     <View style={{flexDirection:'row'}}>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                            <Image style={styles.fiveImageB} source={{uri:getFullUrl(images[2])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.fiveImageB} source={{uri:getFullUrl(images[2])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,3,this)}}>
-                            <Image style={styles.fiveImageB} source={{uri:getFullUrl(images[3])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.fiveImageB} source={{uri:getFullUrl(images[3])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,4,this)}}>
-                            <Image style={styles.fiveImageB} source={{uri:getFullUrl(images[4])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.fiveImageB} source={{uri:getFullUrl(images[4])}}/>
                         </TouchableWithoutFeedback>
                     </View>
                 </View>
@@ -147,27 +153,28 @@ class FiveImage extends Component{
 class SixImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View>
                     <View style={{flexDirection:'row',flexWrap:'wrap'}}>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                            <Image style={styles.sixImage} source={{uri:getFullUrl(images[0])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[0])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                            <Image style={styles.sixImage} source={{uri:getFullUrl(images[1])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[1])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                            <Image style={styles.sixImage} source={{uri:getFullUrl(images[2])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[2])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,3,this)}}>
-                            <Image style={styles.sixImage} source={{uri:getFullUrl(images[3])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[3])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,4,this)}}>
-                            <Image style={styles.sixImage} source={{uri:getFullUrl(images[4])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[4])}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,5,this)}}>
-                            <Image style={styles.sixImage} source={{uri:getFullUrl(images[5])}}/>
+                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[5])}}/>
                         </TouchableWithoutFeedback>
                     </View>
                 </View>
@@ -179,6 +186,7 @@ class SixImage extends Component{
 class MoreImage extends Component{
     render() {
         const images = this.props.images;
+        const lazyloadName = this.props.name;//懒加载的name
         return (
             <View style={styles.container}>
                 <View>
@@ -187,7 +195,7 @@ class MoreImage extends Component{
                             images.map((item,i)=>{
                                 return (
                                     <TouchableWithoutFeedback key={i} onPress={()=>{showImage(images,i,this)}}>
-                                        <Image style={styles.moreImage} source={{uri:getFullUrl(item)}}/>
+                                        <LazyloadImage host={lazyloadName} style={styles.moreImage} source={{uri:getFullUrl(item)}}/>
                                     </TouchableWithoutFeedback>
                                 );
                             })
@@ -220,42 +228,43 @@ export default class ImageRange extends Component {
     render() {
         let imageNumber = this.state.images.length;
         let imageArr = this.state.images;
+        let name = this.props.name;//懒加载的名字
         switch(imageNumber){
             case 1:
                 return (
-                    <OneImage images={imageArr} screenProps={this.props}/>
+                    <OneImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             case 2:
                 return (
-                    <TwoImage images={imageArr} screenProps={this.props}/>
+                    <TwoImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             case 3:
                 return (
-                    <ThreeImage images={imageArr} screenProps={this.props}/>
+                    <ThreeImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             case 4:
                 return (
-                    <FourImage images={imageArr} screenProps={this.props}/>
+                    <FourImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             case 5:
                 return (
-                    <FiveImage images={imageArr} screenProps={this.props}/>
+                    <FiveImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             case 6:
                 return (
-                    <SixImage images={imageArr} screenProps={this.props}/>
+                    <SixImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             case 7:
             case 8:
             case 9:
                 return (
-                    <MoreImage images={imageArr} screenProps={this.props}/>
+                    <MoreImage name={name} images={imageArr} screenProps={this.props}/>
                 );
                 break;
             default:

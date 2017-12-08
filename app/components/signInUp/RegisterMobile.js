@@ -124,12 +124,12 @@ export default class RegisterMobile extends Component {
                             <Image style={styles.logo} source={require('../../assets/images/logo.png')}/>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入手机号</Label>
+                            <Label style={{top:15}}>请输入手机号</Label>
                             <Input onChangeText={(text)=>{this.setState({mobile:text});}}/>
                         </Item>
                         <View>
                             <Item floatingLabel style={styles.buttonMargin}>
-                                <Label>请输入短信验证码</Label>
+                                <Label style={{top:15}}>请输入短信验证码</Label>
                                 <Input onChangeText={(text)=>{this.setState({code:text});}}/>
                             </Item>
                             <Button style={[colors.bgBlue,{position:'absolute',height:30,right:50,bottom:20,paddingLeft:8,paddingRight:8}]}>
@@ -143,7 +143,7 @@ export default class RegisterMobile extends Component {
                             </Button>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入密码</Label>
+                            <Label style={{top:15}}>请输入密码</Label>
                             <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({password:text});}}/>
                         </Item>
                         <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]} onPress={()=>{this.beginReg()}}>

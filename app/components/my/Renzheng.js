@@ -69,7 +69,7 @@ class Renzheng extends Component{
         try{
             //个人信息
             let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-            let userInfo = realmObj.objects("User").filtered("id="+userid);
+            let userInfo = realmObj.objects("User").filtered("id=="+userid);
             if(userInfo.length > 0){
                 let user = userInfo[0];
                 this.setState({
@@ -85,7 +85,7 @@ class Renzheng extends Component{
     //回调
     updateUserInfo(){
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-        let userInfo = realmObj.objects("User").filtered("id="+userid);
+        let userInfo = realmObj.objects("User").filtered("id=="+userid);
         if(userInfo.length > 0){
             let user = userInfo[0];
             this.setState({
@@ -240,7 +240,7 @@ class Renzheng extends Component{
             );
         }
         //如果已经认证
-        if(this.state.userInfo['renzheng'] !== '0'){
+        if(this.state.userInfo['renzheng'] !== '-1'){
             let typeText = ['个人','公司','公益组织'];
             let statusText = ['未审核','审核通过','审核失败'];
             let type = this.state.userInfo['renzhengleixing'] !== "" ? parseInt(this.state.userInfo['renzhengleixing']) : 0;

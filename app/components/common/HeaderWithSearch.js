@@ -38,7 +38,7 @@ export default class HeaderWithSearch extends Component{
                         size={16}
                         style={[styles.icon, styles.searchIcon]}
                         name={'search'}
-                        color={'#86939e'}
+                        color={'#aaaaaa'}
                     />
                     <Text style={styles.searchText}>搜索公益圈 文章</Text>
                 </View>

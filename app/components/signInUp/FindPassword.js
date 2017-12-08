@@ -116,12 +116,12 @@ export default class FindPassword extends Component {
                             <Image style={styles.logo} source={require('../../assets/images/logo.png')}/>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入手机号</Label>
+                            <Label style={{top:15}}>请输入手机号</Label>
                             <Input onChangeText={(text)=>{this.setState({mobile:text});}}/>
                         </Item>
                         <View>
                             <Item floatingLabel style={styles.buttonMargin}>
-                                <Label>请输入短信验证码</Label>
+                                <Label style={{top:15}}>请输入短信验证码</Label>
                                 <Input onChangeText={(text)=>{this.setState({code:text});}}/>
                             </Item>
                             <Button style={[colors.bgBlue,{position:'absolute',height:30,right:50,bottom:20,paddingLeft:8,paddingRight:8}]}>

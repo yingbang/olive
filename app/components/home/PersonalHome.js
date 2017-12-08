@@ -17,16 +17,14 @@ import {
     Platform
 } from 'react-native';
 import {connect} from 'react-redux';
-import HTMLView from 'react-native-htmlview';
 import {List} from 'react-native-elements';
-import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
+import {getFullPath} from '../common/public';
 import ParallaxScrollView from '../common/parallax/index';
 import Blank from '../common/Blank';
-import globalStyle from '../common/GlobalStyle';
 import BlankDongtai from '../common/BlankDongtai';
 import {getDongtaiAction,getUserInfoByIdAction,zanDongtaiAction} from '../../actions/userAction';
-import ImageRange from '../common/ImageRange';
-import UShare from '../common/UShare';
+import DongtaiItem from '../common/DongtaiItem';
+import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
@@ -51,96 +49,11 @@ class PersonalHome extends Component{
             zanDongtaiList:[],//点赞过的动态列表，用于判断是否点赞
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
-    }
-    //点赞、取消点赞
-    zanDongtai(id,type){
-        this.props.dispatch(zanDongtaiAction(id,type,()=>{this._loadZanDongtaiComplete()}));
-    }
-    _loadZanDongtaiComplete(){
-        try{
-            let contentList = realmObj.objects("ZanDongtai");
-            if(contentList.length > 0){
-                this.setState({
-                    zanDongtaiList:contentList
-                });
-            }
-        }catch(e){}
+        this.lazyloadName = "lazyload-personallist";//懒加载的name
     }
     //动态项
     renderRow = ({item}) => (
-        <View style={{marginBottom:15}}>
-            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                <View>
-                    <View style={[globalStyle.dongtaiAvatarView,{padding:8,paddingBottom:0}]}>
-                        {
-                            item['avatar'] !== "" ?
-                                <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
-                                :
-                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
-                        }
-                        <View>
-                            <Text>{item['name']}</Text>
-                            <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
-                        </View>
-                    </View>
-                    <View style={{padding:8,paddingTop:0}}>
-                        <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
-                        <ImageRange images={item['pics']} {...this.props}/>
-                    </View>
-                    <View style={{flexDirection:'row',backgroundColor:'#f8f8f8',borderTopWidth:1,borderTopColor:'#f2f2f2',padding:8}}>
-                        <View style={{flex:1,flexDirection:'row'}}>
-                            {
-                                inArray(this.state.zanDongtaiList,item['id'],'id') ?
-                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                        <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
-                                            <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconzan2.png')}/>
-                                            <Text>取消赞</Text>
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                                    :
-                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                        <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
-                                            <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconzan.png')}/>
-                                            <Text>赞</Text>
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                            }
-                            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                                <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
-                                    <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconpinglun.png')}/>
-                                    <Text>评论</Text>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </View>
-                        <View>
-                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
-                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconshare.png')}/>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
-                    <View style={{padding:8}}>
-                        {
-                            item['zan'] > 0 ?
-                                <View style={{flexDirection:'row',marginBottom:8}}>
-                                    <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                    <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
-                                </View>
-                                : null
-                        }
-
-                        <HTMLView
-                            value={item['pinglunlist']}
-                            stylesheet={styles}
-                            addLineBreaks={false}
-                            onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
-                        />
-                        {
-                            item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
-                        }
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        </View>
+        <DongtaiItem name={this.lazyloadName} item={item} from={1} zan={this.state.zanDongtaiList} {...this.props}/>
     );
     //把id当成key，否则会有警告
     _keyExtractor = (item, index) => item.id;
@@ -149,27 +62,16 @@ class PersonalHome extends Component{
     componentDidMount(){
         try{
             //动态
-            let dongtaiList = realmObj.objects("Dongtai").filtered("userid = " + this.state.userid);
-            if(dongtaiList.length > 0){
-                dongtaiList = dongtaiList.sorted('id',true);
-                this.setState({
-                    dongtai:dongtaiList
-                });
-            }
+            let dongtaiList = realmObj.objects("Dongtai").filtered("userid == " + this.state.userid);
             //会员信息
-            let userInfo = realmObj.objects("User").filtered("id = " + this.state.userid);
-            if(userInfo.length > 0){
-                this.setState({
-                    userInfo:userInfo[0]
-                });
-            }
+            let userInfo = realmObj.objects("User").filtered("id == " + this.state.userid);
             //获取作者点赞过的动态列表
             let zanDongtaiList = realmObj.objects("ZanDongtai");
-            if(zanDongtaiList.length > 0){
-                this.setState({
-                    zanDongtaiList:zanDongtaiList
-                });
-            }
+            this.setState({
+                dongtai:dongtaiList.sorted('id',true),
+                userInfo:userInfo[0],
+                zanDongtaiList:zanDongtaiList
+            });
         }catch(e){
             console.log(e);
         }finally {
@@ -180,8 +82,8 @@ class PersonalHome extends Component{
     //网络请求加载完成
     _loadDongtaiComplete(totalPage){
         try{
-            let contentList = realmObj.objects("Dongtai").filtered("userid = " + this.state.userid);
-            if(contentList.length > 0){
+            let contentList = realmObj.objects("Dongtai").filtered("userid == " + this.state.userid);
+            if(contentList.length >= 0){
                 contentList = contentList.sorted('id',true);
                 let page = this.state.currentDongtaiPage;
                 this.setState({
@@ -190,17 +92,13 @@ class PersonalHome extends Component{
                     loadDongtaiFinish:page >= totalPage,
                     loading:false,
                 });
-            }else{
-                this.setState({
-                    loading:false,
-                });
             }
         }catch(e){}
     }
     _loadUserInfoComplete(){
         try{
-            let userInfo = realmObj.objects("User").filtered("id = " + this.state.userid);
-            if(userInfo.length > 0){
+            let userInfo = realmObj.objects("User").filtered("id == " + this.state.userid);
+            if(userInfo.length >= 0){
                 this.setState({
                     userInfo:userInfo[0]
                 });
@@ -238,6 +136,7 @@ class PersonalHome extends Component{
     render(){
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
         let isSelf = (userid - this.state.userid === 0);
+        let _that =this;
         return (
             <View style={{ flex: 1 }}>
                 <StatusBar hidden={true}/>
@@ -262,9 +161,9 @@ class PersonalHome extends Component{
                         renderForeground={() => (
                             <View key="parallax-header" style={ styles.parallaxHeader }>
                                 {
-                                    this.state.userInfo['avatar'] ?
+                                    (_that.state.userInfo['avatar'] !== "") ?
                                         <Image style={ styles.avatar } source={{
-                                            uri: getFullPath(this.state.userInfo['avatar'],this.state.host),
+                                            uri: getFullPath(_that.state.userInfo['avatar'],_that.state.host),
                                             width: AVATAR_SIZE,
                                             height: AVATAR_SIZE
                                         }}/> :
@@ -274,21 +173,21 @@ class PersonalHome extends Component{
                                             height: AVATAR_SIZE
                                         }}/>
                                 }
-                                <Text style={ styles.sectionSpeakerText }>{this.state.userInfo['nickname']}</Text>
+                                <Text style={ styles.sectionSpeakerText }>{_that.state.userInfo['nickname']}</Text>
                                 <Text style={ styles.sectionTitleText }>
-                                    {this.state.userInfo['intro']}
+                                    {_that.state.userInfo['intro']}
                                 </Text>
                             </View>
                         )}
                         renderStickyHeader={() => (
                             <View key="sticky-header" style={styles.stickySection}>
-                                <TouchableWithoutFeedback onPress={()=>this.pressBack()}>
+                                <TouchableWithoutFeedback onPress={()=>_that.pressBack()}>
                                     <View>
                                         <Image style={{width:15,height:15,marginLeft:8}} source={require('../../assets/icon/iconback.png')}/>
                                     </View>
                                 </TouchableWithoutFeedback>
-                                <Text style={styles.stickySectionText}>{this.state.userInfo['nickname']}</Text>
-                                <TouchableWithoutFeedback onPress={()=>{this.bianji()}}>
+                                <Text style={styles.stickySectionText}>{_that.state.userInfo['nickname']}</Text>
+                                <TouchableWithoutFeedback onPress={()=>{_that.bianji()}}>
                                     <View>
                                         <Text style={{fontSize:14,marginRight:8}}>{isSelf ? "编辑" : ""}</Text>
                                     </View>
@@ -297,12 +196,12 @@ class PersonalHome extends Component{
                         )}
                         renderFixedHeader={()=>(
                             <View key="fixed-header" style={styles.fixedSection}>
-                                <TouchableWithoutFeedback onPress={()=>this.pressBack()}>
+                                <TouchableWithoutFeedback onPress={()=>_that.pressBack()}>
                                     <View style={{flex:1}}>
                                         <Image style={{width:15,height:15,marginLeft:8,tintColor:'#ffffff'}} source={require('../../assets/icon/iconback.png')}/>
                                     </View>
                                 </TouchableWithoutFeedback>
-                                <TouchableWithoutFeedback onPress={()=>{this.bianji()}}>
+                                <TouchableWithoutFeedback onPress={()=>{_that.bianji()}}>
                                     <View>
                                         <Text style={{color:'#ffffff',fontSize:14,marginRight:8}}>{isSelf ? "编辑" : ""}</Text>
                                     </View>
@@ -310,7 +209,7 @@ class PersonalHome extends Component{
                             </View>
                         )}
                     >
-                        <ScrollView style={styles.container}
+                        <LazyloadScrollView name={this.lazyloadName} style={styles.container}
                                     onMomentumScrollEnd = {this._contentViewScroll}
                                     refreshControl={
                                         <RefreshControl
@@ -331,7 +230,7 @@ class PersonalHome extends Component{
                                     ListEmptyComponent={BlankDongtai}
                                 />
                             </List>
-                        </ScrollView>
+                        </LazyloadScrollView>
 
                     </ParallaxScrollView>
                 </View>

@@ -2,10 +2,8 @@ package com.oliveglobal.app;
 
 import android.app.Application;
 
-import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
 import com.beefe.picker.PickerViewPackage;
-import com.RNFetchBlob.RNFetchBlobPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.olive.u_share.UShareReactPackage;
@@ -33,17 +31,13 @@ public class MainApplication extends Application implements ReactApplication {
   }
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-    @Override
-    public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
-    }
+
 
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new PickerViewPackage(),
-            new RNFetchBlobPackage(),
             new ReactNativeContacts(),
             new RCTCameraPackage(),
             new PickerPackage(),
@@ -58,6 +52,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected String getJSMainModuleName() {
       return "index";
     }
+
+    @Override
+    public boolean getUseDeveloperSupport() {
+      return BuildConfig.DEBUG;
+    }
   };
 
   @Override
@@ -69,6 +68,7 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    //友盟分享
     UMShareAPI.get(this);
   }
 }

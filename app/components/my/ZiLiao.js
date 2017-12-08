@@ -26,12 +26,12 @@ import {toastShort} from '../common/ToastTool';
 
 
 class ZiLiao extends Component{
+    //rightComponent={{icon:'qrcode',type:"font-awesome"}}
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
                 centerComponent={{ text: '个人资料'}}
-                rightComponent={{icon:'qrcode',type:"font-awesome"}}
                 backgroundColor="#ffffff"
                 outerContainerStyles={globalStyle.androidHeaderStyle}
             />
@@ -108,7 +108,7 @@ class ZiLiao extends Component{
         try{
             //个人信息
             let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-            let userInfo = realmObj.objects("User").filtered("id="+userid);
+            let userInfo = realmObj.objects("User").filtered("id=="+userid);
             if(userInfo.length > 0){
                 let user = userInfo[0];
                 let statusText = ['未审核','审核通过','审核失败'];
@@ -176,7 +176,7 @@ class ZiLiao extends Component{
     //回调
     updateUserInfo(){
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-        let userInfo = realmObj.objects("User").filtered("id="+userid);
+        let userInfo = realmObj.objects("User").filtered("id=="+userid);
         if(userInfo.length > 0){
             let user = userInfo[0];
             let statusText = ['未审核','审核通过','审核失败'];

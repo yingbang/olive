@@ -19,13 +19,14 @@ import {
 import {connect} from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import {List,Header,Icon} from 'react-native-elements';
-import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
+import {getFullPath} from '../common/public';
 import globalStyle from '../common/GlobalStyle';
 import {toastShort} from '../common/ToastTool';
 import Blank from '../common/Blank';
 import BlankQuanzi from '../common/BlankQuanzi';
-import {getDongtaiAction,getQuanziInfoByIdAction,zanDongtaiAction,getQuanziJoinInfoAction} from '../../actions/userAction';
-import ImageRange from '../common/ImageRange';
+import {getDongtaiAction,getQuanziInfoByIdAction,getQuanziJoinInfoAction} from '../../actions/userAction';
+import DongtaiItem from '../common/DongtaiItem';
+import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
@@ -59,90 +60,11 @@ class QuanziDongtai extends Component{
             join:false,
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
-    }
-    //点赞、取消点赞
-    zanDongtai(id,type){
-        this.props.dispatch(zanDongtaiAction(id,type,()=>{this._loadZanDongtaiComplete()}));
-    }
-    _loadZanDongtaiComplete(){
-        try{
-            let contentList = realmObj.objects("ZanDongtai");
-            if(contentList.length > 0){
-                this.setState({
-                    zanDongtaiList:contentList
-                });
-            }
-        }catch(e){}
+        this.lazyloadName = "lazyload-quanzilist";//懒加载的name
     }
     //动态项
     renderRow = ({item}) => (
-        <View style={{marginBottom:15}}>
-            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                <View>
-                    <View style={globalStyle.dongtaiAvatarView}>
-                        {
-                            item['avatar'] !== "" ?
-                                <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
-                                :
-                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
-                        }
-                        <View>
-                            <Text>{item['name']}</Text>
-                            <Text style={{color:'#999999',fontSize:12}}>{getDateTimeDiff(item['dateline'])}</Text>
-                        </View>
-                    </View>
-                    <View>
-                        <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
-                        <ImageRange images={item['pics']} {...this.props}/>
-                    </View>
-                    <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
-                        <View style={{flex:1,flexDirection:'row'}}>
-                            {
-                                inArray(this.state.zanDongtaiList,item['id'],'id') ?
-                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
-                                    </TouchableWithoutFeedback>
-                                    :
-                                    <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                        <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
-                                    </TouchableWithoutFeedback>
-                            }
-                            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("DongTaiDetail",{id:item['id']})}}>
-                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
-                            </TouchableWithoutFeedback>
-                            <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
-                                <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
-                            </TouchableWithoutFeedback>
-                        </View>
-                        <View>
-                            <TouchableWithoutFeedback onPress={()=>{}}>
-                                <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
-                    <View>
-                        {
-                            item['zan'] > 0 ?
-                                <View style={{flexDirection:'row',marginBottom:8}}>
-                                    <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
-                                    <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
-                                </View>
-                                : null
-                        }
-
-                        <HTMLView
-                            value={item['pinglunlist']}
-                            stylesheet={styles}
-                            addLineBreaks={false}
-                            onLinkPress={(url) => {this.props.screenProps.navigation.navigate("ShowUrl",{url:url})}}
-                        />
-                        {
-                            item['pinglun'] > 3 ? <Text style={{color:'#00bfff',marginTop:5,fontSize:12}}>查看所有{item['pinglun']}条评论</Text> : null
-                        }
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        </View>
+        <DongtaiItem name={this.lazyloadName} item={item} zan={this.state.zanDongtaiList} {...this.props}/>
     );
     //把id当成key，否则会有警告
     _keyExtractor = (item, index) => item.id;
@@ -197,7 +119,7 @@ class QuanziDongtai extends Component{
     _loadDongtaiComplete(totalPage){
         try{
             let contentList = realmObj.objects("Dongtai").filtered("quanzi = " + this.state.id);
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 contentList = contentList.sorted('id',true);
                 let page = this.state.currentDongtaiPage;
                 this.setState({
@@ -262,7 +184,7 @@ class QuanziDongtai extends Component{
     render(){
         return (
             <View style={{ flex: 1 }}>
-                <ScrollView style={styles.container}
+                <LazyloadScrollView name={this.lazyloadName} style={styles.container}
                             onMomentumScrollEnd = {this._contentViewScroll}
                             refreshControl={
                                 <RefreshControl
@@ -302,6 +224,7 @@ class QuanziDongtai extends Component{
                         </View>
                         </TouchableWithoutFeedback>
                     </View>
+
                     <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,padding:(Platform.OS === 'ios') ? 0 : 8}}>
                         <FlatList
                             renderItem={this.renderRow}
@@ -313,7 +236,7 @@ class QuanziDongtai extends Component{
                             ListEmptyComponent={BlankQuanzi}
                         />
                     </List>
-                </ScrollView>
+                </LazyloadScrollView>
             </View>
         );
     }

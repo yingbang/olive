@@ -100,34 +100,20 @@ export default class MyIndex extends Component{
         try{
             //个人信息
             let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-            let userInfo = realmObj.objects("User").filtered("id="+userid);
-            if(userInfo.length > 0){
-                this.setState({
-                    userid:userid,
-                    userInfo:userInfo[0]
-                });
-            }
+            let userInfo = realmObj.objects("User").filtered("id=="+userid);
             //关注人数
             let guanzhu = realmObj.objects("Global").filtered("key == 'guanzhuTotal'");
-            if(guanzhu.length > 0){
-                this.setState({
-                    guanzhu:guanzhu[0].value,
-                });
-            }
             //粉丝
             let fensi = realmObj.objects("Global").filtered("key == 'fensiTotal'");
-            if(fensi.length > 0){
-                this.setState({
-                    fensi:fensi[0].value,
-                });
-            }
             //动态数量
             let dongtai = realmObj.objects("Global").filtered("key == 'dongtaiTotal'");
-            if(dongtai.length > 0){
-                this.setState({
-                    dongtai:dongtai[0].value,
-                });
-            }
+            this.setState({
+                userid:userid,
+                userInfo:userInfo.length >= 0 ? userInfo[0] : {},
+                guanzhu:guanzhu.length >= 0 ? guanzhu[0].value : 0,
+                fensi:fensi.length >= 0 ? fensi[0].value : 0,
+                dongtai:dongtai.length >= 0 ? dongtai[0].value : 0,
+            });
         }catch(e){
             console.log(e);
         }finally {
@@ -215,7 +201,7 @@ export default class MyIndex extends Component{
                 <TouchableWithoutFeedback onPress={()=>{this.onClick('my_ziliao')}}>
                     <View style={styles.baseInfo}>
                         {
-                            this.state.userInfo['avatar'] ?
+                            (this.state.userInfo['avatar'] !== "") ?
                                 <Image style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(this.state.userInfo['avatar'],this.state.host)}}/>
                                 :
                                 <Image style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>

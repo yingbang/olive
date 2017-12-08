@@ -12,6 +12,7 @@ import {
     TextInput,
     TouchableOpacity,
     RefreshControl,
+    StatusBar,
     FlatList
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -263,6 +264,7 @@ class DongTaiDetail extends Component{
         const dongtaiPics = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId)[0]['pics'];//刚开始为空，不显示图片，这样的话才显示
         return (
             <View style={styles.container}>
+                <StatusBar hidden={false}/>
                 <ScrollView style={{flex:1}}
                             onMomentumScrollEnd = {this._contentViewScroll}
                             refreshControl={

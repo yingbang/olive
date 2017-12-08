@@ -1,5 +1,5 @@
 /**
- * 公告详情
+ * 橄榄枝小助手、橄榄枝小喇叭
  */
 import React,{Component} from 'react';
 import {
@@ -29,19 +29,19 @@ function renderNode(node, index) {
     }
 }
 
-export default class NoticeDetail extends Component{
+export default class XiaoxiDetail extends Component{
     constructor(props){
         super(props);
         this.state = {
             title:"",
-            content:""
+            content:"橄榄枝欢迎您"
         }
     }
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
                 leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
-                centerComponent={{ text: '公告详情'}}
+                centerComponent={{ text: '橄榄枝消息'}}
                 backgroundColor="#ffffff"
                 outerContainerStyles={globalStyle.androidHeaderStyle}
             />
@@ -49,13 +49,13 @@ export default class NoticeDetail extends Component{
     };
     componentDidMount(){
         let id = this.props.navigation.state.params.id;
-        let item = realmObj.objects("Notice").filtered("id=="+id);
-        if(item !== null && item.length > 0){
-            this.setState({
-                title:item[0]['title'],
-                content:item[0]['content']
-            });
-        }
+        // let item = realmObj.objects("Notice").filtered("id=="+id);
+        // if(item !== null && item.length > 0){
+        //     this.setState({
+        //         title:item[0]['title'],
+        //         content:item[0]['content']
+        //     });
+        // }
     }
     //打开文章中链接
     linkPress(url){

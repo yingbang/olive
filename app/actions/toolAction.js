@@ -18,7 +18,6 @@ export function getSlideAction(callback){
                 try{
                     realmObj.write(()=>{
                         //删除原来的
-                        realmObj.delete(realmObj.objects("Slide"));
                         let contentList = json.list;
                         for(let i=0, l=contentList.length; i<l; i++){
                             let slide = {
@@ -68,7 +67,6 @@ export function getNoticeAction(page,callback){
                 try{
                     realmObj.write(()=>{
                         //删除原来的
-                        realmObj.delete(realmObj.objects("Notice"));
                         let contentList = json.list;
                         for(let i=0, l=contentList.length; i<l; i++){
                             let item = {

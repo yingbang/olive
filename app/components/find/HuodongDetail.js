@@ -83,7 +83,7 @@ class HuodongDetail extends Component{
         //先从realm中读取数据，如果有，直接显示，否则发送action请求网络数据
         let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
         try{
-            let item = realmObj.objects("Huodong").filtered("id = " + this.state.id);
+            let item = realmObj.objects("Huodong").filtered("id == " + this.state.id);
             if(item !== null && item.length > 0){
                 this.setState({
                     huodong:item[0],
@@ -154,7 +154,7 @@ class HuodongDetail extends Component{
     //获取活动内容完毕
     _loadHuodongComplete = ()=>{
         try{
-            let item = realmObj.objects("Huodong").filtered("id = " + this.state.id);
+            let item = realmObj.objects("Huodong").filtered("id == " + this.state.id);
             if(item !== null && item.length > 0){
                 this.setState({
                     huodong:item[0],
@@ -188,7 +188,7 @@ class HuodongDetail extends Component{
     //主办方显示：用空格分割
     zhubanfang(str){
         if(str === "" || str === null || str === undefined){
-            return "";
+            return null;
         }
         let strs= str.split(" "); //字符分割
         return (
@@ -204,7 +204,7 @@ class HuodongDetail extends Component{
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10,marginBottom:10}} image={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/images/nopic1.jpg')}>
+                    <Card containerStyle={{marginLeft:0,marginRight:0,marginTop:10}} image={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/images/nopic1.jpg')}>
                         <View>
                             <Text style={styles.huodongItemTitle}>{item['title']}</Text>
                             <View style={styles.huodongItemTime}>
@@ -222,10 +222,10 @@ class HuodongDetail extends Component{
                             </View>
                         </View>
                     </Card>
-                    <View style={[styles.huodongDetail,{marginBottom:10}]}>
+                    <View style={[styles.huodongDetail,{padding:8,marginBottom:5,borderTopWidth:10,borderTopColor:'#f2f2f2'}]}>
                         <Text>已报名{this.state.huodongUser.length}人</Text>
                     </View>
-                    <View style={{flexDirection:'row',marginBottom:20}}>
+                    <View style={{flexDirection:'row',padding:8,marginBottom:5,borderBottomWidth:10,borderBottomColor:'#f2f2f2'}}>
                         <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false} horizontal={true}>
                             {
                                 this.state.huodongUser.map((item,i)=>{
@@ -252,6 +252,7 @@ class HuodongDetail extends Component{
                     <HTMLView
                         value={item['content']}
                         stylesheet={styles}
+                        style={{padding:8,paddingTop:0}}
                         renderNode={renderNode}
                         addLineBreaks={false}
                         onLinkPress={(url) => {this.props.navigation.navigate("ShowUrl",{url:url})}}
@@ -316,7 +317,7 @@ const styles = StyleSheet.create({
         fontSize:16
     },
     htmlContainer:{
-        padding:8,
+        padding:0,
         paddingTop:0
     },
     p:{
@@ -350,11 +351,12 @@ const styles = StyleSheet.create({
         tintColor:'#00bfff'
     },
     huodongDetail:{
-        marginTop:10,
+        marginTop:0,
         marginBottom:20,
         paddingBottom:10,
         borderBottomWidth:1,
-        borderBottomColor:'#f2f2f2'
+        borderBottomColor:'#f2f2f2',
+        padding:8
     },
     baoming:{
         borderTopWidth:1,

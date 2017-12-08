@@ -82,11 +82,11 @@ export default class LoginScreen extends Component {
                             <Image style={styles.logo} source={require('../../assets/images/logo.png')}/>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入手机号</Label>
+                            <Label style={{top:15}}>请输入手机号</Label>
                             <Input onChangeText={(text)=>{this.setState({mobile:text});}}/>
                         </Item>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入密码</Label>
+                            <Label style={{top:15}}>请输入密码</Label>
                             <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({password:text});}}/>
                         </Item>
                         <Button block rounded success onPress={()=>{this.beginLogin()}} style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]}>

@@ -93,11 +93,11 @@ export default class FindPasswordNext extends Component {
                             <Image style={styles.logo} source={require('../../assets/images/logo.png')}/>
                         </View>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请输入新密码</Label>
+                            <Label style={{top:15}}>请输入新密码</Label>
                             <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({password:text});}}/>
                         </Item>
                         <Item floatingLabel style={styles.buttonMargin}>
-                            <Label>请再次输入新密码</Label>
+                            <Label style={{top:15}}>请再次输入新密码</Label>
                             <Input secureTextEntry={true} onChangeText={(text)=>{this.setState({repassword:text});}}/>
                         </Item>
                         <Button block rounded success style={[styles.buttonMargin,colors.bgBlue,{marginTop:15}]} onPress={()=>{this.finish()}}>

@@ -78,17 +78,13 @@ class GuanZhu extends Component{
     _loadComplete(totalPage){
         try{
             let contentList = realmObj.objects("FollowUser");
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 let page = this.state.currentPage;
                 this.setState({
                     data:contentList,
                     currentPage:page + 1,
                     isFinished:page >= totalPage,
                     loading:false
-                });
-            }else{
-                this.setState({
-                    loading:false,
                 });
             }
         }catch(e){}

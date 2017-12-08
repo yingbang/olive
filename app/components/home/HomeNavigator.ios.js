@@ -39,7 +39,7 @@ const HomeTab = TabNavigator(
                 borderTopWidth:0
             },
             labelStyle: {
-                fontSize:14,
+                fontSize:16,
                 height:24,
                 width:60,
             },

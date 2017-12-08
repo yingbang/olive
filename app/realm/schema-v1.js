@@ -322,6 +322,6 @@ export default {
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
         DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,
         TongxunluSchema,HuodongBaomingSchema,QuanziSchema,QuanziUserSchema],
-    schemaVersion: 4,
+    schemaVersion: 5,
     migration: () => {}
 };

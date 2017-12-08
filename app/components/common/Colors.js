@@ -20,6 +20,12 @@ const colors = StyleSheet.create({
     c99:{
         color:'#999999'
     },
+    c7b:{
+        color:'#7b7b7b'
+    },
+    cad:{
+        color:'#adadad'
+    },
     //蓝色背景
     bgBlue:{
         backgroundColor:'#00bfff'

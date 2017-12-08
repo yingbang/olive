@@ -15,15 +15,14 @@ import {
     InteractionManager
 } from 'react-native';
 import {connect} from 'react-redux';
-import FontIcon from 'react-native-vector-icons/FontAwesome';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
-import fonts from '../common/Fonts';
-import { Card, List, ListItem, Button} from 'react-native-elements';
-import {formatTime,isExpired,getFullPath,inArray} from '../common/public';
+import { List} from 'react-native-elements';
 import {getHuodongAction,getQuanziAction,getHuodongByUseridAction} from '../../actions/userAction';
-const {width} = Dimensions.get("window");
-import BlankContent from '../common/BlankContent';
+import HuodongItem from './HuodongItem';
+import QuanziItem from './QuanziItem';
+import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
+
 
 class FindIndex extends Component{
     constructor(props) {
@@ -38,49 +37,36 @@ class FindIndex extends Component{
             loading:false,
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
         };
+        this.lazyloadName = "lazyload-huodongList";//懒加载的name
     }
-
     //获取活动
     componentDidMount(){
-        InteractionManager.runAfterInteractions(()=>{
-            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-            try{
-                //活动
-                let huodongList = realmObj.objects("Huodong");
-                if(huodongList.length > 0){
-                    huodongList = huodongList.sorted('id',true);
-                    this.setState({
-                        huodong:huodongList
-                    });
-                }
-                //获取圈子
-                let quanziList = realmObj.objects("Quanzi");
-                if(quanziList.length > 0){
-                    this.setState({
-                        quanzi:quanziList,
-                    });
-                }
-                //我已经报名的活动
-                let baoming = realmObj.objects("HuodongBaoming").filtered("userid == "+userid);
-                if(baoming !== null && baoming.length > 0){
-                    this.setState({
-                        baoming:baoming,
-                    });
-                }
-            }catch(e){
-                console.log(e);
-            }finally {
-                this.props.dispatch(getHuodongAction(this.state.currentHuodongPage,(totalPage)=>{this._loadHuodongComplete(totalPage)}));
-                this.props.dispatch(getQuanziAction(1,"",1,(totalPage)=>{this._loadQuanziComplete(totalPage)}));
-                this.props.dispatch(getHuodongByUseridAction(userid,1));
-            }
-        });
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        try{
+            //活动
+            let huodongList = realmObj.objects("Huodong");
+            //获取圈子
+            let quanziList = realmObj.objects("Quanzi");
+            //我已经报名的活动
+            let baoming = realmObj.objects("HuodongBaoming").filtered("userid == "+userid);
+            this.setState({
+                huodong:huodongList.sorted('id',true),
+                quanzi:quanziList,
+                baoming:baoming,
+            });
+        }catch(e){
+            console.log(e);
+        }finally {
+            this.props.dispatch(getHuodongAction(this.state.currentHuodongPage,(totalPage)=>{this._loadHuodongComplete(totalPage)}));
+            this.props.dispatch(getQuanziAction(1,"",1,(totalPage)=>{this._loadQuanziComplete(totalPage)}));
+            this.props.dispatch(getHuodongByUseridAction(userid,1));
+        }
     }
     //网络请求加载完成
     _loadHuodongComplete(totalPage){
         try{
             let contentList = realmObj.objects("Huodong");
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 contentList = contentList.sorted('id',true);
                 let page = this.state.currentHuodongPage;
                 this.setState({
@@ -89,17 +75,13 @@ class FindIndex extends Component{
                     loadHuodongFinish:page >= totalPage,
                     loading:false,
                 });
-            }else{
-                this.setState({
-                    loading:false,
-                });
             }
         }catch(e){}
     }
     _loadQuanziComplete(totalPage){
         try{
             let contentList = realmObj.objects("Quanzi");
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 this.setState({
                     quanzi:contentList,
                 });
@@ -128,82 +110,14 @@ class FindIndex extends Component{
     };
     //在上面遮罩了一层透明的，这样就可以点击了
     renderRow = ({item}) => (
-        <Card containerStyle={{marginLeft:8,marginRight:8,marginTop:10}} image={item['pic'] ? {uri:getFullPath(item['pic'],this.state.host)} : require('../../assets/images/nopic1.jpg')}>
-            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("HuodongDetail",{id:item.id})}}>
-                <View style={{height:150,width:width-18,flex:1,backgroundColor:"transparent",position:'absolute',top:-150,left:0}}>
-                    <Text> </Text>
-                </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("HuodongDetail",{id:item.id})}}>
-                <View>
-                    <View style={{flexDirection:'row',alignItems:'center',marginBottom:8,overflow:'hidden'}}>
-                        {item['name'] ? "" :
-                            <Text style={{
-                                color: '#fff',
-                                fontSize: 14,
-                                backgroundColor: '#00bfff',
-                                paddingTop: 3,
-                                paddingBottom: 3,
-                                paddingLeft: 8,
-                                paddingRight: 8,
-                                borderRadius: 10,
-                                marginRight: 8
-                            }}>官方</Text>
-                        }
-                        <Text style={styles.huodongItemTitle}>{item['title']}</Text>
-                    </View>
-                    <Text style={{marginBottom: 10,fontSize:14,color:'#555555'}}>{item['intro']}</Text>
-                    <View style={styles.huodongItemTime}>
-                        <Image style={styles.huodongItemTimeImage} source={require('../../assets/icon/icontime.png')}/>
-                        <Text style={{flex:1,fontSize:12}}>{formatTime(item['starttime'],"MM月dd日 周w hh:mm")}</Text>
-                        <Text style={{fontSize:12}}>已有<Text style={{color:'#00bfff'}}>{item['number']}</Text>人报名</Text>
-                    </View>
-                    <View style={styles.baoming}>
-                        <View style={styles.author}>
-                            <Image style={{width:30,height:30,marginRight:5}} source={require('../../assets/icon/iconguan.png')}/>
-                            <Text style={[colors.cBlue,styles.name]}>{item['name'] ? item['name'] : '官方'}</Text>
-                            <Text>发布了该活动</Text>
-                            <Image style={[styles.huodongItemTimeImage,{marginLeft:8}]} source={require('../../assets/icon/iconaddress.png')}/>
-                            <Text>{item['city']}</Text>
-                        </View>
-                        <View>
-                            {
-                                isExpired(item['jiezhitime']) ?
-                                    <Button
-                                        backgroundColor='#dddddd'
-                                        color='#666666'
-                                        buttonStyle={{padding:8,borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                        containerViewStyle={{marginLeft:0,marginRight:0}}
-                                        title={isExpired(item['endtime']) ? '活动已结束' : '报名已截止'} /> :
-                                    <Button
-                                        backgroundColor={inArray(this.state.baoming,item['id'],'huodongid') ? '#ff4343' : "#03A9F4"}
-                                        buttonStyle={{padding:8,borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                                        containerViewStyle={{marginLeft:0,marginRight:0}}
-                                        onPress={() => {this.props.navigation.navigate("HuodongBaoMing",{id:item['id']})}}
-                                        title={inArray(this.state.baoming,item['id'],'huodongid') ? '取消报名' : '我要报名'} />
-                            }
-                        </View>
-                    </View>
-                </View>
-            </TouchableWithoutFeedback>
-        </Card>
+        <HuodongItem baoming={this.state.baoming} item={item} {...this.props}/>
     );
     renderQuanziRow = ({item}) => (
-        <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("QuanziDongtai",{id:item['id']})}}>
-            <View style={styles.quanziView}>
-                {
-                    item['pic'] ?
-                        <Image style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
-                        :
-                        <Image style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>
-                }
-                <Text style={styles.quanziText}>{item['title']}</Text>
-            </View>
-        </TouchableWithoutFeedback>
+        <QuanziItem item={item} {...this.props}/>
     );
     render(){
         return (
-            <ScrollView style={styles.container}
+            <LazyloadScrollView name={this.lazyloadName} style={styles.container}
                         onMomentumScrollEnd = {this._contentViewScroll}
                         refreshControl={
                             <RefreshControl
@@ -237,10 +151,9 @@ class FindIndex extends Component{
                         data={this.state.huodong}
                         extraData={this.state}
                         keyExtractor={this._keyExtractor}
-                        ListEmptyComponent={BlankContent}
                     />
                 </List>
-            </ScrollView>
+            </LazyloadScrollView>
         );
     }
 }
@@ -278,36 +191,10 @@ const styles = StyleSheet.create({
         height:40,
         borderRadius:20,
         alignSelf:'center',
-        tintColor:'#aaaaaa'
+        tintColor:'#c5c5c5'
     },
     quanziText:{
         fontSize:12,
         marginTop:8
     },
-    huodongItemTitle:{
-        fontSize:16,
-        color:'#333333',
-    },
-    huodongItemTime:{
-        flexDirection:'row',
-        alignItems:'center',
-        marginBottom:10
-    },
-    huodongItemTimeImage:{
-        width:18,
-        height:18,
-        marginRight:3
-    },
-    baoming:{
-        flexDirection:'row',
-        alignItems:'center'
-    },
-    author:{
-        flex:1,
-        flexDirection:'row',
-        alignItems:'center'
-    },
-    name:{
-        marginRight:5
-    }
 });

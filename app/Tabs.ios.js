@@ -43,6 +43,7 @@ import ContactsList from './components/my/ContactsList';
 import ZiLiaoUpdate from './components/my/ZiLiaoUpdate';
 import AboutUs from './components/my/AboutUs';
 import Renzheng from './components/my/Renzheng';
+import XiaoxiDetail from './components/my/XiaoxiDetail';
 //资讯
 import NewsDetail from './components/news/NewsDetail';
 //活动
@@ -91,7 +92,10 @@ const AppTab = TabNavigator(
                         normalImage={require('./assets/icon/iconhome.png')}
                         selectedImage={require('./assets/icon/iconhome.png')}
                     />
-                )
+                ),
+                tabBarOnPress:(scene,jumpToIndex)=>{
+                    jumpToIndex(scene.index);
+                }
             }
         },
         FindContainer: {
@@ -106,7 +110,10 @@ const AppTab = TabNavigator(
                         normalImage={require('./assets/icon/iconfind.png')}
                         selectedImage={require('./assets/icon/iconfind.png')}
                     />
-                )
+                ),
+                tabBarOnPress:(scene,jumpToIndex)=>{
+                    jumpToIndex(scene.index);
+                }
             }
         },
         PublishContainer: {
@@ -143,7 +150,10 @@ const AppTab = TabNavigator(
                         normalImage={require('./assets/icon/iconnews.png')}
                         selectedImage={require('./assets/icon/iconnews.png')}
                     />
-                )
+                ),
+                tabBarOnPress:(scene,jumpToIndex)=>{
+                    jumpToIndex(scene.index);
+                }
             }
         },
         MyContainer: {
@@ -197,10 +207,6 @@ const AppTab = TabNavigator(
 );
 
 //是否为第一次登录，如果是第一次，显示邀请好友
-realmObj.write(()=>{
-    //测试的时候用
-    //realmObj.delete(realmObj.objects("Global").filtered("key == 'hasSkipFindFriend'"))
-});
 function isFirst() {
     let isFirst = true;
     let hasSkip = realmObj.objects("Global").filtered("key == 'hasSkipFindFriend'");
@@ -238,6 +244,7 @@ const Navigator = StackNavigator(
         ZiLiaoUpdate: {screen: ZiLiaoUpdate},
         AboutUs: {screen: AboutUs},
         Renzheng: {screen: Renzheng},
+        XiaoxiDetail: {screen: XiaoxiDetail},
         //资讯
         NewsDetail: {screen: NewsDetail},
         //活动

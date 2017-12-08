@@ -50,7 +50,7 @@ export default class SearchHeader extends Component{
                     onChangeText={(text)=>{this.setState({keyword:text})}}
                     containerStyle={styles.searchContainer}
                     inputStyle={Colors.bgF2}
-                    placeholderTextColor={'#aaa'}
+                    placeholderTextColor={'#aaaaaa'}
                     placeholder='搜索公益圈 文章' />
                 <TouchableWithoutFeedback onPress={()=>this.pressSearch()}>
                     <View><Text>搜索</Text></View>
