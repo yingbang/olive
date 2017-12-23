@@ -24,6 +24,8 @@ const NoticeSchema = {
         author:{type:'string',default:''},
         content:{type:'string',default:''},
         dateline:{type:'double',default:0},//发布时间戳
+        type:{type:'int',default:0},//0表示正常公告，1表示小助手，2表示小喇叭
+        hasread:{type:'int',default:0},//0表示未读，1表示已读
     }
 };
 
@@ -322,6 +324,6 @@ export default {
         HiddenUserSchema,JoinCompanySchema,FollowUserSchema,FensiSchema,
         DongtaiSchema,PinglunSchema,ZanSchema,CangSchema,ZanDongtaiSchema,HuodongSchema,
         TongxunluSchema,HuodongBaomingSchema,QuanziSchema,QuanziUserSchema],
-    schemaVersion: 5,
+    schemaVersion: 6,
     migration: () => {}
 };

@@ -71,6 +71,38 @@ export default class LoginScreen extends Component {
                 }
             });
     }
+    //微信登录
+    wxLogin(userinfo){
+
+        let name = userinfo['name'];
+        let gender = userinfo['gender'];
+        let iconurl = userinfo['iconurl'];
+        let country = userinfo['country'];
+        let province = userinfo['province'];
+        let city = userinfo['city'];
+        let openid = userinfo['openid'];
+        let unionid = userinfo['unionid'];
+
+        let host = realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value;
+        let _that = this;
+        request('GET',host + '/api/user/wxlogin?name=' + name + '&gender=' + gender + '&iconurl=' + iconurl
+            + '&country=' + country + '&province=' + province + '&city=' + city + '&openid=' + openid
+            + '&unionid=' + unionid)
+            .set('accept','json')
+            .end(function (err, res) {
+                if(err){
+                    toastShort("网络错误！")
+                }else{
+                    if(res.body.state === 'fail'){
+                        toastShort("登录失败！");
+                    }else if(res.body.state === 'ok'){
+                        toastShort("登录成功！");
+                        let userinfo = res.body.userinfo;
+                        _that.props.wxLoginSuccess(userinfo);
+                    }
+                }
+            });
+    }
 
     render() {
         return (
@@ -103,7 +135,16 @@ export default class LoginScreen extends Component {
                                     <Text style={styles.thirdText}> 第三方账号登录 </Text>
                                     <Text style={styles.line}></Text>
                                 </View>
-                                <TouchableWithoutFeedback onPress={()=>{UShare.login((info)=>{alert(info)},(err)=>{alert(err)})}}>
+                                <TouchableWithoutFeedback onPress={()=>{UShare.login((err)=>{
+                                    toastShort("登录失败，请重试！");
+                                },(info)=>{
+                                    if(info !== ""){
+                                        let userinfo = eval("("+info+")");
+                                        this.wxLogin(userinfo);
+                                    }else{
+                                        toastShort("获取登录信息失败！");
+                                    }
+                                })}}>
                                     <FontIcon name="weixin" style={[fonts.font30,colors.cGreen]}/>
                                 </TouchableWithoutFeedback>
                             </View>

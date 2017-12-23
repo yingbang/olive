@@ -10,11 +10,13 @@ import {
     TouchableWithoutFeedback,
     StyleSheet,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    FlatList
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import { Header} from 'react-native-elements';
 import globalStyle from '../common/GlobalStyle';
+import {CachedImage} from '../common/ImageCacheMy';
 
 //处理iframe
 function renderNode(node, index) {
@@ -34,7 +36,8 @@ export default class XiaoxiDetail extends Component{
         super(props);
         this.state = {
             title:"",
-            content:"橄榄枝欢迎您"
+            content:[],
+            type:1
         }
     }
     static navigationOptions = {
@@ -48,15 +51,37 @@ export default class XiaoxiDetail extends Component{
         }
     };
     componentDidMount(){
-        let id = this.props.navigation.state.params.id;
-        // let item = realmObj.objects("Notice").filtered("id=="+id);
-        // if(item !== null && item.length > 0){
-        //     this.setState({
-        //         title:item[0]['title'],
-        //         content:item[0]['content']
-        //     });
-        // }
+        let type = this.props.navigation.state.params.type;
+        let data = this.props.navigation.state.params.data;
+        this.setState({
+            content:data,
+            type:type
+        });
     }
+    _keyExtractor = (item, index) => item.id;
+    _renderRow = ({item}) => (
+        <View style={{flexDirection:'row',marginTop:10}}>
+            <View style={{width:40,height:40,borderRadius:20,backgroundColor:"#00bfff",marginRight:10,alignItems:'center',justifyContent:'center'}}>
+                {
+                    (this.state.type === 1) ?
+                        <CachedImage style={{width:26,height:26,tintColor:'#ffffff'}} source={require('../../assets/icon/iconcase.png')} /> :
+                        <CachedImage style={{width:20,height:20,tintColor:'#ffffff'}} source={require('../../assets/icon/iconlaba.png')} />
+                }
+            </View>
+            <View style={{flex:1}}>
+                <Text style={{marginBottom:10,fontWeight:'bold'}}>{item['title']}</Text>
+                <View>
+                    <HTMLView
+                        value={item['content']}
+                        stylesheet={styles}
+                        renderNode={renderNode}
+                        addLineBreaks={false}
+                        onLinkPress={(url) => {this.linkPress(url)}}
+                    />
+                </View>
+            </View>
+        </View>
+    );
     //打开文章中链接
     linkPress(url){
         if(this.props.screenProps){
@@ -68,14 +93,12 @@ export default class XiaoxiDetail extends Component{
     render(){
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>{this.state.title}</Text>
                 <ScrollView style={styles.htmlContainer} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-                    <HTMLView
-                        value={this.state.content}
-                        stylesheet={styles}
-                        renderNode={renderNode}
-                        addLineBreaks={false}
-                        onLinkPress={(url) => {this.linkPress(url)}}
+                    <FlatList
+                        data={this.state.content}
+                        extraData={this.state}
+                        keyExtractor={this._keyExtractor}
+                        renderItem={this._renderRow}
                     />
                 </ScrollView>
             </View>
@@ -99,9 +122,11 @@ const styles = StyleSheet.create({
         paddingTop:0
     },
     p:{
-        marginBottom:8
+        marginBottom:8,
+        lineHeight:26,
     },
     div:{
-        marginBottom:8
+        marginBottom:8,
+        lineHeight:26,
     },
 });

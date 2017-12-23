@@ -65,6 +65,8 @@ class PublishEdit extends Component{
         //上传图片：递归
         if(fileArr.length > 0){
             this.uploadImage(fileArr[0],0);
+        }else{
+            this.props.dispatch(fabuDongtaiAction(this.state.content,"",this.state.quanzi,(result)=>{this._fabuComplete(result)}));
         }
     }
     //发布完成
@@ -247,6 +249,7 @@ const styles = StyleSheet.create({
     },
     input:{
         height:200,
+        paddingLeft:15
     },
     selectImage:{
         borderWidth:1,

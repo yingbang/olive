@@ -30,7 +30,7 @@ class ZiLiao extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
-                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.scene.route.params.goBack();} }}
                 centerComponent={{ text: '个人资料'}}
                 backgroundColor="#ffffff"
                 outerContainerStyles={globalStyle.androidHeaderStyle}
@@ -162,7 +162,7 @@ class ZiLiao extends Component{
                         {
                             key:8,
                             title: '认证',
-                            rTitle:(user['renzheng'] !== "") ? statusText[user['renzhengzhuangtai']] : "未认证",
+                            rTitle:(user['renzheng'] !== "0") ? statusText[user['renzhengzhuangtai']] : "",
                             event:'ziliao_renzheng',
                         },
                     ],
@@ -171,7 +171,16 @@ class ZiLiao extends Component{
             }
         }catch(e){
             console.log(e);
-        }finally {}
+        }finally {
+            this.props.navigation.setParams({goBack:()=>{this._goBack()}});
+        }
+    }
+    //返回
+    _goBack(){
+        if(this.props.navigation.state.params.back){
+            this.props.navigation.state.params.back();
+        }
+        this.props.navigation.goBack();
     }
     //回调
     updateUserInfo(){

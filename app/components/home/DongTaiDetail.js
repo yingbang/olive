@@ -24,6 +24,7 @@ import {toastShort} from "../common/ToastTool";
 import {getZanAction,getPinglunAction,getCangStatusAction,zanDongtaiAction,cangDongtaiAction,pinglunAction,getDongtaiInfoByIdAction} from '../../actions/userAction';
 import ImageRange from '../common/ImageRange';
 import UShare from '../common/UShare';
+import {CachedImage} from '../common/ImageCacheMy';
 
 class DongTaiDetail extends Component{
     constructor(props){
@@ -42,6 +43,7 @@ class DongTaiDetail extends Component{
             toUserid:0,//用于区分这个评论到底是针对谁的，默认是动态的发布者，如果是回复动态中的某一条评论，则代表发布那条评论的那个人的ID
             toUsername:"",
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
+            renzheng:false,//是否认证
         }
     }
     static navigationOptions = {
@@ -58,36 +60,32 @@ class DongTaiDetail extends Component{
     componentDidMount(){
         try{
             //获取动态内容
-            let dongtai = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId);
-            if(dongtai.length > 0){
-                this.setState({
-                    dongtai:dongtai[0],
-                    toUserid:dongtai[0]['userid'],
-                    toUsername:dongtai[0]['name'],
-                });
-            }
+            let dongtai = realmObj.objects("Dongtai").filtered("id == " + this.state.dongtaiId);
             //获取这篇动态的点赞者列表
-            let zan = realmObj.objects("Zan").filtered("contentid = " + this.state.dongtaiId).slice(0, 6);
-            if(zan.length > 0){
-                this.setState({
-                    zan:zan
-                });
-            }
+            let zan = realmObj.objects("Zan").filtered("contentid == " + this.state.dongtaiId).slice(0, 6);
             //获取评论列表
-            let pinglun = realmObj.objects("Pinglun").filtered("type = 1 and contentid = " + this.state.dongtaiId);
-            if(pinglun.length > 0){
-                pinglun = pinglun.sorted('id',true);
-                this.setState({
-                    pinglun:pinglun
-                });
-            }
+            let pinglun = realmObj.objects("Pinglun").filtered("type == 1 and contentid == " + this.state.dongtaiId);
             //获取作者点赞过的动态列表
             let zanDongtaiList = realmObj.objects("ZanDongtai");
-            if(zanDongtaiList.length > 0){
-                this.setState({
-                    zanDongtaiList:zanDongtaiList
-                });
+            //是否认证
+            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+            let userInfo = realmObj.objects("User").filtered("id == "+userid);
+            if(userInfo && userInfo.length > 0){
+                let renzheng = userInfo[0]['renzhengzhuangtai'];
+                if(renzheng === 1){
+                    this.setState({
+                        renzheng:true
+                    });
+                }
             }
+            this.setState({
+                dongtai:dongtai[0],
+                toUserid:dongtai[0]['userid'],
+                toUsername:dongtai[0]['name'],
+                zan:zan.length > 0 ? zan : [],
+                pinglun:pinglun.length > 0 ? pinglun.sorted('id',true) : [],
+                zanDongtaiList:zanDongtaiList.length > 0 ? zanDongtaiList : [],
+            });
         }catch(e){}finally{
             this.props.dispatch(getDongtaiInfoByIdAction(this.state.dongtaiId,this._loadDongtaiComplete.bind(this)));
             this.props.dispatch(getZanAction(this.state.dongtaiId,1,this._loadZanComplete));
@@ -97,8 +95,8 @@ class DongTaiDetail extends Component{
     }
     //获取动态内容
     _loadDongtaiComplete(){
-        let dongtai = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId);
-        if(dongtai.length > 0){
+        let dongtai = realmObj.objects("Dongtai").filtered("id == " + this.state.dongtaiId);
+        if(dongtai.length >= 0){
             this.setState({
                 dongtai:dongtai[0],
                 toUserid:dongtai[0]['userid'],
@@ -115,8 +113,8 @@ class DongTaiDetail extends Component{
     //获取点赞列表完毕
     _loadZanComplete = ()=>{
         try{
-            let zan = realmObj.objects("Zan").filtered("contentid = " + this.state.dongtaiId).slice(0, 6);
-            if(zan.length > 0){
+            let zan = realmObj.objects("Zan").filtered("contentid == " + this.state.dongtaiId).slice(0, 6);
+            if(zan.length >= 0){
                 this.setState({
                     zan:zan
                 });
@@ -126,8 +124,8 @@ class DongTaiDetail extends Component{
     //获取评论列表完毕
     _loadPinglunComplete(totalPage){
         try{
-            let contentList = realmObj.objects("Pinglun").filtered("type = 1 and contentid = " + this.state.dongtaiId);
-            if(contentList.length > 0){
+            let contentList = realmObj.objects("Pinglun").filtered("type == 1 and contentid == " + this.state.dongtaiId);
+            if(contentList.length >= 0){
                 contentList = contentList.sorted('id',true);
                 let page = this.state.currentPinglunPage;
                 this.setState({
@@ -179,10 +177,10 @@ class DongTaiDetail extends Component{
         <View style={{paddingTop:8,paddingBottom:8,borderBottomWidth:1,borderBottomColor:'#f8f8f8'}}>
             <View style={{flexDirection:'row'}}>
                 {
-                    item['avatar'] !== "" ?
-                        <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                    (item['avatar'] !== "") ?
+                        <CachedImage style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
                         :
-                        <Image style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                        <CachedImage style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
                 }
                 <View style={{flex:1}}>
                     <Text style={{fontSize:12}}>{item['name']}</Text>
@@ -190,11 +188,11 @@ class DongTaiDetail extends Component{
                 </View>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{this.huifu(item['userid'],item['name'])}}>
-                        <Image style={{width:15,height:15,marginRight:15}} source={require('../../assets/icon/iconhuifu.png')}/>
+                        <CachedImage style={{width:15,height:15,marginRight:15}} source={require('../../assets/icon/iconhuifu.png')}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback>
                         <View style={{flexDirection:'row'}}>
-                            <Image style={{width:15,height:15,marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
+                            <CachedImage style={{width:15,height:15,marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
                             <Text style={{fontSize:10}}>{item['zan']}</Text>
                         </View>
                     </TouchableWithoutFeedback>
@@ -212,7 +210,7 @@ class DongTaiDetail extends Component{
     _loadZanDongtaiComplete(){
         try{
             let contentList = realmObj.objects("ZanDongtai");
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 this.setState({
                     zanDongtaiList:contentList
                 });
@@ -233,6 +231,13 @@ class DongTaiDetail extends Component{
     }
     //发布评论
     onSubmitComment(){
+        //如果没认证，跳转到认证界面
+        if(this.state.renzheng === false){
+            toastShort("您还没有完成实名认证，不能评论");
+            this.props.navigation.navigate('Renzheng');
+            return false;
+        }
+        //验证内容
         let content = this.state.pinglunText;
         if(content === "" || content === null || content === undefined){
             toastShort("说点什么吧");
@@ -259,6 +264,18 @@ class DongTaiDetail extends Component{
     }
     //把id当成key，否则会有警告
     _keyExtractor = (item, index) => item.id;
+    //分享
+    myShare(item){
+        let images = item['pics'];
+        let shareImg = "https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png";
+        if(images !== '' && images !== null && images !== undefined){
+            let imagesArr = images.split(",");
+            shareImg = getFullPath(imagesArr[0],this.state.host);
+        }
+        UShare.share("橄榄枝精选动态",item['content'],
+            shareImg,
+            this.state.host + "/h5/dongtai?id="+item['id'],()=>{},()=>{});
+    }
     render(){
         const {dongtai} = this.state;
         const dongtaiPics = realmObj.objects("Dongtai").filtered("id = " + this.state.dongtaiId)[0]['pics'];//刚开始为空，不显示图片，这样的话才显示
@@ -280,10 +297,10 @@ class DongTaiDetail extends Component{
                             <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:dongtai['userid']})}}>
                             <View style={{flexDirection:'row',marginBottom:20,marginTop:12}}>
                                 {
-                                    dongtai['avatar'] !== "" ?
-                                        <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(dongtai['avatar'],this.state.host)}}/>
+                                    (dongtai['avatar'] !== "") ?
+                                        <CachedImage style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(dongtai['avatar'],this.state.host)}}/>
                                         :
-                                        <Image style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                                        <CachedImage style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
                                 }
                                 <View>
                                     <Text>{dongtai['name']}</Text>
@@ -292,7 +309,7 @@ class DongTaiDetail extends Component{
                             </View>
                             </TouchableWithoutFeedback>
                             <View style={{marginBottom:20,overflow:'hidden'}}>
-                                <Text style={{marginBottom:10}}>{dongtai['content']}</Text>
+                                <Text style={{marginBottom:10,lineHeight:26}}>{dongtai['content']}</Text>
                                 <ImageRange images={dongtaiPics} {...this.props}/>
                             </View>
                             <View>
@@ -307,10 +324,10 @@ class DongTaiDetail extends Component{
                                                             return (
                                                                 <TouchableWithoutFeedback key={i} onPress={()=>{this.props.navigation.navigate("PersonalHome",{id:item['userid']})}}>
                                                                     {
-                                                                        item['avatar'] !== "" ?
-                                                                            <Image style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                                                        (item['avatar'] !== "") ?
+                                                                            <CachedImage style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
                                                                             :
-                                                                            <Image style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                                                                            <CachedImage style={globalStyle.dongtaiAvatar} source={require('../../assets/icon/iconhead.png')}/>
                                                                     }
                                                                 </TouchableWithoutFeedback>
                                                             );
@@ -318,7 +335,7 @@ class DongTaiDetail extends Component{
                                                     }
                                                 </ScrollView>
                                                 <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("ZanList",{id:dongtai['id']})}}>
-                                                    <Image style={{width:40,height:40}} source={require('../../assets/icon/icongengduo.png')}/>
+                                                    <CachedImage style={{width:40,height:40}} source={require('../../assets/icon/icongengduo.png')}/>
                                                 </TouchableWithoutFeedback>
                                             </View>
                                         </View>
@@ -377,27 +394,27 @@ class DongTaiDetail extends Component{
                             inArray(this.state.zanDongtaiList,dongtai['id'],'id') ?
                                 <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(dongtai['id'],0)}}>
                                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
-                                        <Image style={{width:15,height:15,tintColor:'#333333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <CachedImage style={{width:15,height:15,tintColor:'#333333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
                                         <Text style={{fontSize:12}}>取消赞</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
                                 :
                                 <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(dongtai['id'],1)}}>
                                     <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
-                                        <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
+                                        <CachedImage style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconzan.png')}/>
                                         <Text style={{fontSize:12}}>赞</Text>
                                     </View>
                                 </TouchableWithoutFeedback>
                         }
-                        <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png","https://www.baidu.com",()=>{},()=>{})}}>
+                        <TouchableWithoutFeedback onPress={()=>{this.myShare(dongtai)}}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center',borderRightWidth:1,borderRightColor:'#f8f8f8'}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconfenxiang.png')}/>
+                                <CachedImage style={{width:15,height:15,tintColor:'#999999',marginRight:5}} source={require('../../assets/icon/iconfenxiang.png')}/>
                                 <Text style={{fontSize:12}}>分享</Text>
                             </View>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{this.shoucang(this.state.isShoucang)}}>
                             <View style={{flex:1,flexDirection:'row',justifyContent:'center'}}>
-                                <Image style={{width:15,height:15,tintColor:'#999999',marginRight:5}}
+                                <CachedImage style={{width:15,height:15,tintColor:'#999999',marginRight:5}}
                                        source={this.state.isShoucang ? require('../../assets/icon/iconshoucang2.png') : require('../../assets/icon/iconshoucang.png')}/>
                                 <Text style={{fontSize:12}}>{this.state.isShoucang ? "取消收藏" : "收藏"}</Text>
                             </View>

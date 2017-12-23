@@ -17,6 +17,7 @@ import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.media.UMWeb;
 import com.umeng.socialize.utils.Log;
 
 import java.lang.ref.WeakReference;
@@ -57,6 +58,7 @@ public class UShare {
         share(shareModel.getTitle(),shareModel.getContent(),shareModel.getImageUrl(),shareModel.getTargetUrl(),shareModel.getErrorCallback(),shareModel.getSuccessCallback());
     }
     private static void openShare(String title, String content, String imageUrl, String targetUrl, final Callback errorCallback, final Callback successCallback) {
+
         ShareAction shareAction = new ShareAction(mActivity.get()).setDisplayList(SHARE_MEDIA.SINA, SHARE_MEDIA.QQ, SHARE_MEDIA.QZONE, SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.WEIXIN_FAVORITE, SHARE_MEDIA.MORE)
                 //.withTitle(title)
                 .withText(content)
@@ -91,7 +93,12 @@ public class UShare {
                     }
                 });
         if (!TextUtils.isEmpty(imageUrl)) {
-            shareAction.withMedia(new UMImage(mActivity.get(), imageUrl));
+            UMWeb  web = new UMWeb(targetUrl);
+            web.setTitle(title);//标题
+            UMImage thumb =  new UMImage(mActivity.get(), imageUrl);
+            web.setThumb(thumb);  //缩略图
+            web.setDescription(content);//描述
+            shareAction.withMedia(web);
         }
 
         shareAction.open();

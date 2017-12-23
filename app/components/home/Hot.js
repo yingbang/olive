@@ -13,7 +13,8 @@ import {
     Button,
     Platform,
     FlatList,
-    RefreshControl
+    RefreshControl,
+    NetInfo
 } from 'react-native';
 import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
 import {List} from 'react-native-elements';
@@ -21,7 +22,7 @@ import GongYiZuZhi from './GongYiZuZhi';
 import GongYiDaRen from './GongYiDaRen';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
-import {getDongtaiAction,getZanDongtaiAction} from '../../actions/userAction';
+import {getDongtaiAction,getZanDongtaiAction,getNetWorkState} from '../../actions/userAction';
 import DongtaiItem from '../common/DongtaiItem';
 import HotSlide from './HotSlide';
 
@@ -44,9 +45,11 @@ export default class Hot extends Component{
         };
         this.prevDongtaiLength = 0;
         this.lazyloadName = "lazyload-hotlist";//懒加载的name
+
+        //this.count = 0;
     }
     shouldComponentUpdate(nextProps,nextState){
-        console.log("刷新前");
+        //console.log("刷新前");
         //如果动态列表的长度和点赞列表的长度都没有变化，就不更新
         if(this.prevDongtaiLength === nextState.dongtai.length){
             return false;
@@ -69,7 +72,7 @@ export default class Hot extends Component{
             //点赞列表
             let zanDongtaiList = realmObj.objects("ZanDongtai");
             this.setState({
-                dongtai:dongtaiList.length >= 0 ? dongtaiList.sorted('id',true).slice(0,1) : [],
+                dongtai:dongtaiList.length >= 0 ? dongtaiList.sorted('id',true) : [],
                 zanDongtaiList:zanDongtaiList.length >= 0 ? zanDongtaiList : [],
             });
         }catch(e){
@@ -84,7 +87,7 @@ export default class Hot extends Component{
         try{
             let contentList = realmObj.objects("Dongtai");
             if(contentList.length >= 0){
-                contentList = contentList.sorted('id',true).slice(0,1);
+                contentList = contentList.sorted('id',true);
                 let page = this.state.currentDongtaiPage;
                 this.setState({
                     dongtai:contentList,
@@ -114,6 +117,7 @@ export default class Hot extends Component{
         this.props.screenProps.dispatch(getDongtaiAction("",1,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
     };
     render(){
+        //console.log("========="+(this.count++)+"========");
         return (
             <LazyloadScrollView name={this.lazyloadName} style={styles.container}
                         onMomentumScrollEnd = {this._contentViewScroll}
@@ -157,6 +161,7 @@ export default class Hot extends Component{
                             extraData={this.state}
                             keyExtractor={this._keyExtractor}
                             initialNumToRender={1}
+                            removeClippedSubviews={true}
                         />
                     </List>
                 </View>

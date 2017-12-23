@@ -14,7 +14,8 @@ import {
     TouchableWithoutFeedback
 } from 'react-native';
 import {getFullPath} from './public';
-import {LazyloadImage} from './lazyload';
+//import {LazyloadImage} from './lazyload';//LazyloadImage host={lazyloadName}
+import {CachedImage,ImageCache} from './ImageCacheMy';
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,7 +43,7 @@ class OneImage extends Component{
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.oneImage} source={{uri:getFullUrl(images[0])}}/>
+                        <CachedImage style={styles.oneImage} source={{uri:getFullUrl(images[0]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                 </View>
             </View>
@@ -58,10 +59,10 @@ class TwoImage extends Component{
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.twoImage} source={{uri:getFullUrl(images[0])}}/>
+                        <CachedImage style={styles.twoImage} source={{uri:getFullUrl(images[0]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.twoImage} source={{uri:getFullUrl(images[1])}}/>
+                        <CachedImage style={styles.twoImage} source={{uri:getFullUrl(images[1]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                 </View>
             </View>
@@ -77,14 +78,14 @@ class ThreeImage extends Component{
             <View style={styles.container}>
                 <View style={{flexDirection:'row'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.threeImageL} source={{uri:getFullUrl(images[0])}}/>
+                        <CachedImage style={styles.threeImageL} source={{uri:getFullUrl(images[0]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                     <View>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.threeImageR} source={{uri:getFullUrl(images[1])}}/>
+                            <CachedImage style={styles.threeImageR} source={{uri:getFullUrl(images[1]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.threeImageR} source={{uri:getFullUrl(images[2])}}/>
+                            <CachedImage style={styles.threeImageR} source={{uri:getFullUrl(images[2]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                     </View>
                 </View>
@@ -101,16 +102,16 @@ class FourImage extends Component{
             <View style={styles.container}>
                 <View style={{flexDirection:'row',flexWrap:'wrap'}}>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[0])}}/>
+                        <CachedImage style={styles.fourImage} source={{uri:getFullUrl(images[0]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[1])}}/>
+                        <CachedImage style={styles.fourImage} source={{uri:getFullUrl(images[1]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[2])}}/>
+                        <CachedImage style={styles.fourImage} source={{uri:getFullUrl(images[2]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                     <TouchableWithoutFeedback onPress={()=>{showImage(images,3,this)}}>
-                        <LazyloadImage host={lazyloadName} style={styles.fourImage} source={{uri:getFullUrl(images[3])}}/>
+                        <CachedImage style={styles.fourImage} source={{uri:getFullUrl(images[3]),cache:'force-cache'}}/>
                     </TouchableWithoutFeedback>
                 </View>
             </View>
@@ -127,21 +128,21 @@ class FiveImage extends Component{
                 <View>
                     <View style={{flexDirection:'row'}}>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.fiveImageT} source={{uri:getFullUrl(images[0])}}/>
+                            <CachedImage style={styles.fiveImageT} source={{uri:getFullUrl(images[0]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.fiveImageT} source={{uri:getFullUrl(images[1])}}/>
+                            <CachedImage style={styles.fiveImageT} source={{uri:getFullUrl(images[1]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                     </View>
                     <View style={{flexDirection:'row'}}>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.fiveImageB} source={{uri:getFullUrl(images[2])}}/>
+                            <CachedImage style={styles.fiveImageB} source={{uri:getFullUrl(images[2]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,3,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.fiveImageB} source={{uri:getFullUrl(images[3])}}/>
+                            <CachedImage style={styles.fiveImageB} source={{uri:getFullUrl(images[3]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,4,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.fiveImageB} source={{uri:getFullUrl(images[4])}}/>
+                            <CachedImage style={styles.fiveImageB} source={{uri:getFullUrl(images[4]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                     </View>
                 </View>
@@ -159,22 +160,22 @@ class SixImage extends Component{
                 <View>
                     <View style={{flexDirection:'row',flexWrap:'wrap'}}>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,0,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[0])}}/>
+                            <CachedImage style={styles.sixImage} source={{uri:getFullUrl(images[0]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,1,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[1])}}/>
+                            <CachedImage style={styles.sixImage} source={{uri:getFullUrl(images[1]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,2,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[2])}}/>
+                            <CachedImage style={styles.sixImage} source={{uri:getFullUrl(images[2]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,3,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[3])}}/>
+                            <CachedImage style={styles.sixImage} source={{uri:getFullUrl(images[3]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,4,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[4])}}/>
+                            <CachedImage style={styles.sixImage} source={{uri:getFullUrl(images[4]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={()=>{showImage(images,5,this)}}>
-                            <LazyloadImage host={lazyloadName} style={styles.sixImage} source={{uri:getFullUrl(images[5])}}/>
+                            <CachedImage style={styles.sixImage} source={{uri:getFullUrl(images[5]),cache:'force-cache'}}/>
                         </TouchableWithoutFeedback>
                     </View>
                 </View>
@@ -195,7 +196,7 @@ class MoreImage extends Component{
                             images.map((item,i)=>{
                                 return (
                                     <TouchableWithoutFeedback key={i} onPress={()=>{showImage(images,i,this)}}>
-                                        <LazyloadImage host={lazyloadName} style={styles.moreImage} source={{uri:getFullUrl(item)}}/>
+                                        <CachedImage style={styles.moreImage} source={{uri:getFullUrl(item),cache:'force-cache'}}/>
                                     </TouchableWithoutFeedback>
                                 );
                             })

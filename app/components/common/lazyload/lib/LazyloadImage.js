@@ -17,8 +17,6 @@ class LazyloadImage extends LazyloadView{
         if (this.props.animation) {
             key = this.state.visible ? 'visible' : 'invisible';
         }
-        console.log("visi:"+this.state.visible);
-        console.log("pic:"+this.props.source.uri);
         return this.props.host ? <Image
             ref={ele => this._root = ele}
             {...this.props}

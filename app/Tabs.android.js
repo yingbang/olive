@@ -133,7 +133,7 @@ const AppTab = TabNavigator(
                         imageStyle={{tintColor:'#ffffff'}}
                     />
                 ),
-                tabBarVisible:false,//当点击进去，是否显示底部菜单
+                //tabBarVisible:false,//当点击进去，是否显示底部菜单
                 tabBarOnPress:(scene,jumpToIndex)=>{
                     updateUserInfo();
                     jumpToIndex(scene.index);

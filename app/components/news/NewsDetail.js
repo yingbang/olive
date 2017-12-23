@@ -44,7 +44,7 @@ function renderNode(node, index) {
         };
 
         const source = {
-            uri: node.attribs.src,
+            uri: getFullPath(node.attribs.src),
             width,
             height,
         };
@@ -70,7 +70,7 @@ class NewsDetail extends Component{
     static navigationOptions = {
         header:(HeaderProps)=>{
             return <Header
-                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.navigation.goBack();} }}
+                leftComponent={{ icon: 'arrow-back', onPress:()=>{HeaderProps.scene.route.params.goBack();} }}
                 rightComponent={<View style={globalStyle.flexRow}>
                     <Icon style={styles.icon} size={20} color={"#cecece"} onPress={()=>{HeaderProps.scene.route.params.collect()}} name={HeaderProps.scene.route.params.isCollect ? "star" : "star-o"} type="font-awesome"/>
                     <Icon style={styles.icon} size={20} color={"#cecece"} onPress={()=>{HeaderProps.scene.route.params.share()}} name="share-alt" type="font-awesome"/>
@@ -108,8 +108,15 @@ class NewsDetail extends Component{
             //文章阅读数加1
             this.props.dispatch(setNewViewPlus(this.state.id));
             //设置收藏和分享
-            this.props.navigation.setParams({isCollect:this.state.isCollect,collect:()=>{this._collect()}, share:()=>{this._share()}});
+            this.props.navigation.setParams({isCollect:this.state.isCollect,goBack:()=>{this._goBack()},collect:()=>{this._collect()}, share:()=>{this._share()}});
         }
+    }
+    //返回
+    _goBack(){
+        if(this.props.navigation.state.params.back){
+            this.props.navigation.state.params.back();
+        }
+        this.props.navigation.goBack();
     }
     //获取新闻内容完毕
     _loadNewsComplete = ()=>{
@@ -149,7 +156,7 @@ class NewsDetail extends Component{
     }
     //分享
     _share(){
-        UShare.share(this.state.title,this.state.intro,this.state.pic,this.state.host,()=>{},()=>{});
+        UShare.share(this.state.title,this.state.intro,getFullPath(this.state.pic,this.state.host),this.state.host+"/h5/article?id="+this.state.id,()=>{},()=>{});
     }
 
     //收藏、取消收藏

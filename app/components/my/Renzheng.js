@@ -239,12 +239,12 @@ class Renzheng extends Component{
                 </View>
             );
         }
-        //如果已经认证
-        if(this.state.userInfo['renzheng'] !== '-1'){
+        //如果已经提交认证
+        if(this.state.userInfo['renzheng'] !== '0'){
             let typeText = ['个人','公司','公益组织'];
             let statusText = ['未审核','审核通过','审核失败'];
-            let type = this.state.userInfo['renzhengleixing'] !== "" ? parseInt(this.state.userInfo['renzhengleixing']) : 0;
-            let status = this.state.userInfo['renzhengzhuangtai'] !== "" ? parseInt(this.state.userInfo['renzhengzhuangtai']) : 0;
+            let type = (this.state.userInfo['renzhengleixing'] !== "") ? parseInt(this.state.userInfo['renzhengleixing']) : 0;
+            let status = (this.state.userInfo['renzhengzhuangtai'] !== "") ? parseInt(this.state.userInfo['renzhengzhuangtai']) : 0;
             return (
                 <View style={{backgroundColor:'#ffffff',flex:1}}>
                     <ListItem
@@ -254,15 +254,15 @@ class Renzheng extends Component{
                         containerStyle={[globalStyle.listItem,{marginTop:0}]}
                     />
                     <ListItem
-                        title={type === 0 ? "真实姓名" : "机构名称"}
-                        rightTitle={type === 0 ? this.state.userInfo['nickname']+"" : this.state.userInfo['company']+""}
+                        title={(type === 0) ? "真实姓名" : "机构名称"}
+                        rightTitle={(type === 0) ? this.state.userInfo['nickname']+" " : this.state.userInfo['company']+" "}
                         hideChevron={true}
                         containerStyle={[globalStyle.listItem,{marginTop:0}]}
                     />
                     {
-                        type === 0 ? <ListItem
+                        (type === 0) ? <ListItem
                             title={"身份证号"}
-                            rightTitle={this.state.userInfo['idnumber']}
+                            rightTitle={this.state.userInfo['idnumber'] + " "}
                             hideChevron={true}
                             containerStyle={[globalStyle.listItem,{marginTop:0}]}
                         /> : null
@@ -291,7 +291,7 @@ class Renzheng extends Component{
                     <Text onPress={()=>{this.setState({type:2})}} style={[styles.radioBtn,(this.state.type === 2) ? styles.checkedBtn : {}]}>公益组织</Text>
                 </View>
                 {
-                    this.state.type === 0 ?
+                    (this.state.type === 0) ?
                         <View>
                             <View style={styles.block}>
                                 <Text style={styles.blockLeft}>真实姓名：</Text>
@@ -316,7 +316,7 @@ class Renzheng extends Component{
                         : null
                 }
                 {
-                    this.state.type === 1 ?
+                    (this.state.type === 1) ?
                         <View>
                             <View style={styles.block}>
                                 <Text style={styles.blockLeft}>公司名称：</Text>
@@ -346,7 +346,7 @@ class Renzheng extends Component{
                         : null
                 }
                 {
-                    this.state.type === 2 ?
+                    (this.state.type === 2) ?
                         <View>
                             <View style={styles.block}>
                                 <Text style={styles.blockLeft}>组织机构名称：</Text>

@@ -65,7 +65,15 @@ export default class Guanzhu extends Component{
         }catch(e){
             console.log(e);
         }finally {
-            this.props.screenProps.dispatch(getDongtaiAction(this.state.userid,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            //获取所有的关注者
+            let contentList = realmObj.objects("FollowUser");
+            let userids = this.state.userid;
+            if(contentList && contentList.length >= 0){
+                contentList.map((item)=>{
+                    userids += "," + item['id'];
+                });
+                this.props.screenProps.dispatch(getDongtaiAction(userids,this.state.currentDongtaiPage,(totalPage)=>{this._loadDongtaiComplete(totalPage)}));
+            }
         }
     }
     //网络请求加载完成

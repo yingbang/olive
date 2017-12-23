@@ -106,7 +106,7 @@ export default class FindFriendStepTwo extends Component {
         <ListItem
             roundAvatar
             key={item.id}
-            title={item.familyName + item.givenName}
+            title={item.givenName ? item.givenName : item.familyName}
             subtitle={item.mobile}
             rightIcon={<Text onPress={()=>{this.yaoqingOne(item['mobile'],0)}} style={styles.btn}>邀请</Text>}
             leftIcon={item.thumbnailPath ? <Image style={styles.avatar} source={(Platform.OS === 'ios') ? {uri:item.thumbnailPath} : require('../../assets/icon/iconhead.png')}/>: <Image style={[styles.avatar,{tintColor:'#dddddd'}]} source={require('../../assets/icon/iconhead.png')} />}

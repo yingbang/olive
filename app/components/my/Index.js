@@ -21,79 +21,83 @@ import {formatTime,isExpired,getFullPath} from '../common/public';
 import { List, ListItem, Header } from 'react-native-elements';
 import {getDongtaiAction,getFollowUserAction,getFensiAction,getUserInfoByIdAction} from '../../actions/userAction';
 
-const list = [
-    {
-        key:0,
-        name: '公益活动',
-        icon: 'feather',
-        iconType:'entypo',
-        subtitle: '最近参加公益0次',
-        nav:'my_gongyi'
-    },
-    {
-        key:1,
-        name: '我的组织',
-        icon: 'group',
-        iconType:'font-awesome',
-        nav:'my_zuzhi',
-        isDivider:true
-    },
-    {
-        key:2,
-        name: '我的荣誉勋章',
-        icon: 'trophy',
-        iconType:'font-awesome',
-        nav:'my_rongyu'
-    },
-    {
-        key:3,
-        name: '我的公益活动',
-        icon: 'gift',
-        iconType:'font-awesome',
-        nav:'my_huodong'
-    },
-    {
-        key:4,
-        name: '我的收藏',
-        icon: 'star',
-        nav:'my_shoucang'
-    },
-    {
-        key:5,
-        name: '订单',
-        icon: 'reorder',
-        iconType:'font-awesome',
-        nav:'my_dingdan',
-        isDivider:true
-    },
-    {
-        key:6,
-        name: '意见反馈',
-        icon: 'notification',
-        iconType:'entypo',
-        nav:'my_yijian',
-        isDivider:true
-    },
-    {
-        key:7,
-        name: '设置',
-        icon: 'cog',
-        iconType:'font-awesome',
-        nav:'my_shezhi',
-        isDivider:true
-    },
-];
 export default class MyIndex extends Component{
     constructor(props) {
         super(props);
+        this.userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value || 0;
         this.state={
-            userid:0,
+            userid:this.userid,
             userInfo:{},//我的信息
             guanzhu:0,//关注人数
             fensi:0,//粉丝数
             dongtai:0,//我发布的动态条数
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
-        }
+            huodong:realmObj.objects("HuodongBaoming").filtered("userid=="+this.userid).length,//公益活动次数
+            back:false,//用于返回时更新界面
+        };
+        this.timer = null;
+        this.list = [
+            {
+                key:0,
+                name: '公益活动',
+                icon: 'feather',
+                iconType:'entypo',
+                subtitle: '最近参加公益'+this.state.huodong+'次',
+                nav:'my_gongyi'
+            },
+            {
+                key:1,
+                name: '我的组织',
+                icon: 'group',
+                iconType:'font-awesome',
+                nav:'my_zuzhi',
+                isDivider:true
+            },
+            {
+                key:2,
+                name: '我的荣誉勋章',
+                icon: 'trophy',
+                iconType:'font-awesome',
+                nav:'my_rongyu'
+            },
+            {
+                key:3,
+                name: '我的公益活动',
+                icon: 'gift',
+                iconType:'font-awesome',
+                nav:'my_huodong'
+            },
+            {
+                key:4,
+                name: '我的收藏',
+                icon: 'star',
+                nav:'my_shoucang'
+            },
+            {
+                key:5,
+                name: '订单',
+                icon: 'reorder',
+                iconType:'font-awesome',
+                nav:'my_dingdan',
+                isDivider:true
+            },
+            {
+                key:6,
+                name: '意见反馈',
+                icon: 'notification',
+                iconType:'entypo',
+                nav:'my_yijian',
+                isDivider:true
+            },
+            {
+                key:7,
+                name: '设置',
+                icon: 'cog',
+                iconType:'font-awesome',
+                nav:'my_shezhi',
+                isDivider:true
+            },
+        ];
     }
 
     componentDidMount(){
@@ -109,20 +113,42 @@ export default class MyIndex extends Component{
             let dongtai = realmObj.objects("Global").filtered("key == 'dongtaiTotal'");
             this.setState({
                 userid:userid,
-                userInfo:userInfo.length >= 0 ? userInfo[0] : {},
-                guanzhu:guanzhu.length >= 0 ? guanzhu[0].value : 0,
-                fensi:fensi.length >= 0 ? fensi[0].value : 0,
-                dongtai:dongtai.length >= 0 ? dongtai[0].value : 0,
+                userInfo:userInfo.length > 0 ? userInfo[0] : {},
+                guanzhu:guanzhu.length > 0 ? guanzhu[0].value : 0,
+                fensi:fensi.length > 0 ? fensi[0].value : 0,
+                dongtai:dongtai.length > 0 ? dongtai[0].value : 0,
             });
         }catch(e){
             console.log(e);
         }finally {
             let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
             this.props.dispatch(getUserInfoByIdAction(userid));
-            this.props.dispatch(getFollowUserAction(1));
-            this.props.dispatch(getFensiAction(1));
-            this.props.dispatch(getDongtaiAction(userid,1));
+            this.props.dispatch(getFollowUserAction(1,()=>{this.loadComplete()}));
+            this.props.dispatch(getFensiAction(1,()=>{this.loadComplete()}));
+            this.props.dispatch(getDongtaiAction(userid,1,()=>{this.loadComplete()}));
+            let _that = this;
+            this.timer = setInterval(()=>{
+                _that.loadComplete();
+            },2000);
         }
+    }
+    componentWillUnmount(){
+        if(this.timer){
+            clearInterval(this.timer);
+        }
+    }
+    loadComplete(){
+        //关注人数
+        let guanzhu = realmObj.objects("Global").filtered("key == 'guanzhuTotal'");
+        //粉丝
+        let fensi = realmObj.objects("Global").filtered("key == 'fensiTotal'");
+        //动态数量
+        let dongtai = realmObj.objects("Global").filtered("key == 'dongtaiTotal'");
+        this.setState({
+            guanzhu:guanzhu.length > 0 ? guanzhu[0].value : 0,
+            fensi:fensi.length > 0 ? fensi[0].value : 0,
+            dongtai:dongtai.length > 0 ? dongtai[0].value : 0,
+        });
     }
 
     renderRow = ({item}) => (
@@ -145,6 +171,7 @@ export default class MyIndex extends Component{
                 break;
             case 'my_ziliao':
                 TargetComponent = 'ZiLiao';
+                params = {back:()=>{this.setState({back:!this.state.back})}}
                 break;
             case 'my_guanzhu':
                 TargetComponent = 'GuanZhu';
@@ -202,9 +229,9 @@ export default class MyIndex extends Component{
                     <View style={styles.baseInfo}>
                         {
                             (this.state.userInfo['avatar'] !== "") ?
-                                <Image style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(this.state.userInfo['avatar'],this.state.host)}}/>
+                                <Image style={globalStyle.defaultAvatarImage} source={{uri:getFullPath(this.state.userInfo['avatar'],this.state.host)}}/>
                                 :
-                                <Image style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>
+                                <Image style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
                         }
                         <View style={{flex:1}}>
                             <Text>{this.state.userInfo['nickname']}</Text>
@@ -235,7 +262,7 @@ export default class MyIndex extends Component{
                 <List containerStyle={[globalStyle.listContainer,colors.bgF8]}>
                     <FlatList
                         renderItem={this.renderRow}
-                        data={list}
+                        data={this.list}
                         extraData={this.state}
                     />
                 </List>

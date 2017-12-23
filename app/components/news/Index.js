@@ -22,7 +22,8 @@ import {
 import {formatTime,isExpired,getFullPath} from '../common/public';
 import BlankContent from '../common/BlankContent';
 import {getNewsListAction} from '../../actions/newsAction';
-import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
+import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';//LazyloadImage host={lazyloadName}
+import {CachedImage} from '../common/ImageCacheMy';
 
 const lazyloadName = "lazyload-newsList";//懒加载的name
 
@@ -36,6 +37,7 @@ export default class NewsIndex extends Component{
             loading:false,
             data:[],
             host:realmObj.objects("Global").filtered("key == 'REQUEST_HOST'")[0].value,
+            back:false,//如果是从详情页返回的，就更新一下，这样整个页面就更新了，阅读数就会更新
         }
     }
     //组件加载完成
@@ -101,7 +103,7 @@ export default class NewsIndex extends Component{
     };
     //渲染每一行样式
     renderRow = ({item}) => (
-        <ListItem style={{marginLeft:0}} onPress={()=>{this.props.navigation.navigate("NewsDetail",{id:item.id})}}>
+        <ListItem style={{marginLeft:0}} onPress={()=>{this.props.navigation.navigate("NewsDetail",{id:item.id,back:()=>{this.setState({back:!this.state.back})}})}}>
             <Body>
             <View style={styles.cell_container}>
                 <View style={styles.itemLeft}>
@@ -109,15 +111,15 @@ export default class NewsIndex extends Component{
                     <Text style={styles.leftMiddle}>{item.title}</Text>
                     <View style={styles.leftBottom}>
                         {this._flags(item.flags)}
-                        <Image style={styles.bottomImage} source={require('../../assets/icon/iconnews_views.png')}/>
+                        <CachedImage style={styles.bottomImage} source={require('../../assets/icon/iconnews_views.png')}/>
                         <Text style={styles.bottomText}>{item.views}</Text>
-                        <Image style={styles.bottomImage} source={require('../../assets/icon/iconnews_pinglun.png')}/>
+                        <CachedImage style={styles.bottomImage} source={require('../../assets/icon/iconnews_pinglun.png')}/>
                         <Text style={styles.bottomText}>{item.comments}</Text>
                     </View>
                 </View>
             </View>
             </Body>
-            <LazyloadImage host={lazyloadName} square style={styles.thumb} source={!!item.pic ? {uri:getFullPath(item.pic,this.state.host)} : require('../../assets/images/nopic1.jpg')} />
+            <CachedImage square style={styles.thumb} source={!!item.pic ? {uri:getFullPath(item.pic,this.state.host)} : require('../../assets/images/nopic1.jpg')} />
         </ListItem>
     );
     //把id当成key，否则会有警告

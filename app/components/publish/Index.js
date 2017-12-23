@@ -22,13 +22,11 @@ import {
     Input,
     Label,
 } from 'native-base';
-import { NavigationActions } from 'react-navigation';
-import FontIcon from 'react-native-vector-icons/FontAwesome';
+import { NavigationActions} from 'react-navigation';
 import globalStyle from '../common/GlobalStyle';
 import colors from '../common/Colors';
-import fonts from '../common/Fonts';
 
-const {height, width} = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export default class PublishIndex extends Component{
 
@@ -40,24 +38,27 @@ export default class PublishIndex extends Component{
     }
 
     componentDidMount(){
-        try{
-            let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
-            let userInfo = realmObj.objects("User").filtered("id == "+userid);
-            if(userInfo && userInfo.length > 0){
-                let renzheng = userInfo[0]['renzhengzhuangtai'];
-                if(renzheng === 1){
-                    this.setState({
-                        renzheng:true
-                    });
-                }
+        this.getStatus();
+    }
+
+    getStatus(){
+        let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
+        let userInfo = realmObj.objects("User").filtered("id == "+userid);
+        if(userInfo && userInfo.length > 0){
+            let renzheng = userInfo[0]['renzhengzhuangtai'];
+            if(renzheng === 1){
+                this.setState({
+                    renzheng:true
+                });
             }
-        }catch(e){}
+        }
     }
 
     /**
      * 点击发布动态，需要先进行身份验证
      */
     pressFabuDongtai(){
+        this.getStatus();
         if(this.state.renzheng === true){
             this.props.navigation.navigate('PublishEdit',{quanzi:0});
         }else{
@@ -68,6 +69,7 @@ export default class PublishIndex extends Component{
      * 点击取消按钮
      */
     pressCancel(){
+
         let prevState = realmObj.objects("Global").filtered("key == 'prevStateRouteIndex'");
         //console.log("c:"+prevState[0]['value']);
         let routeName="HomeContainer";
@@ -80,7 +82,14 @@ export default class PublishIndex extends Component{
             action: NavigationActions.navigate({ routeName: routeName})
         });
         this.props.navigation.dispatch(navigateAction);
+
     }
+    /*
+    * 关闭按钮
+    * <TouchableOpacity onPress={()=>this.pressCancel()}>
+        <Image style={[colors.tintBlue,styles.fabuImageClose]} source={require('../../assets/icon/iconpublish_close.png')}/>
+      </TouchableOpacity>
+    * */
     render(){
         return (
             <Container style={globalStyle.containerWithoutStatusBar}>
@@ -94,9 +103,6 @@ export default class PublishIndex extends Component{
                                 </View>
                             </TouchableWithoutFeedback>
                             <Text>发布动态</Text>
-                            <TouchableOpacity onPress={()=>this.pressCancel()}>
-                                <Image style={[colors.tintBlue,styles.fabuImageClose]} source={require('../../assets/icon/iconpublish_close.png')}/>
-                            </TouchableOpacity>
                         </View>
                     </ImageBackground>
                 </Content>
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems:'center',
         position:'absolute',
-        bottom:30,
+        bottom:120,//全屏，有关闭按钮：30
         left:width/2 - 40
     },
     fabuImageView:{

@@ -13,6 +13,7 @@ import Carousel from '../common/Carousel';
 import ScrollVertical from '../common/ScrollVertical';
 import {getSlideAction, getNoticeAction} from '../../actions/toolAction';
 import {getFullPath} from '../common/public';
+import {CachedImage} from '../common/ImageCacheMy';
 
 const { width } = Dimensions.get('window');
 
@@ -62,7 +63,7 @@ export default class HotSlide extends Component {
                         this.state.slide.map((item,i)=>{
                             return (
                                 <View key={i} style={styles.carousel}>
-                                    <Image style={styles.carousel} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
+                                    <CachedImage style={styles.carousel} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
                                 </View>
                             );
                         })
@@ -77,7 +78,7 @@ export default class HotSlide extends Component {
                             })}
                             onClick={(id)=>{this.props.screenProps.navigation.navigate("NoticeDetail",{id:id})}}
                             enableAnimation={true}
-                            data={realmObj.objects("Notice")}
+                            data={realmObj.objects("Notice").filtered("type == 0")}
                             delay={2500}
                             duration={1000}
                             scrollHeight={17}
@@ -85,7 +86,7 @@ export default class HotSlide extends Component {
                             kbContainer={{flex:1,marginTop:(Platform.OS === 'ios') ? 4 : 0}}
                             textStyle={{fontSize: 12 }} />
                         <View style={{height:20,position:'absolute',right:0,top:4,backgroundColor:'#ffffff'}}>
-                            <Image style={{width:14,height:14}} source={require('../../assets/icon/icongo.png')}/>
+                            <CachedImage style={{width:14,height:14}} source={require('../../assets/icon/icongo.png')}/>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>

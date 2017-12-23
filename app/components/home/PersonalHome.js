@@ -25,6 +25,7 @@ import BlankDongtai from '../common/BlankDongtai';
 import {getDongtaiAction,getUserInfoByIdAction,zanDongtaiAction} from '../../actions/userAction';
 import DongtaiItem from '../common/DongtaiItem';
 import {LazyloadScrollView, LazyloadView, LazyloadImage} from '../common/lazyload';
+import {CachedImage} from '../common/ImageCacheMy';
 
 const window = Dimensions.get('window');
 const AVATAR_SIZE = 80;
@@ -148,9 +149,8 @@ class PersonalHome extends Component{
                         backgroundSpeed={10}
                         renderBackground={() => (
                             <View key="background">
-                                <Image source={{uri: 'https://b-ssl.duitang.com/uploads/item/201601/19/20160119123125_sFyLM.thumb.700_0.png',
-                                    width: window.width,
-                                    height: PARALLAX_HEADER_HEIGHT}}/>
+                                <CachedImage style={{width: window.width,height: PARALLAX_HEADER_HEIGHT}}
+                                             source={require("../../assets/images/personalBg.png")}/>
                                 <View style={{position: 'absolute',
                                     top: 0,
                                     width: window.width,
@@ -162,16 +162,9 @@ class PersonalHome extends Component{
                             <View key="parallax-header" style={ styles.parallaxHeader }>
                                 {
                                     (_that.state.userInfo['avatar'] !== "") ?
-                                        <Image style={ styles.avatar } source={{
-                                            uri: getFullPath(_that.state.userInfo['avatar'],_that.state.host),
-                                            width: AVATAR_SIZE,
-                                            height: AVATAR_SIZE
-                                        }}/> :
-                                        <Image style={ styles.avatar } source={{
-                                            uri: 'https://b-ssl.duitang.com/uploads/item/201708/11/20170811231309_WF8f3.thumb.700_0.jpeg',
-                                            width: AVATAR_SIZE,
-                                            height: AVATAR_SIZE
-                                        }}/>
+                                        <CachedImage style={ [styles.avatar,{width: AVATAR_SIZE, height: AVATAR_SIZE}] } source={{uri: getFullPath(_that.state.userInfo['avatar'],_that.state.host)}}/> :
+                                        <CachedImage style={ [styles.avatar,{width: AVATAR_SIZE, height: AVATAR_SIZE}] }
+                                                     source={require('../../assets/icon/iconhead.png')}/>
                                 }
                                 <Text style={ styles.sectionSpeakerText }>{_that.state.userInfo['nickname']}</Text>
                                 <Text style={ styles.sectionTitleText }>
@@ -183,7 +176,7 @@ class PersonalHome extends Component{
                             <View key="sticky-header" style={styles.stickySection}>
                                 <TouchableWithoutFeedback onPress={()=>_that.pressBack()}>
                                     <View>
-                                        <Image style={{width:15,height:15,marginLeft:8}} source={require('../../assets/icon/iconback.png')}/>
+                                        <CachedImage style={{width:15,height:15,marginLeft:8}} source={require('../../assets/icon/iconback.png')}/>
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <Text style={styles.stickySectionText}>{_that.state.userInfo['nickname']}</Text>
@@ -198,7 +191,7 @@ class PersonalHome extends Component{
                             <View key="fixed-header" style={styles.fixedSection}>
                                 <TouchableWithoutFeedback onPress={()=>_that.pressBack()}>
                                     <View style={{flex:1}}>
-                                        <Image style={{width:15,height:15,marginLeft:8,tintColor:'#ffffff'}} source={require('../../assets/icon/iconback.png')}/>
+                                        <CachedImage style={{width:15,height:15,marginLeft:8,tintColor:'#ffffff'}} source={require('../../assets/icon/iconback.png')}/>
                                     </View>
                                 </TouchableWithoutFeedback>
                                 <TouchableWithoutFeedback onPress={()=>{_that.bianji()}}>
@@ -219,7 +212,7 @@ class PersonalHome extends Component{
                                     }
                                     showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}
                         >
-                            <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,padding:(Platform.OS === 'ios') ? 0 : 8}}>
+                            <List containerStyle={{marginTop:0,marginBottom:20,borderTopWidth:0,padding:8}}>
                                 <FlatList
                                     renderItem={this.renderRow}
                                     data={this.state.dongtai}

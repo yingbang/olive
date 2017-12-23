@@ -75,12 +75,13 @@ function updateUserInfo(){
     let userid = realmObj.objects("Global").filtered("key == 'currentUserId'")[0].value;
     getUserInfoById(userid);
 }
+//更新新闻
+function updateNews(){
+    let newsList = realmObj.objects("News");
+}
 
-/**
- * 设置底部菜单栏：一般是app的栏目
- */
-const AppTab = TabNavigator(
-    {
+function getRouteConfig(){
+    return {
         HomeContainer: {
             screen: HomeContainer,
             navigationOptions: {
@@ -132,7 +133,7 @@ const AppTab = TabNavigator(
                         imageStyle={{tintColor:'#ffffff'}}
                     />
                 ),
-                tabBarVisible:false,//当点击进去，是否显示底部菜单
+                //tabBarVisible:false,//当点击进去，是否显示底部菜单
                 tabBarOnPress:(scene,jumpToIndex)=>{
                     updateUserInfo();
                     jumpToIndex(scene.index);
@@ -152,6 +153,7 @@ const AppTab = TabNavigator(
                     />
                 ),
                 tabBarOnPress:(scene,jumpToIndex)=>{
+                    //updateNews();
                     jumpToIndex(scene.index);
                 }
             }
@@ -174,8 +176,11 @@ const AppTab = TabNavigator(
                 }
             }
         }
-    }, {
-        initialRouteName: 'HomeContainer',//默认显示的tab页
+    };
+}
+function getNavigatorConfig(initialRouteName) {
+    return {
+        initialRouteName: initialRouteName,//默认显示的tab页
         tabBarPosition: 'bottom',//tab栏的位置
         lazy: true,//是否根据需要懒惰呈现标签，而不是提前，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐为true
         animationEnabled: false,//切换时是否有动画效果
@@ -203,7 +208,16 @@ const AppTab = TabNavigator(
             inactiveTintColor: '#333333',//未选中的颜色
             activeTintColor: '#00BFFF',//选中的颜色
         },
-    }
+    };
+}
+
+
+/**
+ * 设置底部菜单栏：一般是app的栏目
+ */
+const AppTab = TabNavigator(
+    getRouteConfig()
+    , getNavigatorConfig('HomeContainer')
 );
 
 //是否为第一次登录，如果是第一次，显示邀请好友

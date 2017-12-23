@@ -48,7 +48,7 @@ function renderNode(node, index) {
         };
 
         const source = {
-            uri: node.attribs.src,
+            uri: getFullPath(node.attribs.src),
             width,
             height,
         };
@@ -243,7 +243,7 @@ class HuodongDetail extends Component{
                             }
                         </ScrollView>
                         <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("BaomingList",{id:this.state.id})}}>
-                            <Image style={{width:40,height:40}} source={require('../../assets/icon/icongengduo.png')}/>
+                            <Image style={{width:40,height:40}} source={require('../../assets/icon/icongengduo2.png')}/>
                         </TouchableWithoutFeedback>
                     </View>
                     <View style={styles.huodongDetail}>
@@ -266,7 +266,7 @@ class HuodongDetail extends Component{
                         <Text style={{fontSize:12,marginTop:5}}>{this.state.isShoucang ? "取消收藏" : "收藏"}</Text>
                     </View>
                     </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback onPress={()=>{UShare.share(item['title'],getFullPath(item['pic'],this.state.host),"https://www.baidu.com",()=>{},()=>{})}}>
+                    <TouchableWithoutFeedback onPress={()=>{UShare.share(item['title'],item['intro'],getFullPath(item['pic'],this.state.host),this.state.host+"/h5/huodong?id="+item['id'],()=>{},()=>{})}}>
                     <View style={{flex:1,alignItems:'center'}}>
                         <Image style={[styles.huodongItemTimeImage,{width:16,height:16}]} source={require('../../assets/icon/iconshare.png')}/>
                         <Text style={{fontSize:12,marginTop:5}}>分享</Text>

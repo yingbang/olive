@@ -51,29 +51,39 @@ RCT_EXPORT_METHOD(share:(NSString *)title content:(NSString *)content imageUrl:(
   }];
 }
 
-RCT_EXPORT_METHOD(login:(RCTResponseSenderBlock*)successCallback errorCallback:(RCTResponseSenderBlock*)errorCallback )
+RCT_EXPORT_METHOD(login:(RCTResponseSenderBlock)errorCallback callback:(RCTResponseSenderBlock)successCallback )
 {
   [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_WechatSession currentViewController:nil completion:^(id result, NSError *error) {
     if (error) {
-      
+      errorCallback(@[[NSNull null]]);
     } else {
       UMSocialUserInfoResponse *resp = result;
       
       // 授权信息
-      NSLog(@"Wechat uid: %@", resp.uid);
-      NSLog(@"Wechat openid: %@", resp.openid);
-      NSLog(@"Wechat unionid: %@", resp.unionId);
-      NSLog(@"Wechat accessToken: %@", resp.accessToken);
-      NSLog(@"Wechat refreshToken: %@", resp.refreshToken);
-      NSLog(@"Wechat expiration: %@", resp.expiration);
+      //NSLog(@"Wechat uid: %@", resp.uid);
+      //NSLog(@"Wechat openid: %@", resp.openid);
+      //NSLog(@"Wechat unionid: %@", resp.unionId);
+      //NSLog(@"Wechat accessToken: %@", resp.accessToken);
+      //NSLog(@"Wechat refreshToken: %@", resp.refreshToken);
+      //NSLog(@"Wechat expiration: %@", resp.expiration);
       
       // 用户信息
-      NSLog(@"Wechat name: %@", resp.name);
-      NSLog(@"Wechat iconurl: %@", resp.iconurl);
-      NSLog(@"Wechat gender: %@", resp.unionGender);
+      //NSLog(@"Wechat name: %@", resp.name);
+      //NSLog(@"Wechat iconurl: %@", resp.iconurl);
+      //NSLog(@"Wechat gender: %@", resp.unionGender);
       
       // 第三方平台SDK源数据
-      NSLog(@"Wechat originalResponse: %@", resp.originalResponse);
+      //NSLog(@"Wechat originalResponse: %@", resp.originalResponse);
+      
+      //格式化输出
+      NSString *format = @"{'name':'%@','gender':'%@','iconurl':'%@','country':'%@','province':'%@','city':'%@','openid':'%@','unionid':'%@'}";;
+      NSString *fromatedNSString = [NSString stringWithFormat:format,resp.name,resp.unionGender,resp.iconurl,
+                                    @"",@"",@"",
+                                    resp.openid,resp.unionId];
+      //NSLog(@"格式化输出的结果：%@",fromatedNSString);
+
+      successCallback(@[fromatedNSString]);
+      
     }
   }];
 }

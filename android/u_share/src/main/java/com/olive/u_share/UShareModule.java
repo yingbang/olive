@@ -25,7 +25,7 @@ public class UShareModule extends ReactContextBaseJavaModule{
         UShare.share(title,content,imageUrl,targetUrl,successCallback,errorCallback);
     }
     @ReactMethod
-    public static void login(final Callback successCallback, final Callback errorCallback) {
-        ULogin.login(successCallback,errorCallback);
+    public static void login(final Callback errorCallback, final Callback successCallback) {
+        ULogin.login(errorCallback,successCallback);
     }
 }

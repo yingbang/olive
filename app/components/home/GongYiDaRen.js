@@ -10,7 +10,8 @@ import colors from '../common/Colors';
 import {getArrayItems,inArray,getFullPath} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getFollowUserAction} from '../../actions/userAction';
-import {LazyloadImage} from '../common/lazyload';
+//import {LazyloadImage} from '../common/lazyload';//LazyloadImage host={this.lazyloadName}
+import {CachedImage} from '../common/ImageCacheMy';
 
 const { width, height } = Dimensions.get('window');
 
@@ -44,7 +45,7 @@ export default class GongYiDaRen extends Component {
     _loadComplete(){
         try{
             let contentList = realmObj.objects("User").filtered("visible == true and type == 0 and flag == 1");
-            if(contentList.length > 0){
+            if(contentList.length >= 0){
                 this.setState({
                     content:getArrayItems(contentList,5),
                     currentPage:this.state.currentPage++
@@ -55,7 +56,7 @@ export default class GongYiDaRen extends Component {
     _loadFollowUserComplete(){
         try{
             let contentList = realmObj.objects("FollowUser");
-            if(contentList && contentList.length > 0){
+            if(contentList && contentList.length >= 0){
                 this.setState({
                     joinList:contentList
                 });
@@ -91,6 +92,7 @@ export default class GongYiDaRen extends Component {
                 }else{
                     toastShort(text + "失败，请重试")
                 }
+                this.props.screenProps.dispatch(getFollowUserAction(1));
             });
         }catch(e){}
     }
@@ -120,10 +122,10 @@ export default class GongYiDaRen extends Component {
                                 <View style={styles.view}>
                                     <View style={{width:80}}>
                                         {
-                                            item['avatar'] !== "" ?
-                                                <LazyloadImage host={this.lazyloadName} style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
+                                            (item['avatar'] !== "") ?
+                                                <CachedImage style={styles.img} source={{uri:getFullPath(item['avatar'],host),cache:'force-cache'}}/>
                                                 :
-                                                <LazyloadImage host={this.lazyloadName} style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
+                                                <CachedImage style={[globalStyle.defaultAvatar,{marginRight:10}]} source={require('../../assets/icon/iconhead.png')}/>
                                         }
                                     </View>
                                     <View style={{width:width-158,height:70,overflow:'hidden'}}>

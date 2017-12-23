@@ -69,13 +69,20 @@ export function getNoticeAction(page,callback){
                         //删除原来的
                         let contentList = json.list;
                         for(let i=0, l=contentList.length; i<l; i++){
+                            let old = realmObj.objects("Notice").filtered("id == "+contentList[i]['id']);
                             let item = {
                                 id:contentList[i]['id']+0,
                                 title:contentList[i]['title'],
                                 author:contentList[i]['author'] !== null ? contentList[i]['author'] : "",
                                 content:contentList[i]['content'] !== null ? contentList[i]['content'] : "",
                                 dateline:contentList[i]['dateline'] !== null ? parseFloat(contentList[i]['dateline']) : 0,
+                                type:contentList[i]['type'] !== null ? contentList[i]['type'] : 0,
+                                hasread:(contentList[i]['hasread'] !== null && contentList[i]['hasread'] !== undefined) ? contentList[i]['hasread'] : 0,
                             };
+                            //阅读状态不变
+                            if(old && old.length>0){
+                                item.hasread = old[0]['hasread'];
+                            }
                             realmObj.create("Notice",item,true);
                         }
                     });

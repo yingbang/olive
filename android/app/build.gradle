@@ -148,6 +148,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-fetch-blob')
     compile project(':react-native-picker')
     compile project(':react-native-contacts')
     compile project(':react-native-camera')
@@ -156,9 +157,16 @@ dependencies {
     compile project(':react-native-vector-icons')
     compile project(':react-native-splash-screen')
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    // For animated GIF support
+    compile 'com.facebook.fresco:animated-gif:1.3.0'
+    // For WebP support, including animated WebP
+    compile 'com.facebook.fresco:animated-webp:1.3.0'
+    compile 'com.facebook.fresco:webpsupport:1.3.0'
+
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.facebook.react:react-native:+'
-    // From node_modules
+    //From node_modules
     compile project(':u_share')
 }
 

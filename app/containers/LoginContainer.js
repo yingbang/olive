@@ -22,6 +22,38 @@ class LoginContainer extends Component {
     static navigationOptions = {
         header:null
     };
+    //返回用户信息对象
+    getUserObj(json){
+        return {
+            id:parseInt(json['id']),
+            type:parseInt(json['type']),
+            flag:parseInt(json['flag']),
+            name:json['name'] !== null ? json['name'] : "",
+            sex:json['sex'] !== null ? json['sex'] : "",
+            mobile:json['mobile'] !== null ? json['mobile'] : "",
+            nickname:json['nickname'] !== null ? json['nickname'] : "",
+            username:json['username'] !== null ? json['username'] : "",
+            email:json['email'] !== null ? json['email'] : "",
+            province:json['province'] !== null ? json['province'] : "",
+            city:json['city'] !== null ? json['city'] : "",
+            area:json['area'] !== null ? json['area'] : "",
+            address:json['address'] !== null ? json['address'] : "",
+            weixin:json['weixin'] !== null ? json['weixin'] : "",
+            company:json['company'] !== null ? json['company'] : "",
+            job:json['job'] !== null ? json['job'] : "",
+            intro:json['intro'] !== null ? json['intro'] : "",
+            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "0",
+            avatar:json['avatar'] !== null ? json['avatar'] : "",
+            visible:false,//自己的信息不需要显示在列表中
+            renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
+            renzhengshijian:json['renzhengshijian'] !== null ? json['renzhengshijian'] : 0,
+            renzhengzhuangtai:json['renzhengzhuangtai'] !== null ? json['renzhengzhuangtai'] : 0,
+            shenfenzheng:json['shenfenzheng'] !== null ? json['shenfenzheng'] : "",
+            idnumber:json['idnumber'] !== null ? json['idnumber'] : "",
+            zhizhao:json['zhizhao'] !== null ? json['zhizhao'] : "",
+            zuzhi:json['zuzhi'] !== null ? json['zuzhi'] : "",
+        };
+    }
     //登录成功以后
     loginSuccess = (mobile) => {
         //保存登录状态到本地数据库
@@ -33,35 +65,7 @@ class LoginContainer extends Component {
                 //保存到realm
                 try{
                     realmObj.write(()=>{
-                        let user = {
-                            id:parseInt(json['id']),
-                            type:parseInt(json['type']),
-                            flag:parseInt(json['flag']),
-                            name:json['name'] !== null ? json['name'] : "",
-                            sex:json['sex'] !== null ? json['sex'] : "",
-                            mobile:json['mobile'] !== null ? json['mobile'] : "",
-                            nickname:json['nickname'] !== null ? json['nickname'] : "",
-                            username:json['username'] !== null ? json['username'] : "",
-                            email:json['email'] !== null ? json['email'] : "",
-                            province:json['province'] !== null ? json['province'] : "",
-                            city:json['city'] !== null ? json['city'] : "",
-                            area:json['area'] !== null ? json['area'] : "",
-                            address:json['address'] !== null ? json['address'] : "",
-                            weixin:json['weixin'] !== null ? json['weixin'] : "",
-                            company:json['company'] !== null ? json['company'] : "",
-                            job:json['job'] !== null ? json['job'] : "",
-                            intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "-1",
-                            avatar:json['avatar'] !== null ? json['avatar'] : "",
-                            visible:false,//自己的信息不需要显示在列表中
-                            renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
-                            renzhengshijian:json['renzhengshijian'] !== null ? json['renzhengshijian'] : 0,
-                            renzhengzhuangtai:json['renzhengzhuangtai'] !== null ? json['renzhengzhuangtai'] : 0,
-                            shenfenzheng:json['shenfenzheng'] !== null ? json['shenfenzheng'] : "",
-                            idnumber:json['idnumber'] !== null ? json['idnumber'] : "",
-                            zhizhao:json['zhizhao'] !== null ? json['zhizhao'] : "",
-                            zuzhi:json['zuzhi'] !== null ? json['zuzhi'] : "",
-                        };
+                        let user = this.getUserObj(json);
                         realmObj.create("User",user,true);
                         //保存当前登录的用户ID和手机号
                         realmObj.create("Global",{key:"currentUserId",value:json['id']+""},true);
@@ -74,10 +78,25 @@ class LoginContainer extends Component {
             }
         });
     };
+    //第三方登录成功
+    wxLoginSuccess = (userinfo)=>{
+        try{
+            realmObj.write(()=>{
+                let user = this.getUserObj(userinfo);
+                realmObj.create("User",user,true);
+                //保存当前登录的用户ID和手机号
+                realmObj.create("Global",{key:"currentUserId",value:userinfo['id']+""},true);
+                realmObj.create("Global",{key:"currentUserMobile",value:userinfo['mobile']},true);
+            });
+        }catch(e){
+            console.log(e)
+        }
+        this.props.dispatch(loginSuccess())
+    };
     //默认显示登录页面
     render() {
         return (
-            <LoginScreen {...this.props} loginSuccess={(mobile)=>{this.loginSuccess(mobile)}}/>
+            <LoginScreen {...this.props} wxLoginSuccess={(userinfo)=>{this.wxLoginSuccess(userinfo)}} loginSuccess={(mobile)=>{this.loginSuccess(mobile)}}/>
         );
     }
 }

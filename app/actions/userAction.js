@@ -2,8 +2,21 @@
  * 会员相关
  */
 'use strict';
+import {Platform, NetInfo} from 'react-native';
 import * as types from './actionTypes';
 import request from 'superagent';
+//网络是否连接
+export function getNetWorkState(callback) {
+    if (Platform.OS === 'ios') {
+        NetInfo.isConnected.addEventListener('connectionChange', (isConnect) => {
+            callback && callback(isConnect);
+        });
+    } else {
+        NetInfo.isConnected.fetch().done((isConnected) => {
+            callback && callback(isConnected);
+        });
+    }
+}
 
 //获取会员列表
 export function getUserListAction(page,type,flag,callback){
@@ -37,7 +50,7 @@ export function getUserListAction(page,type,flag,callback){
                                 address:contentList[i]['address'] !== null ? contentList[i]['address'] : "",
                                 weixin:contentList[i]['weixin'] !== null ? contentList[i]['weixin'] : "",
                                 intro:contentList[i]['intro'] !== null ? contentList[i]['intro'] : "",
-                                renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng']+"" : "-1",
+                                renzheng:contentList[i]['renzheng'] !== null ? contentList[i]['renzheng']+"" : "0",
                                 avatar:contentList[i]['avatar'] !== null ? contentList[i]['avatar'] : "",
                                 visible:hidden.length <= 0,
                                 renzhengleixing:contentList[i]['renzhengleixing'] !== null ? contentList[i]['renzhengleixing'] : 0,
@@ -91,7 +104,7 @@ export function getUserInfoAction(mobile,callback){
                             address:json['address'] !== null ? json['address'] : "",
                             weixin:json['weixin'] !== null ? json['weixin'] : "",
                             intro:json['intro'] !== null ? json['intro'] : "",
-                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "-1",
+                            renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "0",
                             avatar:json['avatar'] !== null ? json['avatar'] : "",
                             visible:hidden.length <= 0,
                             renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,
@@ -149,7 +162,7 @@ export function getUserInfoById(userid,callback) {
                         company:json['company'] !== null ? json['company'] : "",
                         job:json['job'] !== null ? json['job'] : "",
                         intro:json['intro'] !== null ? json['intro'] : "",
-                        renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "-1",
+                        renzheng:json['renzheng'] !== null ? json['renzheng']+"" : "0",
                         avatar:json['avatar'] !== null ? json['avatar'] : "",
                         visible:hidden.length <= 0,
                         renzhengleixing:json['renzhengleixing'] !== null ? json['renzhengleixing'] : 0,

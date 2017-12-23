@@ -51,61 +51,75 @@ class LazyloadView extends Component{
     _unmounted = false;
 
     _toggle = visible => {
-        if (this._visible !== visible) {
-            this._visible = visible;
-            clearTimeout(this._timeout);
+        try{
+            if (this._visible !== visible) {
+                this._visible = visible;
+                clearTimeout(this._timeout);
 
-            // If we have a callback, call it with the visibility state change
-            if (this.props.onVisibilityChange && typeof this.props.onVisibilityChange === 'function') {
-                this.props.onVisibilityChange(this._visible, this.ref, this.props);
-            }
-
-            this._timeout = setTimeout(() => {
-                if (this._unmounted) {
-                    return;
+                // If we have a callback, call it with the visibility state change
+                if (this.props.onVisibilityChange && typeof this.props.onVisibilityChange === 'function') {
+                    this.props.onVisibilityChange(this._visible, this.ref, this.props);
                 }
 
-                visible && this.props.animation && LayoutAnimation.configureNext(this.props.animation);
-                this.setState({
-                    visible
-                });
-            }, 16);
-        }
+                this._timeout = setTimeout(() => {
+                    if (this._unmounted) {
+                        return;
+                    }
+
+                    visible && this.props.animation && LayoutAnimation.configureNext(this.props.animation);
+                    this.setState({
+                        visible
+                    });
+                }, 16);
+            }
+        }catch(e){}
     };
 
     measureInWindow = (...args) => {
-        this._root.measureInWindow(...args);
+        try{
+            this._root.measureInWindow(...args);
+        }catch(e){}
     };
 
     measureLayout = (...args) => {
-        this._root.measureLayout(...args);
+        try{
+            this._root.measureLayout(...args);
+        }catch(e){}
     };
 
     setNativeProps = (...args) => {
-        this._root.setNativeProps(...args);
+        try{
+            this._root.setNativeProps(...args);
+        }catch(e){}
     };
 
     focus = (...args) => {
-        this._root.focus(...args);
+        try{
+            this._root.focus(...args);
+        }catch(e){}
     };
 
     blur = (...args) => {
-        this._root.blur(...args);
+        try{
+            this._root.blur(...args);
+        }catch(e){}
     };
 
     _onLayout = (...args) => {
-        if (this._unmounted) {
-            return;
-        }
-        this.props.onLayout && this.props.onLayout(...args);
-        LazyloadManager.add(
-            {
-                name: this.props.host,
-                id: this._id
-            },
-            this.measureLayout,
-            this._toggle
-        );
+        try{
+            if (this._unmounted) {
+                return;
+            }
+            this.props.onLayout && this.props.onLayout(...args);
+            LazyloadManager.add(
+                {
+                    name: this.props.host,
+                    id: this._id
+                },
+                this.measureLayout,
+                this._toggle
+            );
+        }catch(e){}
     };
 
     render() {

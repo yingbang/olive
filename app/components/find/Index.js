@@ -110,7 +110,7 @@ class FindIndex extends Component{
     };
     //在上面遮罩了一层透明的，这样就可以点击了
     renderRow = ({item}) => (
-        <HuodongItem baoming={this.state.baoming} item={item} {...this.props}/>
+        <HuodongItem name={this.lazyloadName} baoming={this.state.baoming} item={item} {...this.props}/>
     );
     renderQuanziRow = ({item}) => (
         <QuanziItem item={item} {...this.props}/>
@@ -140,7 +140,7 @@ class FindIndex extends Component{
                     />
                     <TouchableWithoutFeedback onPress={()=>{this.props.navigation.navigate("Quanzi")}}>
                         <View style={styles.quanziView}>
-                            <Image style={styles.quanziMore} source={require('../../assets/icon/icongengduo.png')}/>
+                            <Image style={styles.quanziMore} source={require('../../assets/icon/icongengduo3.png')}/>
                             <Text style={styles.quanziText}>所有圈子</Text>
                         </View>
                     </TouchableWithoutFeedback>
@@ -191,7 +191,6 @@ const styles = StyleSheet.create({
         height:40,
         borderRadius:20,
         alignSelf:'center',
-        tintColor:'#c5c5c5'
     },
     quanziText:{
         fontSize:12,

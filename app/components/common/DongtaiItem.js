@@ -16,12 +16,13 @@ import {
     RefreshControl,
 } from 'react-native';
 import HTMLView from 'react-native-htmlview';
-import {getDateTimeDiff,inArray,getFullPath} from '../common/public';
+import {getDateTimeDiff,inArray,getFullPath,removeHTMLTag,strCut} from '../common/public';
 import {zanDongtaiAction} from '../../actions/userAction';
 import globalStyle from '../common/GlobalStyle';
 import ImageRange from '../common/ImageRange';
 import UShare from '../common/UShare';
-import {LazyloadImage} from '../common/lazyload';
+import {LazyloadView,LazyloadImage} from '../common/lazyload';//LazyloadImage host={this.lazyloadName}
+import {CachedImage} from '../common/ImageCacheMy';
 
 
 export default class DongtaiItem extends Component {
@@ -65,21 +66,33 @@ export default class DongtaiItem extends Component {
             this.props.navigation.navigate("PersonalHome",{id:userid});
         }
     }
+    //分享
+    myShare(item){
+        let images = item['pics'];
+        let shareImg = "https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png";
+        if(images !== '' && images !== null && images !== undefined){
+            let imagesArr = images.split(",");
+            shareImg = getFullPath(imagesArr[0],this.state.host);
+        }
+        UShare.share("橄榄枝精选动态",item['content'],
+            shareImg,
+            this.state.host + "/h5/dongtai?id="+item['id'],()=>{},()=>{});
+    }
     render(){
         let item = this.props.item;
-        let from = this.props.from || 0;//个人中心的样式稍微不一样
+        let from = 0;//暂时不要了，【个人中心的样式稍微不一样，this.props.from || 0】
         //个人中心样式
         if(from === 1){
             return (
-                <View style={{marginBottom:15}}>
+                <LazyloadView host={this.lazyloadName} style={{marginBottom:15,overflow:'hidden'}}>
                     <TouchableWithoutFeedback onPress={()=>{this.dongtaiDetail(item['id'])}}>
                         <View>
                             <View style={[globalStyle.dongtaiAvatarView,{padding:8,paddingBottom:0}]}>
                                 {
                                     (item['avatar'] !== "") ?
-                                        <LazyloadImage host={this.lazyloadName} style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                        <CachedImage style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host),cache:'force-cache'}}/>
                                         :
-                                        <LazyloadImage host={this.lazyloadName} style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                                        <CachedImage style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
                                 }
                                 <View>
                                     <Text>{item['name']}</Text>
@@ -110,14 +123,14 @@ export default class DongtaiItem extends Component {
                                     }
                                     <TouchableWithoutFeedback onPress={()=>{this.dongtaiDetail(item['id'])}}>
                                         <View style={{flexDirection:'row',marginRight:20,alignItems:'center'}}>
-                                            <Image style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconpinglun.png')}/>
+                                            <CachedImage style={[globalStyle.dongtaiIcon,{marginRight:5}]} source={require('../../assets/icon/iconpinglun.png')}/>
                                             <Text>评论</Text>
                                         </View>
                                     </TouchableWithoutFeedback>
                                 </View>
                                 <View>
                                     <TouchableWithoutFeedback onPress={()=>{UShare.share('你好', '分享内容', '','',()=>{},()=>{})}}>
-                                        <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconshare.png')}/>
+                                        <CachedImage style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconshare.png')}/>
                                     </TouchableWithoutFeedback>
                                 </View>
                             </View>
@@ -125,7 +138,7 @@ export default class DongtaiItem extends Component {
                                 {
                                     item['zan'] > 0 ?
                                         <View style={{flexDirection:'row',marginBottom:8}}>
-                                            <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                            <CachedImage style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
                                             <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
                                         </View>
                                         : null
@@ -143,21 +156,21 @@ export default class DongtaiItem extends Component {
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
-                </View>
+                </LazyloadView>
             );
         }
         //热门、关注样式
         return (
-            <View style={{marginBottom:15}}>
+            <View host={this.lazyloadName} style={{marginBottom:15,overflow:'hidden'}}>
                 <TouchableWithoutFeedback onPress={()=>{this.dongtaiDetail(item['id'])}}>
                     <View>
                         <TouchableWithoutFeedback onPress={()=>{this.personalHome(item['userid'])}}>
                             <View style={globalStyle.dongtaiAvatarView}>
                                 {
                                     (item['avatar'] !== "") ?
-                                        <LazyloadImage host={this.lazyloadName} style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host)}}/>
+                                        <CachedImage style={globalStyle.dongtaiAvatar} source={{uri:getFullPath(item['avatar'],this.state.host),cache:'force-cache'}}/>
                                         :
-                                        <LazyloadImage host={this.lazyloadName} style={globalStyle.defaultAvatar} source={require('../../assets/icon/iconhead.png')}/>
+                                        <CachedImage style={[globalStyle.defaultAvatar,{width:40,height:40,borderRadius:20}]} source={require('../../assets/icon/iconhead.png')}/>
                                 }
                                 <View>
                                     <Text>{item['name']}</Text>
@@ -166,7 +179,7 @@ export default class DongtaiItem extends Component {
                             </View>
                         </TouchableWithoutFeedback>
                         <View>
-                            <Text style={globalStyle.homeDongtaiText}>{item['content']}</Text>
+                            <Text style={globalStyle.homeDongtaiText}>{strCut(removeHTMLTag(item['content']),130)}</Text>
                             <ImageRange name={this.lazyloadName} images={item['pics']} {...this.props}/>
                         </View>
                         <View style={{flexDirection:'row',marginTop:10,marginBottom:10}}>
@@ -174,23 +187,23 @@ export default class DongtaiItem extends Component {
                                 {
                                     inArray(this.state.zanDongtaiList,item['id'],'id') ?
                                         <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],0)}}>
-                                            <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
+                                            <CachedImage style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan2.png')}/>
                                         </TouchableWithoutFeedback>
                                         :
                                         <TouchableWithoutFeedback onPress={()=>{this.zanDongtai(item['id'],1)}}>
-                                            <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
+                                            <CachedImage style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconzan.png')}/>
                                         </TouchableWithoutFeedback>
                                 }
                                 <TouchableWithoutFeedback onPress={()=>{this.dongtaiDetail(item['id'])}}>
-                                    <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
+                                    <CachedImage style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconpinglun.png')}/>
                                 </TouchableWithoutFeedback>
-                                <TouchableWithoutFeedback onPress={()=>{UShare.share("你好标题","我是要分享的内容","https://mmbiz.qlogo.cn/mmbiz_png/7HmKrmWJ6Xfkm49C15ThoI8q6rexlGgIWKAp9szBq0uzYtnEkSpHib2dEmRq15jBuYdMnkaCpsqvPWaDaemSorg/0?wx_fmt=png","https://www.baidu.com",()=>{},()=>{});}}>
-                                    <Image style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
+                                <TouchableWithoutFeedback onPress={()=>{this.myShare(item)}}>
+                                    <CachedImage style={globalStyle.dongtaiIcon} source={require('../../assets/icon/iconfenxiang.png')}/>
                                 </TouchableWithoutFeedback>
                             </View>
                             <View>
                                 <TouchableWithoutFeedback onPress={()=>{this.dongtaiDetail(item['id'])}}>
-                                    <Image style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
+                                    <CachedImage style={[globalStyle.dongtaiIcon,{marginRight:0}]} source={require('../../assets/icon/iconmore.png')}/>
                                 </TouchableWithoutFeedback>
                             </View>
                         </View>
@@ -198,7 +211,7 @@ export default class DongtaiItem extends Component {
                             {
                                 item['zan'] > 0 ?
                                     <View style={{flexDirection:'row',marginBottom:8}}>
-                                        <Image style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
+                                        <CachedImage style={{width:15,height:15,tintColor:'#333',marginRight:5}} source={require('../../assets/icon/iconzan2.png')}/>
                                         <Text style={{fontSize:12,color:'#333'}}>{item['zan']}人赞了</Text>
                                     </View>
                                     : null

@@ -40,14 +40,16 @@ class LazyloadScrollView extends Component{
     getScrollResponder = () => this._scrollResponder;
 
     refresh = () => {
-        this._onScroll({
-            nativeEvent: {
-                contentOffset: {
-                    y: this.currentPosition.y,
-                    x: this.currentPosition.x
+        try{
+            this._onScroll({
+                nativeEvent: {
+                    contentOffset: {
+                        y: this.currentPosition.y,
+                        x: this.currentPosition.x
+                    }
                 }
-            }
-        });
+            });
+        }catch(e){}
     };
 
     _manager = null;
@@ -55,36 +57,40 @@ class LazyloadScrollView extends Component{
     _scrollResponder = null;
 
     _onLayout = (e, node) => {
-        this.props.onLayout && this.props.onLayout(e, node);
-        let {width, height} = e.nativeEvent.layout;
-        let {
-            name,
-            renderDistance,
-            recycle,
-            recycleDistance
-        } = this.props;
-
-        this._manager = new LazyloadManager(
-            {
+        try{
+            this.props.onLayout && this.props.onLayout(e, node);
+            let {width, height} = e.nativeEvent.layout;
+            let {
                 name,
-                dimensions: {
-                    width,
-                    height
+                renderDistance,
+                recycle,
+                recycleDistance
+            } = this.props;
+
+            this._manager = new LazyloadManager(
+                {
+                    name,
+                    dimensions: {
+                        width,
+                        height
+                    },
+                    offset: renderDistance,
+                    recycle: recycle ? recycleDistance : 0,
+                    horizontal: this.props.horizontal
                 },
-                offset: renderDistance,
-                recycle: recycle ? recycleDistance : 0,
-                horizontal: this.props.horizontal
-            },
-            ReactNative.findNodeHandle(this)
-        );
+                ReactNative.findNodeHandle(this)
+            );
+        }catch(e){}
 
     };
 
     _onScroll = e => {
-        this.props.onScroll && this.props.onScroll(e);
-        let {x, y} = e.nativeEvent.contentOffset;
-        this.currentPosition = {x, y};
-        this._manager && this._manager.calculate({x, y});
+        try{
+            this.props.onScroll && this.props.onScroll(e);
+            let {x, y} = e.nativeEvent.contentOffset;
+            this.currentPosition = {x, y};
+            this._manager && this._manager.calculate({x, y});
+        }catch(e){}
     };
 
     render() {

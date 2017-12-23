@@ -12,9 +12,10 @@ import colors from '../common/Colors';
 import globalStyle from '../common/GlobalStyle';
 import { Card, Button} from 'react-native-elements';
 import {formatTime,isExpired,getFullPath,inArray} from '../common/public';
-import {LazyloadImage} from '../common/lazyload';
+//import {LazyloadImage} from '../common/lazyload';//LazyloadImage host={lazyloadName}
+import {CachedImage} from '../common/ImageCacheMy';
 
-const lazyloadName = "lazyload-huodongList";//懒加载的name
+//const lazyloadName = "lazyload-huodongList";//懒加载的name
 const {width} = Dimensions.get("window");
 
 export default class QuanziItem extends Component {
@@ -32,9 +33,9 @@ export default class QuanziItem extends Component {
                 <View style={styles.quanziView}>
                     {
                         item['pic'] ?
-                            <LazyloadImage host={lazyloadName} style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
+                            <CachedImage style={[globalStyle.defaultAvatarImage,styles.quanziImage]} source={{uri:getFullPath(item['pic'],this.state.host)}}/>
                             :
-                            <LazyloadImage host={lazyloadName} style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>
+                            <CachedImage style={[globalStyle.defaultAvatar,styles.quanziImage]} source={require('../../assets/icon/iconhead.png')}/>
                     }
                     <Text style={styles.quanziText}>{item['title']}</Text>
                 </View>

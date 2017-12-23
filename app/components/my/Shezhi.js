@@ -117,25 +117,27 @@ export class Shezhi extends Component{
                         {text: '取消', onPress: ()=>{}},
                         {text: '确定', onPress: ()=>{
                             //删除登录状态
-                            realmObj.write(()=>{
-                                let userid = realmObj.objects('Global').filtered("key == 'currentUserId'");
-                                let userMobile = realmObj.objects('Global').filtered("key == 'currentUserMobile'");
-                                realmObj.delete(userid);
-                                realmObj.delete(userMobile);
-                                realmObj.delete(realmObj.objects("Global").filtered("key == 'guanzhuTotal'"));
-                                realmObj.delete(realmObj.objects("Global").filtered("key == 'fensiTotal'"));
-                                realmObj.delete(realmObj.objects("Global").filtered("key == 'dongtaiTotal'"));
-                                realmObj.delete(realmObj.objects("User"));
-                                realmObj.delete(realmObj.objects("HiddenUser"));
-                                realmObj.delete(realmObj.objects("JoinCompany"));
-                                realmObj.delete(realmObj.objects("FollowUser"));
-                                realmObj.delete(realmObj.objects("Fensi"));
-                                realmObj.delete(realmObj.objects("ZanDongtai"));
-                                realmObj.delete(realmObj.objects("Cang"));
-                                realmObj.delete(realmObj.objects("HuodongBaoming"));
-                                realmObj.delete(realmObj.objects("Tongxunlu"));
-                                //realmObj.deleteAll();//清空
-                            });
+                            try{
+                                realmObj.write(()=>{
+                                    let userid = realmObj.objects('Global').filtered("key == 'currentUserId'");
+                                    let userMobile = realmObj.objects('Global').filtered("key == 'currentUserMobile'");
+                                    realmObj.delete(userid);
+                                    realmObj.delete(userMobile);
+                                    realmObj.delete(realmObj.objects("Global").filtered("key == 'guanzhuTotal'"));
+                                    realmObj.delete(realmObj.objects("Global").filtered("key == 'fensiTotal'"));
+                                    realmObj.delete(realmObj.objects("Global").filtered("key == 'dongtaiTotal'"));
+                                    realmObj.delete(realmObj.objects("User"));
+                                    realmObj.delete(realmObj.objects("HiddenUser"));
+                                    realmObj.delete(realmObj.objects("JoinCompany"));
+                                    realmObj.delete(realmObj.objects("FollowUser"));
+                                    realmObj.delete(realmObj.objects("Fensi"));
+                                    realmObj.delete(realmObj.objects("ZanDongtai"));
+                                    realmObj.delete(realmObj.objects("Cang"));
+                                    realmObj.delete(realmObj.objects("HuodongBaoming"));
+                                    realmObj.delete(realmObj.objects("Tongxunlu"));
+                                    //realmObj.deleteAll();//清空
+                                });
+                            }catch(e){}
                             _that.props.dispatch(logout());
                         }}
                     ],

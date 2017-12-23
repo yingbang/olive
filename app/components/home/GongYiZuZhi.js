@@ -10,7 +10,8 @@ import colors from '../common/Colors';
 import {getArrayItems,inArray,getFullPath} from '../common/public';
 import {toastShort} from '../common/ToastTool';
 import {getUserListAction,getJoinCompanyAction} from '../../actions/userAction';
-import {LazyloadImage} from '../common/lazyload';
+//import {LazyloadImage} from '../common/lazyload';//LazyloadImage host={this.lazyloadName}
+import {CachedImage} from '../common/ImageCacheMy';
 
 
 export default class GongYiZuZhi extends Component {
@@ -22,7 +23,7 @@ export default class GongYiZuZhi extends Component {
             currentPage:1,
             joinList:[]
         };
-        this.lazyloadName = this.props.name;//懒加载的name
+        //this.lazyloadName = this.props.name;//懒加载的name
     }
 
     componentDidMount(){
@@ -135,10 +136,10 @@ export default class GongYiZuZhi extends Component {
                             <TouchableWithoutFeedback key={i} onPress={()=>{this.props.screenProps.navigation.navigate("PersonalHome",{id:item['id']})}}>
                                 <View style={styles.container}>
                                     {
-                                        item['avatar'] !== "" ?
-                                            <LazyloadImage host={this.lazyloadName} style={styles.img} source={{uri:getFullPath(item['avatar'],host)}}/>
+                                        (item['avatar'] !== "") ?
+                                            <CachedImage style={styles.img} source={{uri:getFullPath(item['avatar'],host),cache:'force-cache'}}/>
                                             :
-                                            <LazyloadImage host={this.lazyloadName} style={[globalStyle.defaultAvatar,{marginBottom:10}]} source={require('../../assets/icon/iconhead.png')}/>
+                                            <CachedImage style={[globalStyle.defaultAvatar,{marginBottom:10}]} source={require('../../assets/icon/iconhead.png')}/>
                                     }
                                     <Text style={{marginBottom:10}}>{item['nickname']}</Text>
                                     {
